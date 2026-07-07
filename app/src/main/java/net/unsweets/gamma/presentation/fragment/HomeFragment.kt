@@ -11,11 +11,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.fragment_home.*
+import dagger.hilt.android.AndroidEntryPoint
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.FragmentHomeBinding
 import net.unsweets.gamma.presentation.util.Util
 
 
+@AndroidEntryPoint
 class HomeFragment : Fragment(), Util.DrawerContentFragment {
 
     interface Scrollable {
@@ -31,7 +33,7 @@ class HomeFragment : Fragment(), Util.DrawerContentFragment {
 
         override fun onTabReselected(tab: TabLayout.Tab?) {
             if (tab == null) return
-            val fragmentTag = "android:switcher:${viewPager.id}:${adapter.getItemId(tab.position)}"
+            val fragmentTag = "android:switcher:${binding.viewPager.id}:${adapter.getItemId(tab.position)}"
             val fragment =
                 childFragmentManager.findFragmentByTag(fragmentTag) as? Scrollable ?: return
             fragment.scrollToTop()
@@ -45,18 +47,27 @@ class HomeFragment : Fragment(), Util.DrawerContentFragment {
 
     override val menuItemId = R.id.home
 
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewPager.adapter = adapter
-        tabLayout.setupWithViewPager(viewPager)
-        tabLayout.addOnTabSelectedListener(tabListener)
+        binding.viewPager.adapter = adapter
+        binding.tabLayout.setupWithViewPager(binding.viewPager)
+        binding.tabLayout.addOnTabSelectedListener(tabListener)
     }
 
 

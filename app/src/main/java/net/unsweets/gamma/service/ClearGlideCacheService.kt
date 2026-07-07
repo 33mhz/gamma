@@ -5,13 +5,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import net.unsweets.gamma.presentation.util.GlideApp
+import com.bumptech.glide.Glide
 
 class ClearGlideCacheService : IntentService("ClearGlideCacheService") {
 
     override fun onHandleIntent(intent: Intent?) {
         if (intent == null) return
-        GlideApp.getPhotoCacheDir(baseContext)?.deleteRecursively()
+        Glide.getPhotoCacheDir(baseContext)?.deleteRecursively()
         val broadcast = Intent(action)
         sendBroadcast(broadcast)
     }

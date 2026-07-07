@@ -3,13 +3,12 @@ package net.unsweets.gamma.presentation.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
-import kotlinx.android.synthetic.main.segment_item.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.SegmentItemBinding
 import net.unsweets.gamma.domain.entity.PnutResponse
 import net.unsweets.gamma.domain.entity.UniquePageable
 import net.unsweets.gamma.domain.model.PageableItemWrapper
@@ -126,14 +125,14 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
                 val viewHolder = holder as? SegmentViewHolder ?: return
                 when {
                     pager.state == PageableItemWrapper.Pager.State.Error -> {
-                        viewHolder.retryButton.visibility = View.VISIBLE
-                        viewHolder.noItemsMessageTextView.visibility = View.GONE
-                        viewHolder.loadingIndicatorProgressBar.visibility = View.GONE
-                        viewHolder.endOfListImageView.visibility = View.GONE
-                        viewHolder.segmentImageView.visibility = View.GONE
+                        viewHolder.binding.retryButton.visibility = View.VISIBLE
+                        viewHolder.binding.noItemsMessageTextView.visibility = View.GONE
+                        viewHolder.binding.loadingIndicatorProgressBar.visibility = View.GONE
+                        viewHolder.binding.endOfListImageView.visibility = View.GONE
+                        viewHolder.binding.segmentImageView.visibility = View.GONE
                         setClickableSegment(viewHolder, pager) {
-                            viewHolder.retryButton.visibility = View.GONE
-                            viewHolder.loadingIndicatorProgressBar.visibility = View.VISIBLE
+                            viewHolder.binding.retryButton.visibility = View.GONE
+                            viewHolder.binding.loadingIndicatorProgressBar.visibility = View.VISIBLE
 //                        options.itemList[position] = pager.copy(state = PageableItemWrapper.Pager.State.Loading)
                             notifyItemChanged(
                                 position,
@@ -142,23 +141,23 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
                         }
                     }
                     pager.state == PageableItemWrapper.Pager.State.Loading -> {
-                        viewHolder.retryButton.visibility = View.GONE
-                        viewHolder.noItemsMessageTextView.visibility = View.GONE
-                        viewHolder.loadingIndicatorProgressBar.visibility = View.VISIBLE
-                        viewHolder.endOfListImageView.visibility = View.GONE
-                        viewHolder.segmentImageView.visibility = View.GONE
+                        viewHolder.binding.retryButton.visibility = View.GONE
+                        viewHolder.binding.noItemsMessageTextView.visibility = View.GONE
+                        viewHolder.binding.loadingIndicatorProgressBar.visibility = View.VISIBLE
+                        viewHolder.binding.endOfListImageView.visibility = View.GONE
+                        viewHolder.binding.segmentImageView.visibility = View.GONE
                         setClickableSegment(viewHolder, pager)
                     }
                     pager.more -> {
                         // remain items
-                        viewHolder.retryButton.visibility = View.GONE
-                        viewHolder.noItemsMessageTextView.visibility = View.GONE
-                        viewHolder.loadingIndicatorProgressBar.visibility = View.GONE
-                        viewHolder.endOfListImageView.visibility = View.GONE
-                        viewHolder.segmentImageView.visibility = View.VISIBLE
+                        viewHolder.binding.retryButton.visibility = View.GONE
+                        viewHolder.binding.noItemsMessageTextView.visibility = View.GONE
+                        viewHolder.binding.loadingIndicatorProgressBar.visibility = View.GONE
+                        viewHolder.binding.endOfListImageView.visibility = View.GONE
+                        viewHolder.binding.segmentImageView.visibility = View.VISIBLE
                         setClickableSegment(viewHolder, pager) {
-                            viewHolder.segmentImageView.visibility = View.GONE
-                            viewHolder.loadingIndicatorProgressBar.visibility = View.VISIBLE
+                            viewHolder.binding.segmentImageView.visibility = View.GONE
+                            viewHolder.binding.loadingIndicatorProgressBar.visibility = View.VISIBLE
 //                        options.itemList[position] = pager.copy(state = PageableItemWrapper.Pager.State.Loading)
                             notifyItemChanged(
                                 position,
@@ -169,26 +168,26 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
                     }
                     !pager.more && position == 0 -> {
                         // empty
-                        viewHolder.retryButton.visibility = View.GONE
-                        viewHolder.loadingIndicatorProgressBar.visibility = View.GONE
-                        viewHolder.noItemsMessageTextView.visibility = View.VISIBLE
-                        viewHolder.endOfListImageView.visibility = View.GONE
-                        viewHolder.segmentImageView.visibility = View.GONE
+                        viewHolder.binding.retryButton.visibility = View.GONE
+                        viewHolder.binding.loadingIndicatorProgressBar.visibility = View.GONE
+                        viewHolder.binding.noItemsMessageTextView.visibility = View.VISIBLE
+                        viewHolder.binding.endOfListImageView.visibility = View.GONE
+                        viewHolder.binding.segmentImageView.visibility = View.GONE
                         val context = holder.itemView.context
                         val itemName = context.getString(options.listener.itemNameRes)
-                            .toLowerCase(Locale.ENGLISH)
-                        viewHolder.noItemsMessageTextView.text =
+                            .lowercase(Locale.ENGLISH)
+                        viewHolder.binding.noItemsMessageTextView.text =
                             context.getString(R.string.no_items_template, itemName)
                         disableSegment(viewHolder)
 
                     }
                     else -> {
                         // loaded all items
-                        viewHolder.retryButton.visibility = View.GONE
-                        viewHolder.noItemsMessageTextView.visibility = View.GONE
-                        viewHolder.loadingIndicatorProgressBar.visibility = View.GONE
-                        viewHolder.endOfListImageView.visibility = View.VISIBLE
-                        viewHolder.segmentImageView.visibility = View.GONE
+                        viewHolder.binding.retryButton.visibility = View.GONE
+                        viewHolder.binding.noItemsMessageTextView.visibility = View.GONE
+                        viewHolder.binding.loadingIndicatorProgressBar.visibility = View.GONE
+                        viewHolder.binding.endOfListImageView.visibility = View.VISIBLE
+                        viewHolder.binding.segmentImageView.visibility = View.GONE
                         disableSegment(viewHolder)
                     }
                 }
@@ -304,10 +303,6 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
     }
 
     class SegmentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val loadingIndicatorProgressBar: ProgressBar = itemView.loadingIndicatorProgressBar
-        val noItemsMessageTextView: TextView = itemView.noItemsMessageTextView
-        val retryButton: MaterialButton = itemView.retryButton
-        val endOfListImageView: ImageView = itemView.endOfListImageView
-        val segmentImageView: ImageView = itemView.segmentImageView
+        val binding = SegmentItemBinding.bind(itemView)
     }
 }

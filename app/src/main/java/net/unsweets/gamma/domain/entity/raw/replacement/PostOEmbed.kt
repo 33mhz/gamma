@@ -3,8 +3,8 @@ package net.unsweets.gamma.domain.entity.raw.replacement
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import kotlinx.android.parcel.IgnoredOnParcel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import net.unsweets.gamma.domain.entity.raw.OEmbed
 import net.unsweets.gamma.domain.entity.raw.PostRaw
 import net.unsweets.gamma.domain.entity.raw.Raw

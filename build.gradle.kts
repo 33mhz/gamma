@@ -1,43 +1,20 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-buildscript {
-    val kotlinVersion: String by extra { "1.4.30" }
-    repositories {
-        google()
-        jcenter()
-        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
-        maven(url = "https://jitpack.io")
-
-
-    }
-    dependencies {
-        classpath("com.android.tools.build:gradle:4.1.2")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-        classpath("com.google.gms:oss-licenses:0.9.2")
-        classpath("com.google.gms:google-services:4.3.5")
-        classpath("com.google.firebase:firebase-crashlytics-gradle:2.4.1")
-        val navVersion = "2.3.1"
-        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:$navVersion")
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
+plugins {
+    id("com.android.application") version "9.2.1" apply false
+    id("com.android.library") version "9.2.1" apply false
+    id("org.jetbrains.kotlin.android") version "2.4.0" apply false
+    id("com.google.dagger.hilt.android") version "2.60.1" apply false
+    id("com.google.devtools.ksp") version "2.3.9" apply false
+    id("com.google.android.gms.oss-licenses-plugin") version "0.12.0" apply false
+    id("com.google.gms.google-services") version "4.5.0" apply false
+    id("com.google.firebase.crashlytics") version "3.0.7" apply false
+    id("androidx.navigation.safeargs.kotlin") version "2.9.8" apply false
 }
 
-allprojects {
-    val kotlinVersion: String by extra { "1.4.30" }
-    repositories {
-        google()
-        jcenter()
-        maven(url = "https://jitpack.io")
-        maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
-    }
-  configurations.all {
-    resolutionStrategy {
-      force("org.objenesis:objenesis:2.6")
-    }
-  }
-}
+val kotlinVersion: String by project
+extra.set("kotlinVersion", kotlinVersion)
 
-task("clean", Delete::class) {
-    delete = setOf(rootProject.buildDir)
+tasks.register<Delete>("clean") {
+    delete(rootProject.layout.buildDirectory)
 }

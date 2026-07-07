@@ -1,18 +1,17 @@
 package net.unsweets.gamma.presentation.activity
 
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_files.*
-import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.ActivityFilesBinding
 
 class FilesActivity : BaseActivity() {
 
-
+    private lateinit var binding: ActivityFilesBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_files)
-        setSupportActionBar(toolbar)
+        binding = ActivityFilesBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
     }
-
 
 }

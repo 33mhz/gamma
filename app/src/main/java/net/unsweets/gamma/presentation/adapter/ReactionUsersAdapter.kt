@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.RequestOptions
-import kotlinx.android.synthetic.main.reaction_user_item.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.ReactionUserItemBinding
 import net.unsweets.gamma.domain.entity.User
 import net.unsweets.gamma.domain.model.preference.ShapeOfAvatar
-import net.unsweets.gamma.presentation.util.GlideApp
+import com.bumptech.glide.Glide
 
 class ReactionUsersAdapter(
     private val reactionUsers: List<User>,
@@ -34,7 +34,7 @@ class ReactionUsersAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val user = reactionUsers[position]
-        GlideApp.with(holder.itemView).load(user.getAvatarUrl(User.AvatarSize.Normal))
+        Glide.with(holder.itemView).load(user.getAvatarUrl(User.AvatarSize.Normal))
             .apply(RequestOptions.circleCropTransform())
             .into(holder.avatarView)
         holder.avatarView.setOnClickListener {
@@ -43,7 +43,8 @@ class ReactionUsersAdapter(
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val avatarView: ImageView = itemView.reactionUserIconImageView
+        val binding = ReactionUserItemBinding.bind(itemView)
+        val avatarView: ImageView = binding.reactionUserIconImageView
     }
 
 }

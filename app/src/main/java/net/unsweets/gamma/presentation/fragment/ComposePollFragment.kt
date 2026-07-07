@@ -86,7 +86,7 @@ class ComposePollFragment : BaseFragment(), ComposePollOptionFragment.Callback {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_compose_poll, container, false)
         binding.viewModel = viewModel
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.composePollRecyclerView.adapter = composePollListAdapter
         binding.composePollRecyclerView.isNestedScrollingEnabled = false
         binding.composePollToolbar.let {
@@ -147,16 +147,16 @@ class ComposePollFragment : BaseFragment(), ComposePollOptionFragment.Callback {
             MutableLiveData<PollPostBody>().apply { value = PollPostBody.defaultValue }
         val prompt = MutableLiveData<String>().apply { value = "" }
         val items = PollPostBody.PollOption.template
-        val isAnonymous = Transformations.map(pollPostBody) {
+        val isAnonymous: LiveData<Boolean> = pollPostBody.map {
             it?.isAnonymous == true
         }
-        val maxOptions = Transformations.map(pollPostBody) {
+        val maxOptions: LiveData<Int> = pollPostBody.map {
             it?.maxOptions ?: 1
         }
-        val duration = Transformations.map(pollPostBody) {
+        val duration: LiveData<Int?> = pollPostBody.map {
             it?.duration
         }
-        val durationStr = Transformations.map(pollPostBody) {
+        val durationStr: LiveData<String> = pollPostBody.map {
             if (it == null) return@map ""
             PollDeadline.fromInt(it.duration).toFormatString(app)
         }

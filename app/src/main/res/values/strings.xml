@@ -95,6 +95,7 @@
     <string name="this_post_has_deleted">This post has deleted.</string>
     <string name="deleted_post_user_name">deleted post</string>
     <string name="posted">Posted: %s</string>
+    <string name="user_name_format">\@%s</string>
     <string name="starred">Starred: %s</string>
     <string name="reposted_by_template">reposted by @%s</string>
     <string name="date_short_seconds_template">%ds</string>
@@ -163,7 +164,7 @@
     <string name="share_search_posts_rss_url">Share search posts RSS</string>
     <string name="advanced_options">Advanced options</string>
     <string name="revised">Revised</string>
-    <string name="format_time">%tH:%tM:%tS</string>
+    <string name="format_time">%1$tH:%1$tM:%1$tS</string>
     <string name="pref_general_header_title_key">pref_general_header_title_key</string>
     <string name="pref_license_key">pref_license_key</string>
     <string name="license">License</string>

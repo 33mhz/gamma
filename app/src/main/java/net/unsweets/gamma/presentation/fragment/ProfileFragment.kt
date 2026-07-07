@@ -45,7 +45,7 @@ import net.unsweets.gamma.presentation.activity.EditProfileActivity
 import net.unsweets.gamma.presentation.activity.PhotoViewActivity
 import net.unsweets.gamma.presentation.adapter.ProfilePagerAdapter
 import net.unsweets.gamma.presentation.util.EntityOnTouchListener
-import net.unsweets.gamma.presentation.util.GlideApp
+import com.bumptech.glide.Glide
 import net.unsweets.gamma.presentation.util.ShareUtil
 import net.unsweets.gamma.presentation.util.Util
 import net.unsweets.gamma.util.SingleLiveEvent
@@ -111,7 +111,7 @@ class ProfileFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false)
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         arguments?.let { bundle ->
             val iconUrl = bundle.getString(BundleKey.IconUrl.name, "")
             if (iconUrl != null && iconUrl.isNotBlank()) {
@@ -129,7 +129,7 @@ class ProfileFragment : BaseFragment() {
             toolbar.setOnMenuItemClickListener { onOptionsItemSelected(it) }
         }
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.getUser()
+            viewModel.fetchUser()
         }
         binding.profileDescriptionTextView.setOnTouchListener(entityOnTouchListener)
         val pagerAdapter = ProfilePagerAdapter(requireContext(), childFragmentManager, userId)
@@ -148,7 +148,7 @@ class ProfileFragment : BaseFragment() {
 //        })
 
         val coverUrl = User.getCoverUrl(userId)
-        GlideApp.with(this).load(coverUrl)
+        Glide.with(this).load(coverUrl)
             .apply(RequestOptions.bitmapTransform(BlurTransformation(20)))
             .into(binding.coverImageView)
 
@@ -194,13 +194,13 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun fixTransition(iconUrl: String) {
-        GlideApp.with(requireContext())
+        Glide.with(requireContext())
             .load(iconUrl)
             .addListener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(
                     e: GlideException?,
                     model: Any?,
-                    target: Target<Drawable>?,
+                    target: Target<Drawable>,
                     isFirstResource: Boolean
                 ): Boolean {
                     startPostponedEnterTransition()
@@ -208,10 +208,10 @@ class ProfileFragment : BaseFragment() {
                 }
 
                 override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any?,
+                    resource: Drawable,
+                    model: Any,
                     target: Target<Drawable>?,
-                    dataSource: DataSource?,
+                    dataSource: DataSource,
                     isFirstResource: Boolean
                 ): Boolean {
                     startPostponedEnterTransition()
@@ -253,6 +253,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun eventHandling(it: Event?) {
+        if (it == null) return
         when (it) {
             is Event.FollowingList -> openFollowingList(it.user)
             is Event.FollowerList -> openFollowerList(it.user)
@@ -329,20 +330,20 @@ class ProfileFragment : BaseFragment() {
     ) : AndroidViewModel(app) {
         val event = SingleLiveEvent<Event>()
         val user = MutableLiveData<User>()
-        val iconUrl = Transformations.map(user) {
+        val iconUrl: LiveData<String> = user.map {
             when {
                 it != null -> it.getAvatarUrl(null)
                 userId != null -> User.getAvatarUrl(userId, null)
                 else -> ""
             }
         }
-        val usernameWithAt: LiveData<String> = Transformations.map(user) { "@${it?.username}" }
-        val since: LiveData<CharSequence?> = Transformations.map(user) {
+        val usernameWithAt: LiveData<String> = user.map { "@${it?.username}" }
+        val since: LiveData<CharSequence?> = user.map {
             val calendar = Calendar.getInstance()
             if (it != null) calendar.time = it.createdAt
             DateFormat.format("yyyy/MM/dd", calendar)
         }
-        val relation: LiveData<Int> = Transformations.map(user) {
+        val relation: LiveData<Int> = user.map {
             if (it == null) return@map 0
             if (it.youFollow && it.followsYou && !it.youCanFollow) {
                 // it's me!
@@ -357,7 +358,7 @@ class ProfileFragment : BaseFragment() {
         val toolbarTextColor = MutableLiveData<Int>().apply { value = Color.WHITE }
         val toolbarBgColor = MutableLiveData<Int>().apply { value = Color.TRANSPARENT }
         val loading = MutableLiveData<Boolean>().apply { value = false }
-        val mainActionButtonText: LiveData<String> = Transformations.map(user) {
+        val mainActionButtonText: LiveData<String> = user.map {
             when {
                 it == null -> ""
                 it.me -> app.getString(R.string.edit_profile)
@@ -367,31 +368,31 @@ class ProfileFragment : BaseFragment() {
             }
         }
         val fetchingUser = MutableLiveData<Boolean>().apply { value = false }
-        val actionButtonTextColor = Transformations.map(user) {
+        val actionButtonTextColor: LiveData<Int> = user.map {
             when (it?.youFollow) {
                 false -> Util.getAccentColor(app)
                 else -> Util.getWindowBackgroundColor(app)
             }
         }
-        val actionButtonTintColor = Transformations.map(user) {
+        val actionButtonTintColor: LiveData<Int> = user.map {
             when (it?.youFollow) {
                 true -> Util.getAccentColor(app)
                 else -> Util.getWindowBackgroundColor(app)
             }
         }
         val actionButtonRippleColor = Util.getPrimaryColorDark(app)
-        val verifiedDomainVisibility = Transformations.map(user) {
+        val verifiedDomainVisibility: LiveData<Int> = user.map {
             if (it?.verified != null) View.VISIBLE else View.GONE
         }
 
         init {
-            if (user.value == null) getUser()
+            if (user.value == null) fetchUser()
         }
 
         fun openVerifiedDomain() =
             user.value?.verified?.let { event.emit(Event.OpenVerifiedDomain(it.link)) }
 
-        fun getUser() {
+        fun fetchUser() {
             val id = userId ?: user.value?.id ?: return
             fetchingUser.value = true
             viewModelScope.launch {
@@ -454,7 +455,7 @@ class ProfileFragment : BaseFragment() {
             private val userId: String?
         ) :
             ViewModelProvider.AndroidViewModelFactory(application) {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
                 return ProfileViewModel(
                     application,

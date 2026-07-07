@@ -5,5 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".presentation.fragment.ChangeAccountDialogFragment">
 
-    <include layout="@layout/account_list" />
+    <include
+        android:id="@+id/accountListInclude"
+        layout="@layout/account_list" />
 </FrameLayout>

@@ -10,8 +10,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.android.synthetic.main.fragment_choose_primary_color_dialog.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.FragmentChoosePrimaryColorDialogBinding
 import net.unsweets.gamma.presentation.adapter.ColorListAdapter
 import net.unsweets.gamma.presentation.util.ThemeColorUtil
 
@@ -62,15 +62,11 @@ class ChoosePrimaryColorDialogFragment : DialogFragment(), DialogInterface.OnCli
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val view = LayoutInflater.from(context)
-            .inflate(
-                R.layout.fragment_choose_primary_color_dialog,
-                view?.findViewById(android.R.id.content)
-            )
-        view.colorList.adapter = ColorListAdapter(this, themeColor)
-        view.colorList.setHasFixedSize(true)
+        val binding = FragmentChoosePrimaryColorDialogBinding.inflate(LayoutInflater.from(context))
+        binding.colorList.adapter = ColorListAdapter(this, themeColor)
+        binding.colorList.setHasFixedSize(true)
         return MaterialAlertDialogBuilder(requireContext())
-            .setView(view)
+            .setView(binding.root)
             .setPositiveButton(R.string.ok, this)
             .setNeutralButton(R.string.default_text, this)
             .setNegativeButton(R.string.cancel, this)
@@ -86,7 +82,7 @@ class ChoosePrimaryColorDialogFragment : DialogFragment(), DialogInterface.OnCli
         class Factory(private val themeColor: ThemeColorUtil.ThemeColor?) :
             ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return ChoosePrimaryColorDialogViewModel(themeColor) as T
             }
         }

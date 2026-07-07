@@ -13,8 +13,8 @@ import android.widget.FrameLayout
 import androidx.annotation.IdRes
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.fragment_post_item.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.FragmentPostItemBinding
 import net.unsweets.gamma.presentation.fragment.PostItemFragment
 
 
@@ -71,8 +71,9 @@ class PostTouchHelperCallback(
         isCurrentlyActive: Boolean
     ) {
         val vh = (viewHolder as? PostItemFragment.PostViewHolder) ?: return
-        val foregroundView = vh.itemView.postItemForegroundView
-        val backgroundView = vh.itemView.swipeActionsLayout
+        val binding = FragmentPostItemBinding.bind(vh.itemView)
+        val foregroundView = binding.postItemForegroundView
+        val backgroundView = binding.swipeActionsLayout
         val per = dX / deviceWidth
         val direction = if (prevDX < dX) Direction.Right else Direction.Left
         if (isCurrentlyActive) {
@@ -95,16 +96,17 @@ class PostTouchHelperCallback(
 
 
     private fun getShownViewId(per: Float, backgroundView: View, viewHolder: PostItemFragment.PostViewHolder): Int? {
+        val binding = FragmentPostItemBinding.bind(backgroundView)
         return when {
             per < 0.1 -> null
-            0.1 <= per && per < 0.25 -> backgroundView.actionReplyImageView.id
-            0.25 <= per && per < 0.4 -> backgroundView.actionStarImageView.id
-            0.4 <= per && per < 0.55 -> backgroundView.actionRepostImageView.id
+            0.1 <= per && per < 0.25 -> binding.actionReplyImageView.id
+            0.25 <= per && per < 0.4 -> binding.actionStarImageView.id
+            0.4 <= per && per < 0.55 -> binding.actionRepostImageView.id
             else -> when (viewHolder.isMainItem) {
-                true -> backgroundView.actionMoreImageView.id
+                true -> binding.actionMoreImageView.id
                 else -> when {
-                    0.55 <= per && per < 0.7 -> backgroundView.actionThreadImageView.id
-                    else -> backgroundView.actionMoreImageView.id
+                    0.55 <= per && per < 0.7 -> binding.actionThreadImageView.id
+                    else -> binding.actionMoreImageView.id
                 }
             }
         }
@@ -166,7 +168,8 @@ class PostTouchHelperCallback(
     }
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
-        val foregroundView = viewHolder.itemView.swipeActionsLayout
+        val binding = FragmentPostItemBinding.bind(viewHolder.itemView)
+        val foregroundView = binding.swipeActionsLayout
         ItemTouchHelper.Callback.getDefaultUIUtil().clearView(foregroundView)
 //        super.clearView(recyclerView, viewHolder)
     }

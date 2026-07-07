@@ -22,10 +22,10 @@ class ThemeColorPreference @JvmOverloads constructor(
             notifyChanged()
         }
 
-    override fun onBindViewHolder(holder: PreferenceViewHolder?) {
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
         val colorPreviewImageView =
-            holder?.findViewById(R.id.colorPreviewImageView) as? ImageView ?: return
+            holder.findViewById(R.id.colorPreviewImageView) as? ImageView ?: return
         val color = themeColor?.getColor(context) ?: context.getColor(R.color.colorPrimary)
         colorPreviewImageView.setImageDrawable(ColorDrawable(color))
     }

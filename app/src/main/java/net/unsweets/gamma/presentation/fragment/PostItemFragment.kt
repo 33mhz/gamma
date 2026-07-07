@@ -29,11 +29,11 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.android.synthetic.main.fragment_post_item.view.*
 import kotlinx.coroutines.launch
 import net.unsweets.gamma.R
 import net.unsweets.gamma.broadcast.PostReceiver
@@ -253,7 +253,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
     lateinit var voteUseCase: VoteUseCase
 
     private val glideRequest by lazy {
-        GlideApp.with(this)
+        Glide.with(this)
     }
 
     abstract val streamType: StreamType
@@ -734,10 +734,10 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         itemTouchHelper: ItemTouchHelper,
         avatarSwipe: Boolean
     ) : RecyclerView.ViewHolder(mView) {
-        val rootCardView: CardView = itemView.rootCardView
+        val rootCardView: CardView = itemView.findViewById(R.id.rootCardView)
         var startX = -1f
         private val threshold = 10f
-        val avatarView: ImageView = itemView.avatarImageView.also {
+        val avatarView: ImageView = itemView.findViewById<ImageView>(R.id.avatarImageView).also {
             it.setOnTouchListener { view, motionEvent ->
                 if (!view.isEnabled) return@setOnTouchListener false
                 if (motionEvent.action == MotionEvent.ACTION_DOWN) {
@@ -752,52 +752,52 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
                 false
             }
         }
-        val screenNameTextView: TextView = itemView.screenNameTextView
-        val bodyTextView: TextView = itemView.bodyTextView
-        val dateTextView: TextView = itemView.relativeTimeTextView
-        val handleNameTextView: TextView = itemView.handleNameTextView
-        val repostedByTextView: TextView = itemView.repostedByTextView
-        val starStateView: View = itemView.starStateView
-        val repostStateView: View = itemView.repostStateView
-        val actionReplyImageView: ImageView = itemView.actionReplyImageView
-        val actionStarImageView: ImageView = itemView.actionStarImageView
-        val actionRepostImageView: ImageView = itemView.actionRepostImageView
-        val actionThreadImageView: ImageView = itemView.actionThreadImageView
-        val actionMoreImageView: ImageView = itemView.actionMoreImageView
-        val thumbnailViewPager: ViewPager2 = itemView.thumbnailViewPager
-        val thumbnailViewPagerFrameLayout: FrameLayout = itemView.thumbnailViewPagerFrameLayout
-        val thumbnailTabLayout: TabLayout = itemView.thumbnailTabLayout
-        val chatIconImageView: ImageView = itemView.chatIconImageView
-        val nsfwMaskLayout: FrameLayout = itemView.nsfwMaskLayout
-        val showNsfwButton: MaterialButton = itemView.showNsfwButton
-        val spoilerMaskLayout: FrameLayout = itemView.spoilerMaskLayout
-        val showSpoilerButton: MaterialButton = itemView.showSpoilerButton
-        val contentsWrapperLayout: LinearLayout = itemView.contentsWrapperLayout
-        val detailInfoLayout: ConstraintLayout = itemView.detailInfoLayout
-        val replyCountTextView: TextView = itemView.replyCountTextView
-        val repostCountTextView: TextView = itemView.repostCountTextView
-        val starCountTextView: TextView = itemView.starCountTextView
-        val postItemForegroundView: ConstraintLayout = itemView.postItemForegroundView
-        val reactionUsersRecyclerView: RecyclerView = itemView.reactionUsersRecyclerView
-        val clientNameTextView: TextView = itemView.clientNameTextView
-        val foregroundActionsLayout: LinearLayout = itemView.foregroundActionsLayout
-        val replyButton: ImageButton = itemView.replyButton
-        val starButton: ImageButton = itemView.starButton
-        val repostButton: ImageButton = itemView.repostButton
-        val threadButton: ImageButton = itemView.threadButton
-        val moreButton: ImageButton = itemView.moreButton
+        val screenNameTextView: TextView = itemView.findViewById(R.id.screenNameTextView)
+        val bodyTextView: TextView = itemView.findViewById(R.id.bodyTextView)
+        val dateTextView: TextView = itemView.findViewById(R.id.relativeTimeTextView)
+        val handleNameTextView: TextView = itemView.findViewById(R.id.handleNameTextView)
+        val repostedByTextView: TextView = itemView.findViewById(R.id.repostedByTextView)
+        val starStateView: View = itemView.findViewById(R.id.starStateView)
+        val repostStateView: View = itemView.findViewById(R.id.repostStateView)
+        val actionReplyImageView: ImageView = itemView.findViewById(R.id.actionReplyImageView)
+        val actionStarImageView: ImageView = itemView.findViewById(R.id.actionStarImageView)
+        val actionRepostImageView: ImageView = itemView.findViewById(R.id.actionRepostImageView)
+        val actionThreadImageView: ImageView = itemView.findViewById(R.id.actionThreadImageView)
+        val actionMoreImageView: ImageView = itemView.findViewById(R.id.actionMoreImageView)
+        val thumbnailViewPager: ViewPager2 = itemView.findViewById(R.id.thumbnailViewPager)
+        val thumbnailViewPagerFrameLayout: FrameLayout = itemView.findViewById(R.id.thumbnailViewPagerFrameLayout)
+        val thumbnailTabLayout: TabLayout = itemView.findViewById(R.id.thumbnailTabLayout)
+        val chatIconImageView: ImageView = itemView.findViewById(R.id.chatIconImageView)
+        val nsfwMaskLayout: FrameLayout = itemView.findViewById(R.id.nsfwMaskLayout)
+        val showNsfwButton: MaterialButton = itemView.findViewById(R.id.showNsfwButton)
+        val spoilerMaskLayout: FrameLayout = itemView.findViewById(R.id.spoilerMaskLayout)
+        val showSpoilerButton: MaterialButton = itemView.findViewById(R.id.showSpoilerButton)
+        val contentsWrapperLayout: LinearLayout = itemView.findViewById(R.id.contentsWrapperLayout)
+        val detailInfoLayout: ConstraintLayout = itemView.findViewById(R.id.detailInfoLayout)
+        val replyCountTextView: TextView = itemView.findViewById(R.id.replyCountTextView)
+        val repostCountTextView: TextView = itemView.findViewById(R.id.repostCountTextView)
+        val starCountTextView: TextView = itemView.findViewById(R.id.starCountTextView)
+        val postItemForegroundView: ConstraintLayout = itemView.findViewById(R.id.postItemForegroundView)
+        val reactionUsersRecyclerView: RecyclerView = itemView.findViewById(R.id.reactionUsersRecyclerView)
+        val clientNameTextView: TextView = itemView.findViewById(R.id.clientNameTextView)
+        val foregroundActionsLayout: LinearLayout = itemView.findViewById(R.id.foregroundActionsLayout)
+        val replyButton: ImageButton = itemView.findViewById(R.id.replyButton)
+        val starButton: ImageButton = itemView.findViewById(R.id.starButton)
+        val repostButton: ImageButton = itemView.findViewById(R.id.repostButton)
+        val threadButton: ImageButton = itemView.findViewById(R.id.threadButton)
+        val moreButton: ImageButton = itemView.findViewById(R.id.moreButton)
         var isMainItem: Boolean = false
-        val showLongPostButton: MaterialButton = itemView.showLongPostButton
-        val revisedIconImageView: ImageView = itemView.revisedIconImageView
-        val swipeActionsLayout: FrameLayout = itemView.swipeActionsLayout
-        val absoluteDateTextView: TextView = itemView.absoluteDateTextView
-        val pollCardView: CardView = itemView.pollCardView
-        val pollPromptTextView: TextView = itemView.pollPromptTextView
-        val pollOptionsRecyclerView: RecyclerView = itemView.pollOptionsRecyclerView.also {
+        val showLongPostButton: MaterialButton = itemView.findViewById(R.id.showLongPostButton)
+        val revisedIconImageView: ImageView = itemView.findViewById(R.id.revisedIconImageView)
+        val swipeActionsLayout: FrameLayout = itemView.findViewById(R.id.swipeActionsLayout)
+        val absoluteDateTextView: TextView = itemView.findViewById(R.id.absoluteDateTextView)
+        val pollCardView: CardView = itemView.findViewById(R.id.pollCardView)
+        val pollPromptTextView: TextView = itemView.findViewById(R.id.pollPromptTextView)
+        val pollOptionsRecyclerView: RecyclerView = itemView.findViewById<RecyclerView>(R.id.pollOptionsRecyclerView).also {
             it.isNestedScrollingEnabled = false
         }
-        val pollFooterTextView: TextView = itemView.pollFooterTextView
-        val pollVoteButton: MaterialButton = itemView.pollVoteButton
+        val pollFooterTextView: TextView = itemView.findViewById(R.id.pollFooterTextView)
+        val pollVoteButton: MaterialButton = itemView.findViewById(R.id.pollVoteButton)
 
         init {
             addSpacerDecoration()
@@ -892,7 +892,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             private val voteUseCase: VoteUseCase
         ) :
             ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
                 return PostItemViewModel(
                     streamType,

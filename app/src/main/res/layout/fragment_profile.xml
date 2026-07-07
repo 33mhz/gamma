@@ -49,9 +49,9 @@
                         app:menu="@menu/profile"
                         app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
                         app:subtitle="@{`@` + viewModel.user.username}"
-                        app:subtitleTextColor="@{safeUnbox(viewModel.toolbarTextColor)}"
+                        app:subtitleTextColor="@{viewModel.toolbarTextColor}"
                         app:title="@{viewModel.user.name}"
-                        app:titleTextColor="@{safeUnbox(viewModel.toolbarTextColor)}"
+                        app:titleTextColor="@{viewModel.toolbarTextColor}"
                         tools:background="@android:color/transparent" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -136,11 +136,11 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:elevation="2dp"
-                            android:enabled="@{!safeUnbox(viewModel.loading)}"
+                            android:enabled="@{!viewModel.loading}"
                             android:onClick="@{() -> viewModel.mainAction()}"
                             android:text="@{viewModel.mainActionButtonText}"
-                            android:textColor="@{safeUnbox(viewModel.actionButtonTextColor)}"
-                            app:backgroundTint="@{safeUnbox(viewModel.actionButtonTintColor)}"
+                            android:textColor="@{viewModel.actionButtonTextColor}"
+                            app:backgroundTint="@{viewModel.actionButtonTintColor}"
                             app:iconGravity="end"
                             app:iconPadding="@dimen/margin_regular"
                             app:iconSize="@dimen/size_button_loading_indicator"
@@ -148,8 +148,8 @@
                             app:layout_constraintEnd_toEndOf="@+id/profileCardView"
                             app:layout_constraintStart_toStartOf="@+id/profileCardView"
                             app:layout_constraintTop_toTopOf="@+id/profileCardView"
-                            app:loading="@{safeUnbox(viewModel.loading)}"
-                            app:rippleColor="@{safeUnbox(viewModel.actionButtonRippleColor)}" />
+                            app:loading="@{viewModel.loading}"
+                            app:rippleColor="@{viewModel.actionButtonRippleColor}" />
 
                         <com.google.android.material.card.MaterialCardView
                             android:id="@+id/profileCardView"
@@ -187,7 +187,7 @@
                                     android:textAlignment="center"
                                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                                     android:textColor="?attr/colorPrimary"
-                                    android:visibility="@{safeUnbox(viewModel.verifiedDomainVisibility)}"
+                                    android:visibility="@{viewModel.verifiedDomainVisibility}"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toBottomOf="@+id/divider"

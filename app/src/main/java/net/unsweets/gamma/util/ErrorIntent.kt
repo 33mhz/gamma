@@ -12,7 +12,7 @@ object ErrorIntent {
         LogUtil.e(t.toString())
         val message: String = when (t) {
             is ErrorCollections.CommunicationError -> t.errorResponse.meta.errorMessage
-            else -> t?.message ?: Constants.unknownError
+            else -> t?.message ?: Constants.UNKNOWN_ERROR
         }
         return Intent().also {
             it.action = action

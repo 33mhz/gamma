@@ -6,8 +6,8 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import kotlinx.android.parcel.IgnoredOnParcel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import net.unsweets.gamma.R
 import java.util.*
 
@@ -120,7 +120,6 @@ sealed class Interaction(
                 context.getString(R.string.action_template_text, actionStr, usersStr)
             }
             is PollResponse -> context.getString(R.string.closed_poll, objects[0].prompt)
-            else -> ""
         }
     }
 }

@@ -171,7 +171,7 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
             private val updateRelationshipUseCase: UpdateRelationshipUseCase
 
         ) : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
                 return UserListViewModel(
                     userListType,

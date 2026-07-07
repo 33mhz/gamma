@@ -8,6 +8,7 @@ import androidx.annotation.ColorInt
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.BindingAdapter
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
+import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.button.MaterialButton
 import net.unsweets.gamma.R
@@ -15,37 +16,37 @@ import net.unsweets.gamma.R
 object BindingUtil {
     @BindingAdapter("glideAvatarSrc")
     @JvmStatic
-    fun ImageView.glideAvatarSrc(url: String?) {
+    fun glideAvatarSrc(view: ImageView, url: String?) {
         if (url.isNullOrEmpty()) {
-            setImageDrawable(null)
+            view.setImageDrawable(null)
             return
         }
-        val placeholder = this.drawable
-        val request = GlideApp
-            .with(this)
+        val placeholder = view.drawable
+        val request = Glide
+            .with(view)
             .load(url)
             .apply(RequestOptions.circleCropTransform())
 
         if (placeholder != null)
             request.placeholder(placeholder)
-        request.into(this)
+        request.into(view)
     }
 
     @BindingAdapter("glideSrc")
     @JvmStatic
-    fun ImageView.glideSrc(url: String?) {
+    fun glideSrc(view: ImageView, url: String?) {
         if (url.isNullOrEmpty()) {
-            setImageDrawable(null)
+            view.setImageDrawable(null)
             return
         }
-        val placeholder = this.drawable
-        val request = GlideApp
-            .with(this)
+        val placeholder = view.drawable
+        val request = Glide
+            .with(view)
             .load(url)
 
         if (placeholder != null)
             request.placeholder(placeholder)
-        request.into(this)
+        request.into(view)
     }
 
     @BindingAdapter("textId")

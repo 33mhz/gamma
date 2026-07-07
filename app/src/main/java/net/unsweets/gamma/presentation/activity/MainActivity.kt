@@ -3,32 +3,26 @@ package net.unsweets.gamma.presentation.activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Rect
 import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.Window
-import android.widget.ImageView
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.core.app.SharedElementCallback
 import androidx.core.view.GravityCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
-import com.google.android.material.internal.DescendantOffsetUtils
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
-import kotlinx.android.synthetic.main.account_list.view.*
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.navigation_drawer_header.view.*
+import dagger.hilt.android.AndroidEntryPoint
 import net.unsweets.gamma.R
 import net.unsweets.gamma.broadcast.ErrorReceiver
 import net.unsweets.gamma.broadcast.PostReceiver
+import net.unsweets.gamma.databinding.AccountListBinding
 import net.unsweets.gamma.databinding.ActivityMainBinding
 import net.unsweets.gamma.databinding.NavigationDrawerHeaderBinding
 import net.unsweets.gamma.domain.entity.Post
@@ -40,7 +34,17 @@ import net.unsweets.gamma.domain.usecases.GetAuthenticatedUserUseCase
 import net.unsweets.gamma.domain.usecases.GetCurrentAccountUseCase
 import net.unsweets.gamma.domain.usecases.UpdateDefaultAccountUseCase
 import net.unsweets.gamma.presentation.adapter.AccountListAdapter
-import net.unsweets.gamma.presentation.fragment.*
+import net.unsweets.gamma.presentation.fragment.BaseListFragment
+import net.unsweets.gamma.presentation.fragment.BasicDialogFragment
+import net.unsweets.gamma.presentation.fragment.ChangeAccountDialogFragment
+import net.unsweets.gamma.presentation.fragment.ChannelListFragment
+import net.unsweets.gamma.presentation.fragment.ChannelsFragment
+import net.unsweets.gamma.presentation.activity.ComposePostActivity
+import net.unsweets.gamma.presentation.fragment.ExploreFragment
+import net.unsweets.gamma.presentation.fragment.HomeFragment
+import net.unsweets.gamma.presentation.fragment.ProfileFragment
+import net.unsweets.gamma.presentation.fragment.SearchFragment
+import net.unsweets.gamma.presentation.util.BindingUtil
 import net.unsweets.gamma.presentation.util.FragmentHelper.addFragment
 import net.unsweets.gamma.presentation.util.LoginUtil
 import net.unsweets.gamma.presentation.util.SnackbarCallback
@@ -53,6 +57,7 @@ import net.unsweets.gamma.util.oneline
 import net.unsweets.gamma.util.showAsError
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callback,
     AccountListAdapter.Listener, ErrorReceiver.Callback {
     override fun onReceiveError(message: String) {
@@ -147,31 +152,30 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
                 snackbarCallback.actionResId,
                 snackbarCallback.callback
             )
-        }
-            .show()
+        }.show()
     }
 
     private lateinit var binding: ActivityMainBinding
 
     private val accountListView by lazy {
-        val view = layoutInflater.inflate(R.layout.account_list, binding.navigationView, false)
-        view.accountList.also { accountList ->
-            accountList.adapter =
-                AccountListAdapter(accounts, this, true)
-        }
+        val accountListBinding = AccountListBinding.inflate(layoutInflater, binding.navigationView, false)
+        accountListBinding.accountList.adapter = AccountListAdapter(accounts, this, true)
+        accountListBinding.accountList.layoutManager = LinearLayoutManager(this)
+        accountListBinding.root
     }
 
 
-    private val showAccountMenuObserver = Observer<Boolean> {
-        val indicatorView: ImageView? = binding.navigationView.switchAccountIndicatorImageView
-        indicatorView?.let { imageView ->
-            val res =
-                if (it) R.drawable.ic_arrow_drop_down_to_up else R.drawable.ic_arrow_drop_up_to_down
+    private val showAccountMenuObserver = Observer<Boolean> { showAccountMenu ->
+        val res = if (showAccountMenu) R.drawable.ic_arrow_drop_up_to_down else R.drawable.ic_arrow_drop_down_to_up
+        val headerView = binding.navigationView.getHeaderView(0)
+        val headerBinding = NavigationDrawerHeaderBinding.bind(headerView)
+        
+        headerBinding.switchAccountIndicatorImageView.let { imageView ->
             val avd = AnimatedVectorDrawableCompat.create(this, res) ?: return@let
             imageView.setImageDrawable(avd)
             avd.start()
         }
-        when (it) {
+        when (showAccountMenu) {
             true -> {
                 binding.navigationView.getHeaderView(accountHeaderPosition).visibility =
                     View.VISIBLE
@@ -195,7 +199,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
     private val drawerToggle: ActionBarDrawerToggle by lazy {
         object : ActionBarDrawerToggle(
-            this, drawerLayout, bottomAppBar,
+            this, binding.drawerLayout, binding.bottomAppBar,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         ) {
@@ -209,8 +213,8 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     override fun supportFinishAfterTransition() {
         super.supportFinishAfterTransition()
         LogUtil.e("supportFinishAfterTransition")
-        fab.invalidate()
-        bottomAppBar.performHide()
+        binding.fab.invalidate()
+        binding.bottomAppBar.performHide()
     }
 
     override fun postponeEnterTransition() {
@@ -218,52 +222,39 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         LogUtil.e("supportFinishAfterTransition")
     }
     @Inject
-    lateinit var getAuthenticatedUseCase: GetAuthenticatedUserUseCase
-
-    private val receiverManager by lazy {
-        LocalBroadcastManager.getInstance(applicationContext)
+    lateinit var getAuthenticatedUserUseCase: GetAuthenticatedUserUseCase
+    private val viewModel: MainActivityViewModel by lazy {
+        ViewModelProvider(this, MainActivityViewModel.Factory(getAuthenticatedUserUseCase))[MainActivityViewModel::class.java]
     }
 
     private val postReceiver by lazy {
         PostReceiver(this)
     }
+
     private val errorReceiver by lazy {
         ErrorReceiver(this)
     }
 
-    private val viewModel: MainActivityViewModel by lazy {
-        ViewModelProvider(
-            this,
-            MainActivityViewModel.Factory(getAuthenticatedUseCase)
-        )[MainActivityViewModel::class.java]
-    }
-    private val fragmentMap: HashMap<Int, () -> PostItemFragment> = hashMapOf(
-        R.id.conversations to { PostItemFragment.getConversationInstance() },
-        R.id.missedConversations to { PostItemFragment.getMissedConversationInstance() },
-        R.id.newcomers to { PostItemFragment.getNewcomersInstance() },
-        R.id.photos to { PostItemFragment.getPhotoInstance() },
-        R.id.trending to { PostItemFragment.getTrendingInstance() },
-        R.id.global to { PostItemFragment.getGlobalInstance() }
-    )
-    private val eventObserver = Observer<Event> {
-        when (it) {
-            is Event.OpenMyProfile -> openMyProfile(it.user)
-            is Event.ComposePost -> openComposePostDialog()
-            is Event.Failed -> failed(it.t)
-        }
+    private val receiverManager by lazy {
+        LocalBroadcastManager.getInstance(this)
     }
 
-    private fun failed(t: Throwable) {
-        ErrorIntent.broadcast(this, t)
+
+    private val eventObserver = Observer<MainActivity.Event> {
+        when (it) {
+            is MainActivity.Event.ComposePost -> openComposePostDialog()
+            is MainActivity.Event.OpenMyProfile -> openMyProfile(it.user)
+            is MainActivity.Event.Failed -> LogUtil.e(it.t.message)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setExitSharedElementCallback(MaterialContainerTransformSharedElementCallback())
         window.sharedElementsUseOverlay = false
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.lifecycleOwner = this
-        binding.viewModel = viewModel
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        
         viewModel.event.observe(this, eventObserver)
         viewModel.showAccountMenu.observe(this, showAccountMenuObserver)
 
@@ -274,11 +265,14 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     }
 
     private fun setupBottomAppBar() {
-        bottomAppBar.setOnMenuItemClickListener {
+        binding.bottomAppBar.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.menuSearch -> showSearchFragment()
+                R.id.menuSearch -> {
+                    showSearchFragment()
+                    true
+                }
+                else -> false
             }
-            true
         }
     }
 
@@ -319,22 +313,36 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
 
     private fun setupNavigationView() {
-        val header = navigationView.getHeaderView(0)
-        DataBindingUtil.bind<NavigationDrawerHeaderBinding>(header)
-        DataBindingUtil.getBinding<NavigationDrawerHeaderBinding>(header)?.let { binding ->
-            binding.lifecycleOwner = this
-            binding.viewModel = viewModel
+        val header = binding.navigationView.getHeaderView(0)
+        NavigationDrawerHeaderBinding.bind(header).let { headerBinding ->
+            viewModel.user.observe(this) { user ->
+                user?.let {
+                    headerBinding.navigationDrawerHandleNameTextView.text = it.name
+                    headerBinding.navigationDrawerScreenNameTextView.text = getString(R.string.user_name_format, it.username)
+
+                    BindingUtil.glideSrc(headerBinding.navigationDrawerHeaderImageView, it.content.coverImage.link)
+                    BindingUtil.glideAvatarSrc(headerBinding.navigationDrawerAvatarImageView, it.content.avatarImage.link)
+                }
+            }
+            
+            headerBinding.root.setOnClickListener {
+                viewModel.openMyProfile()
+            }
+            
+            headerBinding.navigationDrawerHeaderClickTarget.setOnClickListener {
+                viewModel.toggleNavigationViewMenu()
+            }
         }
-        navigationView.setNavigationItemSelectedListener(::onOptionsItemSelected)
+        binding.navigationView.setNavigationItemSelectedListener(::onOptionsItemSelected)
         binding.navigationView.addHeaderView(accountListView)
     }
 
     private fun syncMenu() {
-        uncheckMenuItem(navigationView.menu)
+        uncheckMenuItem(binding.navigationView.menu)
         val fragment =
             supportFragmentManager.findFragmentById(R.id.fragmentPlaceholder) as? Util.DrawerContentFragment
                 ?: return
-        navigationView.menu.findItem(fragment.menuItemId)?.isChecked = true
+        binding.navigationView.menu.findItem(fragment.menuItemId)?.isChecked = true
     }
 
     private fun uncheckMenuItem(menu: Menu) {
@@ -342,7 +350,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         for (i in 0 until size) {
             val item = menu.getItem(i)
             if (item.hasSubMenu()) {
-                uncheckMenuItem(item.subMenu)
+                item.subMenu?.let { uncheckMenuItem(it) }
             } else {
                 item.isChecked = false
             }
@@ -351,12 +359,12 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
     private fun openComposePostDialog() {
         val intent = ComposePostActivity.newIntent(this)
-        val options = ActivityOptions.makeSceneTransitionAnimation(this, fab, getString((R.string.shared_element_compose)))
+        val options = ActivityOptions.makeSceneTransitionAnimation(this, binding.fab, getString((R.string.shared_element_compose)))
         startActivity(intent, options.toBundle())
     }
 
     private fun setupNavigation() {
-        drawerLayout.addDrawerListener(drawerToggle)
+        binding.drawerLayout.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
     }
 
@@ -366,22 +374,23 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         Handler().postDelayed({
             val fragment = ProfileFragment.newInstance(user.id, user.content.avatarImage.link, user)
             addFragment(supportFragmentManager, fragment, user.id)
-            uncheckMenuItem(navigationView.menu)
+            uncheckMenuItem(binding.navigationView.menu)
         }, 200)
     }
 
-    override fun closeDrawer() = drawerLayout.closeDrawer(GravityCompat.START)
+    override fun closeDrawer() = binding.drawerLayout.closeDrawer(GravityCompat.START)
 
-    override fun openDrawer() = drawerLayout.openDrawer(GravityCompat.START)
+    override fun openDrawer() = binding.drawerLayout.openDrawer(GravityCompat.START)
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         drawerToggle.onConfigurationChanged(newConfig)
     }
 
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         when {
-            drawerLayout.isDrawerVisible(GravityCompat.START) -> closeDrawer()
+            binding.drawerLayout.isDrawerVisible(GravityCompat.START) -> closeDrawer()
             else -> super.onBackPressed()
         }
     }
@@ -390,26 +399,25 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (drawerToggle.onOptionsItemSelected(item))
             true
-        else
-            item?.let {
-                when (it.itemId) {
-                    R.id.home -> goToHome()
-                    R.id.conversations,
-                    R.id.missedConversations,
-                    R.id.newcomers,
-                    R.id.photos,
-                    R.id.trending,
-                    R.id.global -> showExploreStream(it.itemId)
+        else {
+            when (item.itemId) {
+                R.id.home -> goToHome()
+                R.id.conversations,
+                R.id.missedConversations,
+                R.id.newcomers,
+                R.id.photos,
+                R.id.trending,
+                R.id.global -> showExploreStream(item.itemId)
 //                    R.id.file -> goToFiles()
-                    R.id.channels -> goToChannels()
-                    R.id.settings -> goToSettings()
-                }
-                closeDrawer()
-                return true
-            } ?: super.onOptionsItemSelected(item)
+                R.id.channels -> goToChannels()
+                R.id.settings -> goToSettings()
+            }
+            closeDrawer()
+            true
+        }
     }
 
     private fun showExploreStream(menuId: Int) {
@@ -441,6 +449,15 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         data class OpenMyProfile(val user: User) : Event()
         data class Failed(val t: Throwable) : Event()
     }
+
+    private val fragmentMap = mapOf<Int, () -> BaseListFragment<*, *>>(
+        R.id.conversations to { ChannelListFragment.privateChannels() },
+        R.id.missedConversations to { ExploreFragment.MissedConversationsFragment.newInstance() },
+        R.id.newcomers to { ExploreFragment.NewcomersFragment.newInstance() },
+        R.id.photos to { ExploreFragment.PhotosFragment.newInstance() },
+        R.id.trending to { ExploreFragment.TrendingFragment.newInstance() },
+        R.id.global to { ExploreFragment.GlobalFragment.newInstance() }
+    )
 
     companion object {
         private const val accountHeaderPosition = 1

@@ -62,7 +62,7 @@
                         android:onClick="@{() -> viewModel.clear()}"
                         android:src="@drawable/ic_close_black_24dp"
                         android:tint="@color/toolbarIcon"
-                        android:visibility="@{safeUnbox(viewModel.clearButtonVisibility)}" />
+                        android:visibility="@{viewModel.clearButtonVisibility}" />
                 </FrameLayout>
             </androidx.appcompat.widget.Toolbar>
 

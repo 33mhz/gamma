@@ -13,19 +13,22 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.map
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import kotlinx.android.parcel.Parcelize
-import kotlinx.android.synthetic.main.compose_thumbnail_image.view.*
+import kotlinx.parcelize.Parcelize
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.ComposeThumbnailImageBinding
 import net.unsweets.gamma.databinding.FragmentComposePostBinding
 import net.unsweets.gamma.domain.entity.Post
 import net.unsweets.gamma.domain.entity.PostBody
@@ -41,13 +44,15 @@ import net.unsweets.gamma.domain.usecases.GetCurrentAccountUseCase
 import net.unsweets.gamma.presentation.activity.EditPhotoActivity
 import net.unsweets.gamma.presentation.util.AnimationCallback
 import net.unsweets.gamma.presentation.util.BackPressedHookable
-import net.unsweets.gamma.presentation.util.GlideApp
+import net.unsweets.gamma.presentation.util.BindingUtil
+import net.unsweets.gamma.presentation.util.DateUtil
 import net.unsweets.gamma.presentation.util.Util
 import net.unsweets.gamma.service.PostService
 import net.unsweets.gamma.util.Constants
 import net.unsweets.gamma.util.SingleLiveEvent
 import net.unsweets.gamma.util.observeOnce
-import java.util.*
+import java.util.ArrayList
+import java.util.Date
 import javax.inject.Inject
 
 class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listener,
@@ -143,7 +148,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         }
 
         override fun onRemove() {
-            if (adapter.getItems().size > 0) return
+            if (adapter.getItems().isNotEmpty()) return
             viewModel.previewAttachmentsVisibility.value = View.GONE
         }
     }
@@ -155,7 +160,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
     private fun updateSendMenuItem() {
         val menuItem = findMenuItemWithinRightMenu(R.id.menuPost) ?: return
         val count = viewModel.counter.value ?: 0
-        val enabled = (0 <= count) && count < Constants.MaxPostTextLength
+        val enabled = (0 <= count) && count < Constants.MAX_POST_TEXT_LENGTH
         menuItem.isEnabled = enabled
     }
 
@@ -212,7 +217,8 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         arguments?.getParcelable<Post>(BundleKey.ReplyTarget.name)
     }
 
-    private lateinit var binding: FragmentComposePostBinding
+    private var _binding: FragmentComposePostBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var adapter: ThumbnailAdapter
 
@@ -295,13 +301,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_compose_post, container, false)
-        binding.lifecycleOwner = this
-        binding.viewModel = viewModel
-//        val shape = preferenceRepository.shapeOfAvatar
-//        binding.myAccountAvatarImageView.setShape(shape)
-//        binding.replyAvatarImageView.setShape(shape)
+        _binding = FragmentComposePostBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -324,7 +324,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
     }
 
     private fun updatePhoto(data: Intent) {
-        val editPhotoResult = EditPhotoActivity.parseIntent(data)
+        val editPhotoResult = EditPhotoActivity.parseIntent(data) ?: return
         val uriInfo = adapter.getItems()[editPhotoResult.index].copy(uri = editPhotoResult.uri)
         adapter.replace(uriInfo, editPhotoResult.index)
     }
@@ -336,8 +336,9 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         syncMenuState()
 
         adapter = ThumbnailAdapter(viewModel.media.toMutableList(), thumbnailAdapterListener)
-        viewModel.previewAttachmentsVisibility.value =
-            if (adapter.getItems().isNotEmpty()) View.VISIBLE else View.GONE
+        viewModel.previewAttachmentsVisibility.observe(viewLifecycleOwner) {
+            binding.thumbnailRecyclerView.visibility = it
+        }
         binding.thumbnailRecyclerView.adapter = adapter
 
         Util.setTintForToolbarIcons(
@@ -352,13 +353,38 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         binding.viewLeftActionMenuView.setOnMenuItemClickListener(::onOptionsItemSelected)
         binding.viewRightActionMenuView.setOnMenuItemClickListener(::onOptionsItemSelected)
 
-        replyTarget?.user?.let {
-            GlideApp.with(this).load(it.content.avatarImage.link)
-                .apply(RequestOptions.circleCropTransform())
-                .into(binding.replyAvatarImageView)
+        viewModel.replyTargetVisibility.observe(viewLifecycleOwner) {
+            binding.replyTargetCardView.visibility = it
+        }
+        
+        viewModel.replyTarget.observe(viewLifecycleOwner) { post ->
+            post?.let {
+                BindingUtil.glideAvatarSrc(binding.replyAvatarImageView, it.user?.content?.avatarImage?.link)
+                binding.replyScreenNameTextView.text = it.user?.username
+                binding.replyNameTextView.text = it.user?.name
+                binding.replyDateTextView.text = DateUtil.getShortDateStr(requireContext(), it.createdAt)
+                binding.replyBodyTextView.text = it.content?.text
+            }
         }
 
-        viewModel.text.observeOnce(this, Observer<String> {
+        viewModel.myAccountAvatarUrl.observe(viewLifecycleOwner) {
+            BindingUtil.glideAvatarSrc(binding.myAccountAvatarImageView, it)
+        }
+        
+        binding.myAccountAvatarImageView.setOnClickListener {
+            viewModel.showAccountList()
+        }
+        
+        binding.composeTextEditText.setText(viewModel.text.value)
+        binding.composeTextEditText.doAfterTextChanged { 
+            viewModel.text.value = it?.toString()
+        }
+        
+        viewModel.counterStr.observe(viewLifecycleOwner) {
+            binding.counterTextView.text = it
+        }
+
+        viewModel.text.observeOnce(viewLifecycleOwner, Observer<String> {
             binding.composeTextEditText.setSelection(it.length)
         })
         if (viewModel.initialized) {
@@ -408,7 +434,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
     ) {
         when (requestCode) {
             PermissionRequestCode.Storage.ordinal -> {
-                if (grantResults.isEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     showGalleryDialog()
                 }
             }
@@ -499,14 +525,11 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        isVisible
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        if (savedInstanceState != null) {
-//            focusToEditText()
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     class ThumbnailAdapter(
@@ -531,14 +554,14 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val uriInfo = items[position]
-            GlideApp
-                .with(holder.thumbnailView)
+            Glide
+                .with(holder.binding.thumbnail)
                 .load(uriInfo.uri)
                 .sizeMultiplier(.7f)
-                .into(holder.thumbnailView)
+                .into(holder.binding.thumbnail)
 
-            holder.removeButton.setOnClickListener { remove(holder.adapterPosition) }
-            holder.thumbnailView.setOnClickListener { listener.onClick(uriInfo.uri, position) }
+            holder.binding.removeButton.setOnClickListener { remove(holder.adapterPosition) }
+            holder.binding.thumbnail.setOnClickListener { listener.onClick(uriInfo.uri, holder.adapterPosition) }
         }
 
         private fun remove(index: Int) {
@@ -570,8 +593,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         fun getItems() = items
 
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val thumbnailView: ImageView = view.thumbnail
-            val removeButton: ImageButton = view.removeButton
+            val binding = ComposeThumbnailImageBinding.bind(view)
         }
     }
 
@@ -590,7 +612,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         val currentUserIdLiveData: MutableLiveData<String> =
             MutableLiveData<String>().apply { value = currentUserId }
         val myAccountAvatarUrl: LiveData<String> =
-            Transformations.map(currentUserIdLiveData) {
+            currentUserIdLiveData.map {
                 User.getAvatarUrl(
                     it,
                     User.AvatarSize.Large
@@ -601,16 +623,16 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         var initialized: Boolean = false
         val nsfw = MutableLiveData<Boolean>().apply { value = false }
         val replyTarget = MutableLiveData<Post>().apply { value = replyTargetArg }
-        val replyTargetVisibility = Transformations.map(replyTarget) {
+        val replyTargetVisibility: LiveData<Int> = replyTarget.map {
             if (it != null) View.VISIBLE else View.GONE
         }
         var longPost: LongPost? = null
         val text = MutableLiveData<String>().apply { value = "" }
-        val counter: LiveData<Int> = Transformations.map(text) {
+        val counter: LiveData<Int> = text.map {
             val text = it ?: ""
-            Constants.MaxPostTextLength - text.codePointCount(0, text.length)
+            Constants.MAX_POST_TEXT_LENGTH - text.codePointCount(0, text.length)
         }
-        val counterStr: LiveData<String> = Transformations.map(counter) { it.toString() }
+        val counterStr: LiveData<String> = counter.map { it.toString() }
         val previewAttachmentsVisibility = MutableLiveData<Int>().apply { value = View.GONE }
         val computedInitialText by lazy {
             val replyTargetUserUsername = replyTargetArg?.user?.username
@@ -636,7 +658,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         ) :
             ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return ComposePostViewModel(
                     replyTarget,
                     mentionToMyself,

@@ -2,12 +2,11 @@ package net.unsweets.gamma.presentation.fragment
 
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.files_item.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.FilesItemBinding
 import net.unsweets.gamma.domain.entity.File
 import net.unsweets.gamma.domain.entity.PnutResponse
 import net.unsweets.gamma.domain.model.PageableItemWrapper
@@ -51,17 +50,15 @@ class FileListFragment : BaseListFragment<File, FileListFragment.FileViewHolder>
     }
 
     override fun onBindViewHolder(item: File, viewHolder: FileViewHolder, position: Int, isMainItem: Boolean) {
-        viewHolder.filesItemTitleTextView.text = item.name
-        viewHolder.filesItemDateTextView.text = item.createdAt.toFormatString(context)
-        viewHolder.filesItemSubTitleTextView.text = item.mimeType
+        viewHolder.binding.filesItemTitleTextView.text = item.name
+        viewHolder.binding.filesItemDateTextView.text = item.createdAt.toFormatString(context)
+        viewHolder.binding.filesItemSubTitleTextView.text = item.mimeType
     }
 
     override fun getItemLayout(): Int = R.layout.files_item
 
     class FileViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val filesItemTitleTextView: TextView = itemView.filesItemTitleTextView
-        val filesItemSubTitleTextView: TextView = itemView.filesItemSubTitleTextView
-        val filesItemDateTextView: TextView = itemView.filesItemDateTextView
+        val binding = FilesItemBinding.bind(itemView)
     }
 
     class FilesViewModel(private val getFilesUseCase: GetFilesUseCase) : BaseListViewModel<File>() {
@@ -78,7 +75,7 @@ class FileListFragment : BaseListFragment<File, FileListFragment.FileViewHolder>
         }
 
         class Factory(private val getFilesUseCase: GetFilesUseCase) : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
                 return FilesViewModel(getFilesUseCase) as T
             }

@@ -12,6 +12,9 @@ import net.unsweets.gamma.util.MoshiSingleton
 import net.unsweets.gamma.util.await
 import net.unsweets.gamma.util.bodyOrThrow
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -47,9 +50,9 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
     private fun createUserImageRequestBody(uri: Uri, key: UserImageKey): MultipartBody.Part {
         val file = java.io.File(uri.path)
         val mimeType = URLConnection.guessContentTypeFromName(file.path)
-        val content = RequestBody.create(MediaType.parse(mimeType), file)
+        val content = file.asRequestBody(mimeType?.toMediaTypeOrNull())
         return MultipartBody.Part.createFormData(
-            key.name.toLowerCase(Locale.ENGLISH),
+            key.name.lowercase(Locale.ENGLISH),
             file.name,
             content
         )
@@ -58,10 +61,10 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
     override fun createFile(content: RequestBody, fileBody: FileBody): PnutResponse<File> {
         return defaultPnutService.createFile(
             MultipartBody.Part.createFormData("content", fileBody.name, content),
-            RequestBody.create(MediaType.parse("text/plain"), fileBody.name),
-            RequestBody.create(MediaType.parse("text/plain"), fileBody.kind.name),
-            RequestBody.create(MediaType.parse("text/plain"), BuildConfig.APPLICATION_ID),
-            RequestBody.create(MediaType.parse("text/plain"), "true")
+            fileBody.name.toRequestBody("text/plain".toMediaTypeOrNull()),
+            fileBody.kind.name.toRequestBody("text/plain".toMediaTypeOrNull()),
+            BuildConfig.APPLICATION_ID.toRequestBody("text/plain".toMediaTypeOrNull()),
+            "true".toRequestBody("text/plain".toMediaTypeOrNull())
         ).execute().bodyOrThrow()
     }
 
@@ -285,7 +288,7 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         val cache = Cache(context.cacheDir, cacheSize)
         client.cache(cache)
         return Retrofit.Builder()
-            .baseUrl(Constants.apiBaseUrl)
+            .baseUrl(Constants.API_BASE_URL)
             .client(client.build())
             .addConverterFactory(MoshiConverterFactory.create(MoshiSingleton.moshi))
             .build()

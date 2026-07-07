@@ -6,16 +6,18 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dagger.android.support.DaggerDialogFragment
-import kotlinx.android.synthetic.main.account_list.view.*
+import androidx.fragment.app.DialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.FragmentChangeAccountDialogBinding
 import net.unsweets.gamma.domain.model.Account
 import net.unsweets.gamma.domain.usecases.GetAccountListUseCase
 import net.unsweets.gamma.presentation.adapter.AccountListAdapter
 import net.unsweets.gamma.util.ErrorCollections
 import javax.inject.Inject
 
-class ChangeAccountDialogFragment : DaggerDialogFragment() {
+@AndroidEntryPoint
+class ChangeAccountDialogFragment : DialogFragment() {
     private val currentUserId: String by lazy {
         arguments?.getString(BundleKey.CurrentUserId.name) ?: throw ErrorCollections.AccountNotFound
     }
@@ -57,11 +59,8 @@ class ChangeAccountDialogFragment : DaggerDialogFragment() {
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val view = LayoutInflater.from(context).inflate(
-            R.layout.fragment_change_account_dialog,
-            view?.findViewById(android.R.id.content)
-        )
-        view.accountList.adapter = AccountListAdapter(
+        val binding = FragmentChangeAccountDialogBinding.inflate(LayoutInflater.from(context))
+        binding.accountListInclude.accountList.adapter = AccountListAdapter(
             accounts,
             accountListListener,
             false
@@ -69,7 +68,7 @@ class ChangeAccountDialogFragment : DaggerDialogFragment() {
 
         return MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.accounts)
-            .setView(view)
+            .setView(binding.root)
             .create()
     }
 

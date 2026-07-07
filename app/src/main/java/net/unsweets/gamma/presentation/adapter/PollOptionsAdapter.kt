@@ -5,11 +5,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.checkbox.MaterialCheckBox
-import kotlinx.android.synthetic.main.poll_item_view.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.PollItemViewBinding
 import net.unsweets.gamma.domain.entity.Poll
 import net.unsweets.gamma.domain.entity.PollLikeValue
 import net.unsweets.gamma.util.LogUtil
@@ -23,10 +22,6 @@ class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var p
     private val options
         get() = poll?.options ?: pollLikeValue.options
 
-    enum class ViewType(@LayoutRes val viewRes: Int) {
-        Votable(R.layout.poll_item_vote), ViewOnly(R.layout.poll_item_view)
-    }
-
     interface Callback {
         fun onUpdateChoiceState(votable: Boolean)
     }
@@ -35,7 +30,6 @@ class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var p
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OptionsViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        itemViewType
         val view = inflater.inflate(R.layout.poll_item_view, parent, false)
         return OptionsViewHolder(view)
     }
@@ -50,12 +44,6 @@ class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var p
         choosedPositions.addAll(positions)
         notifyDataSetChanged()
     }
-
-    private val itemViewType
-        get() = when {
-            poll != null && !pollLikeValue.alreadyClosed -> ViewType.Votable
-            else -> ViewType.ViewOnly
-        }
 
     private val choosedPositions = mutableSetOf<Int>()
     val getChoosedPositions
@@ -74,10 +62,11 @@ class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var p
     }
 
     class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val pollOptionProgressBar: ProgressBar = itemView.pollOptionProgressBar
-        private val pollOptionCheckBox: MaterialCheckBox = itemView.pollOptionCheckBox
-        private val pollOptionCountTextView: TextView = itemView.pollOptionCountTextView
-        private val pollOptionLayout: ViewGroup = itemView.pollOptionLayout
+        val binding = PollItemViewBinding.bind(itemView)
+        private val pollOptionProgressBar: ProgressBar = binding.pollOptionProgressBar
+        private val pollOptionCheckBox: MaterialCheckBox = binding.pollOptionCheckBox
+        private val pollOptionCountTextView: TextView = binding.pollOptionCountTextView
+        private val pollOptionLayout: ViewGroup = binding.pollOptionLayout
         fun bindTo(
             option: Poll.PollOption,
             choosedPositions: MutableSet<Int>,

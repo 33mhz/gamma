@@ -15,6 +15,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContentResolverCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -22,10 +23,8 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import kotlinx.android.synthetic.main.fragment_gallery_item_list_dialog.*
-import kotlinx.android.synthetic.main.fragment_gallery_item_list_dialog_item.view.*
 import net.unsweets.gamma.R
-import net.unsweets.gamma.presentation.util.GlideApp
+import com.bumptech.glide.Glide
 import net.unsweets.gamma.util.Constants
 import java.io.File
 
@@ -43,12 +42,15 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
 
     private val galleryItemList: ArrayList<GalleryItem> = ArrayList()
     private val mode by lazy {
+        @Suppress("DEPRECATION")
         arguments?.getSerializable(BundleKey.Mode.name) as? Mode ?: Mode.Single
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = GalleryItemAdapter(galleryItemList)
+        val pictureList = view.findViewById<RecyclerView>(R.id.pictureList)
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
         Thread(Runnable {
             galleryItemList.addAll(getImages())
             pictureList.post { adapter.notifyDataSetChanged() }
@@ -70,7 +72,7 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
 
     private fun createImageFile(): File? {
         val storageDir =
-            File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), Constants.Gamma)
+            File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), Constants.GAMMA)
         storageDir.mkdirs()
         val file = File.createTempFile(
             System.currentTimeMillis().toString(),
@@ -84,7 +86,7 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
     private fun galleryAddPic() {
         val photoPath = currentPhotoPath ?: return
         Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).also { mediaScanIntent ->
-            val f = File(photoPath.path)
+            val f = File(photoPath.path ?: "")
             mediaScanIntent.data = Uri.fromFile(f)
             context?.sendBroadcast(mediaScanIntent)
         }
@@ -119,6 +121,7 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
         startActivityForResult(intent, RequestCode.Library.ordinal)
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             RequestCode.TakePhoto.ordinal -> {
@@ -168,6 +171,7 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
         return dialog
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         dialog?.window
@@ -189,12 +193,12 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
     private inner class ViewHolder internal constructor(inflater: LayoutInflater, parent: ViewGroup) :
         RecyclerView.ViewHolder(inflater.inflate(R.layout.fragment_gallery_item_list_dialog_item, parent, false)) {
 
-        internal val imageView: ImageView = itemView.imageView
+        internal val imageView: ImageView = itemView.findViewById(R.id.imageView)
 
         init {
             imageView.setOnClickListener {
                 listener?.let { listener ->
-                    listener.onGalleryItemClicked(galleryItemList[adapterPosition].uri, tag)
+                    listener.onGalleryItemClicked(galleryItemList[bindingAdapterPosition].uri, tag)
                     dismiss()
                 }
             }
@@ -206,12 +210,14 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(MediaStore.MediaColumns.DATA)
         val order = "${MediaStore.Images.ImageColumns.DATE_ADDED} DESC"
-        val resolver = context?.contentResolver
-        val cursor = ContentResolverCompat.query(resolver, uri, projection, null, null, order, null)
+        val resolver = context?.contentResolver ?: return res
+        val cursor = ContentResolverCompat.query(resolver, uri, projection, null, null, order, null as android.os.CancellationSignal?) ?: return res
         while (cursor.moveToNext()) {
             val pathIdx = cursor.getColumnIndex(MediaStore.MediaColumns.DATA)
             val path = cursor.getString(pathIdx)
-            res.add(GalleryItem(Uri.fromFile(File(path))))
+            if (path != null) {
+                res.add(GalleryItem(Uri.fromFile(File(path))))
+            }
         }
         cursor.close()
         return res
@@ -227,7 +233,7 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
             override fun onLoadFailed(
                 e: GlideException?,
                 model: Any?,
-                target: Target<Drawable>?,
+                target: Target<Drawable>,
                 isFirstResource: Boolean
             ): Boolean {
                 items.removeAt(position)
@@ -236,10 +242,10 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
             }
 
             override fun onResourceReady(
-                resource: Drawable?,
-                model: Any?,
+                resource: Drawable,
+                model: Any,
                 target: Target<Drawable>?,
-                dataSource: DataSource?,
+                dataSource: DataSource,
                 isFirstResource: Boolean
             ): Boolean {
                 return false
@@ -254,7 +260,7 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = items[position]
 
-            GlideApp.with(holder.itemView)
+            Glide.with(holder.itemView)
                 .load(item.uri)
                 .thumbnail(.1f)
                 .listener(ErrorHandling(position))

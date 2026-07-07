@@ -17,7 +17,8 @@ class PostReceiver(private val listener: Callback) : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action ?: return
-        when (PostService.Actions.getAction(action)) {
+        val postAction = PostService.Actions.getAction(action) ?: return
+        when (postAction) {
             PostService.Actions.SendPost -> listener.onPostReceive(PostService.getPost(intent) ?: return)
             PostService.Actions.Star -> listener.onStarReceive(PostService.getPost(intent) ?: return)
             PostService.Actions.Repost -> listener.onRepostReceive(PostService.getPost(intent) ?: return)

@@ -17,8 +17,8 @@ import androidx.core.view.marginRight
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import kotlinx.android.synthetic.main.activity_photo_view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.ActivityPhotoViewBinding
 import net.unsweets.gamma.domain.model.ThumbAndFull
 import net.unsweets.gamma.presentation.fragment.PhotoViewItemFragment
 
@@ -95,17 +95,19 @@ class PhotoViewActivity : BaseActivity() {
         intent.getIntExtra(IntentKey.Index.name, 0)
     }
     private val adapter by lazy {
-        MediaViewPager(supportFragmentManager, photos, index)
+        MediaViewPager(supportFragmentManager, photos.orEmpty(), index)
     }
+
+    private lateinit var binding: ActivityPhotoViewBinding
 
     private fun fixTopPadding() {
         val rect = Rect()
         window.decorView.getWindowVisibleDisplayFrame(rect)
         val statusBarHeight = rect.top
-        toolbar.layoutParams = FrameLayout.LayoutParams(toolbar.layoutParams).also {
-            it.leftMargin = toolbar.marginLeft
-            it.bottomMargin = toolbar.marginBottom
-            it.rightMargin = toolbar.marginRight
+        binding.toolbar.layoutParams = FrameLayout.LayoutParams(binding.toolbar.layoutParams).also {
+            it.leftMargin = binding.toolbar.marginLeft
+            it.bottomMargin = binding.toolbar.marginBottom
+            it.rightMargin = binding.toolbar.marginRight
             it.topMargin = statusBarHeight
         }
     }
@@ -118,15 +120,16 @@ class PhotoViewActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setupAnimation()
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_photo_view)
+        binding = ActivityPhotoViewBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         supportPostponeEnterTransition()
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        mediaViewPager.adapter = adapter
-        mediaViewPager.currentItem = index
-        mediaviewPagerIndicator.setupWithViewPager(mediaViewPager)
+        binding.mediaViewPager.adapter = adapter
+        binding.mediaViewPager.currentItem = index
+        binding.mediaviewPagerIndicator.setupWithViewPager(binding.mediaViewPager)
 
-        haulerView.setOnDragDismissedListener {
+        binding.haulerView.setOnDragDismissedListener {
             finishAfterTransition()
         }
     }
@@ -139,7 +142,7 @@ class PhotoViewActivity : BaseActivity() {
                 sharedElements: MutableMap<String, View>
             ) {
                 super.onMapSharedElements(names, sharedElements)
-                val view = adapter.getItem(mediaViewPager.currentItem).requireView()
+                val view = adapter.getItem(binding.mediaViewPager.currentItem).requireView()
                     .findViewById<View>(R.id.photoView)
                 sharedElements[names[0]] = view
             }

@@ -2,6 +2,8 @@ package net.unsweets.gamma.di
 
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import net.unsweets.gamma.domain.repository.IAccountRepository
 import net.unsweets.gamma.domain.repository.IPnutCacheRepository
 import net.unsweets.gamma.domain.repository.IPnutRepository
@@ -9,7 +11,8 @@ import net.unsweets.gamma.domain.repository.IPreferenceRepository
 import net.unsweets.gamma.domain.usecases.*
 
 @Module
-open class UseCaseModule {
+@InstallIn(SingletonComponent::class)
+object UseCaseModule {
     @Provides
     fun provideTokenUseCase(
         accountRepository: IAccountRepository,

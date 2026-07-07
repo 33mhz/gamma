@@ -12,13 +12,13 @@ import kotlin.math.round
 class SeekBarPreferenceMod @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : SeekBarPreference(context, attrs), SeekBar.OnSeekBarChangeListener {
+) : androidx.preference.SeekBarPreference(context, attrs), SeekBar.OnSeekBarChangeListener {
     private val step: Int
 
     init {
         val typedArray = context.theme.obtainStyledAttributes(
             attrs,
-            R.styleable.SeekBarPreference, 0, 0
+            androidx.preference.R.styleable.SeekBarPreference, 0, 0
         )
         step = typedArray.getInt(
             androidx.preference.R.styleable.SeekBarPreference_seekBarIncrement,
@@ -39,9 +39,8 @@ class SeekBarPreferenceMod @JvmOverloads constructor(
     override fun onStopTrackingTouch(seekBar: SeekBar?) {
     }
 
-    override fun onBindViewHolder(view: PreferenceViewHolder?) {
+    override fun onBindViewHolder(view: PreferenceViewHolder) {
         super.onBindViewHolder(view)
-        if (view == null) return
         val seekBar = view.findViewById(androidx.preference.R.id.seekbar) as? SeekBar ?: return
         seekBar.setOnSeekBarChangeListener(this)
     }

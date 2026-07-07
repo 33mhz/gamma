@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import kotlinx.android.synthetic.main.fragment_base_list.view.*
 import kotlinx.coroutines.launch
 import net.unsweets.gamma.R
 import net.unsweets.gamma.domain.entity.PnutResponse
@@ -133,7 +132,7 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
     }
 
     protected open fun getFragmentLayout(): Int = R.layout.fragment_base_list
-    protected open fun getRecyclerView(view: View): RecyclerView = view.baseList
+    protected open fun getRecyclerView(view: View): RecyclerView = view.findViewById(R.id.baseList)
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -232,7 +231,7 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
     }
 
     protected open fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout =
-        view.swipeRefreshLayout
+        view.findViewById(R.id.swipeRefreshLayout)
 
     abstract val baseListListener: BaseListRecyclerViewAdapter.IBaseList<T, V>
 }

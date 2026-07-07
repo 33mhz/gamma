@@ -1,39 +1,32 @@
 package net.unsweets.gamma.di
 
-import android.app.Application
 import android.content.Context
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import net.unsweets.gamma.domain.repository.*
 import javax.inject.Singleton
 
-@Module(
-    subcomponents = [
-        UseCaseComponent::class
-    ]
-)
-open class AppModule(private val application: Application) {
-    private val accountRepository = AccountRepository(application)
-    private val pnutRepository =
-        PnutRepository(application, accountRepository.getDefaultAccount()?.token)
-    private val preferenceRepository = PreferenceRepository(application)
-
-    @Provides
-    fun provideContext(): Context = application
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
 
     @Provides
     @Singleton
-    fun providePreferenceRepository(): IPreferenceRepository = preferenceRepository
+    fun provideAccountRepository(@ApplicationContext context: Context): IAccountRepository = AccountRepository(context)
 
     @Provides
     @Singleton
-    fun providePnutRepository(): IPnutRepository = pnutRepository
-
-    @Provides
-    fun providePnutCacheRepository(): IPnutCacheRepository =
-        PnutCacheRepository(accountRepository.getDefaultAccount()?.id, application)
+    fun providePnutRepository(@ApplicationContext context: Context, accountRepository: IAccountRepository): IPnutRepository =
+        PnutRepository(context, accountRepository.getDefaultAccount()?.token)
 
     @Provides
     @Singleton
-    fun provideAccountRepository(): IAccountRepository = accountRepository
+    fun providePreferenceRepository(@ApplicationContext context: Context): IPreferenceRepository = PreferenceRepository(context)
+
+    @Provides
+    fun providePnutCacheRepository(@ApplicationContext context: Context, accountRepository: IAccountRepository): IPnutCacheRepository =
+        PnutCacheRepository(accountRepository.getDefaultAccount()?.id, context)
 }

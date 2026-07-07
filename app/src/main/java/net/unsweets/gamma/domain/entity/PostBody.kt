@@ -2,7 +2,7 @@ package net.unsweets.gamma.domain.entity
 
 import android.os.Parcelable
 import com.squareup.moshi.Json
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import net.unsweets.gamma.domain.entity.raw.PostRaw
 
 @Parcelize

@@ -5,8 +5,8 @@ import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import kotlinx.android.synthetic.main.list_with_toolbar.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.ListWithToolbarBinding
 import net.unsweets.gamma.domain.model.StreamType
 import net.unsweets.gamma.presentation.util.ShareUtil
 
@@ -17,8 +17,8 @@ class TagStreamFragment : PostItemFragment() {
     }
 
     override fun getFragmentLayout(): Int = R.layout.list_with_toolbar
-    override fun getRecyclerView(view: View): RecyclerView = view.itemList
-    override fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout = view.swipeRefreshLayout
+    override fun getRecyclerView(view: View): RecyclerView = ListWithToolbarBinding.bind(view).itemList
+    override fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout = ListWithToolbarBinding.bind(view).swipeRefreshLayout
 
     private val taggedPostsRssUrl by lazy {
         "https://api.pnut.io/v0/feed/rss/posts/tags/$hashTag"
@@ -26,12 +26,13 @@ class TagStreamFragment : PostItemFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.toolbar.title = getString(R.string.tag_stream_fragment_title_template, hashTag)
-        view.toolbar.setNavigationOnClickListener {
+        val binding = ListWithToolbarBinding.bind(view)
+        binding.toolbar.title = getString(R.string.tag_stream_fragment_title_template, hashTag)
+        binding.toolbar.setNavigationOnClickListener {
             backToPrevFragment()
         }
-        view.toolbar.inflateMenu(R.menu.tag_stream)
-        view.toolbar.setOnMenuItemClickListener(menuIemListener)
+        binding.toolbar.inflateMenu(R.menu.tag_stream)
+        binding.toolbar.setOnMenuItemClickListener(menuIemListener)
     }
 
     private val menuIemListener = Toolbar.OnMenuItemClickListener {

@@ -70,10 +70,10 @@ object Util {
         when (menuItem.isChecked) {
             true -> {
                 val color = getPrimaryColor(context)
-                menuItem.icon.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+                menuItem.icon?.setColorFilter(color, PorterDuff.Mode.SRC_IN)
             }
             false -> {
-                menuItem.icon.clearColorFilter()
+                menuItem.icon?.clearColorFilter()
                 val colorStateList =
                     AppCompatResources.getColorStateList(context, R.color.toolbar_icon_tint)
                 setTintForToolbarIcon(colorStateList, menuItem)
@@ -100,8 +100,8 @@ object Util {
         }
     }
 
-    fun getPrimaryColor(context: Context) = getAttributeValue(context, R.attr.colorPrimary)
-    fun getAccentColor(context: Context) = getAttributeValue(context, R.attr.colorAccent)
+    fun getPrimaryColor(context: Context) = getAttributeValue(context, androidx.appcompat.R.attr.colorPrimary)
+    fun getAccentColor(context: Context) = getAttributeValue(context, androidx.appcompat.R.attr.colorAccent)
 
     private fun getAttributeValue(context: Context, @AttrRes resourceId: Int): Int {
         val typedValue = TypedValue()

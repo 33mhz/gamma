@@ -5,8 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.*
-import kotlinx.android.synthetic.main.fragment_simple_bottom_sheet_menu.view.*
-import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.FragmentSimpleBottomSheetMenuBinding
 
 class SimpleBottomSheetMenuFragment : BaseBottomSheetDialogFragment() {
 
@@ -39,8 +38,11 @@ class SimpleBottomSheetMenuFragment : BaseBottomSheetDialogFragment() {
         return dialog
     }
 
+    private var _binding: FragmentSimpleBottomSheetMenuBinding? = null
+    private val binding get() = _binding!!
+
     private fun onShow() {
-        val menu = view?.navigationView?.menu ?: return
+        val menu = _binding?.navigationView?.menu ?: return
         listener?.onMenuShow(menu, tag)
     }
 
@@ -48,14 +50,19 @@ class SimpleBottomSheetMenuFragment : BaseBottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_simple_bottom_sheet_menu, container, false)
-        view.navigationView.inflateMenu(menuRes)
-        view.navigationView.setNavigationItemSelectedListener {
+        _binding = FragmentSimpleBottomSheetMenuBinding.inflate(inflater, container, false)
+        binding.navigationView.inflateMenu(menuRes)
+        binding.navigationView.setNavigationItemSelectedListener {
             listener?.onMenuItemSelected(it, tag)
             dismiss()
             true
         }
-        return view
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private enum class BundleKey { Menu }

@@ -7,9 +7,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import com.theartofdev.edmodo.cropper.CropImageView
-import kotlinx.android.synthetic.main.activity_edit_photo.*
+import com.canhub.cropper.CropImageView
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.ActivityEditPhotoBinding
 import java.io.File
 
 
@@ -22,16 +22,19 @@ class EditPhotoActivity : BaseActivity() {
         intent.getIntExtra(IntentKey.Index.name, -1)
     }
 
+    private lateinit var binding: ActivityEditPhotoBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_photo)
-        setSupportActionBar(toolbar)
+        binding = ActivityEditPhotoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         if (mode == Mode.Square) {
-            cropImageView.setAspectRatio(1, 1)
-            cropImageView.setFixedAspectRatio(true)
+            binding.cropImageView.setAspectRatio(1, 1)
+            binding.cropImageView.setFixedAspectRatio(true)
         }
-        cropImageView.setImageUriAsync(uri)
-        cropImageView.setOnCropImageCompleteListener { _, result -> cropped(result) }
+        binding.cropImageView.setImageUriAsync(uri)
+        binding.cropImageView.setOnCropImageCompleteListener { _, result -> cropped(result) }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -39,38 +42,41 @@ class EditPhotoActivity : BaseActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return item?.itemId?.let {
-            when (it) {
-                R.id.menuCrop -> requestToCrop()
-                R.id.menuRotateRight -> rotate()
-                else -> super.onOptionsItemSelected(item)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menuCrop -> {
+                requestToCrop()
+                true
             }
-            true
-        } ?: true
+            R.id.menuRotateRight -> {
+                rotate()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun rotate() {
-        cropImageView.rotatedDegrees = cropImageView.rotatedDegrees + 90
+        binding.cropImageView.rotatedDegrees = binding.cropImageView.rotatedDegrees + 90
     }
 
     private fun requestToCrop() {
-        val ext = File(uri.path).extension
-        cropImageView.saveCroppedImageAsync(
-            Uri.fromFile(File(externalCacheDir, "${System.currentTimeMillis()}.$ext"))
-        )
+        val ext = File(uri.path ?: "").extension
+        val outputUri = Uri.fromFile(File(externalCacheDir, "${System.currentTimeMillis()}.$ext"))
+        binding.cropImageView.croppedImageAsync(customOutputUri = outputUri)
     }
 
     private fun cropped(result: CropImageView.CropResult) {
         val data = Intent().apply {
             putExtra(IntentKey.Index.name, index)
-            putExtra(IntentKey.Uri.name, result.uri)
+            putExtra(IntentKey.Uri.name, result.uriContent)
         }
         setResult(Activity.RESULT_OK, data)
         finish()
     }
 
     private val mode by lazy {
+        @Suppress("DEPRECATION")
         intent.getSerializableExtra(IntentKey.Mode.name) as? Mode ?: Mode.Free
     }
 
@@ -87,8 +93,8 @@ class EditPhotoActivity : BaseActivity() {
             putExtra(IntentKey.Uri.name, uri)
             putExtra(IntentKey.Index.name, index)
         }
-        fun parseIntent(intent: Intent): EditPhotoResult {
-            val uri = intent.getParcelableExtra<Uri>(IntentKey.Uri.name)
+        fun parseIntent(intent: Intent): EditPhotoResult? {
+            val uri = intent.getParcelableExtra<Uri>(IntentKey.Uri.name) ?: return null
             val index = intent.getIntExtra(IntentKey.Index.name, -1)
             return EditPhotoResult(uri, index)
         }

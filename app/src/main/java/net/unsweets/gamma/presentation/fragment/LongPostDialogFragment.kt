@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_long_post_dialog.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.FragmentLongPostDialogBinding
 import net.unsweets.gamma.domain.entity.raw.LongPost
 
 class LongPostDialogFragment : BaseBottomSheetDialogFragment() {
@@ -15,17 +15,25 @@ class LongPostDialogFragment : BaseBottomSheetDialogFragment() {
             ?: throw NullPointerException("You must set LongPost")
     }
 
+    private var _binding: FragmentLongPostDialogBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_long_post_dialog, container, false)
+        _binding = FragmentLongPostDialogBinding.inflate(inflater, container, false)
         val title = longPost.value.title
-        view.longPostViewToolbar.setNavigationOnClickListener { dismiss() }
-        view.longPostViewToolbar.title =
+        binding.longPostViewToolbar.setNavigationOnClickListener { dismiss() }
+        binding.longPostViewToolbar.title =
             if (title?.isNotEmpty() == true) title else getString(R.string.long_post_no_title)
-        view.longPostBodyTextView.text = longPost.value.body
-        return view
+        binding.longPostBodyTextView.text = longPost.value.body
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private enum class BundleKey { LongPost }

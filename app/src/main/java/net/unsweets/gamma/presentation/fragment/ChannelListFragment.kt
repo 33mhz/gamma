@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import kotlinx.android.synthetic.main.list_with_toolbar.view.*
 import net.unsweets.gamma.R
 import net.unsweets.gamma.domain.entity.Channel
 import net.unsweets.gamma.domain.entity.PnutResponse
@@ -30,8 +29,8 @@ class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.Channe
     lateinit var getChannelUseCase: GetChannelsUseCase
 
     override fun getFragmentLayout(): Int = R.layout.fragment_base_list
-    override fun getRecyclerView(view: View): RecyclerView = view.itemList
-    override fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout = view.swipeRefreshLayout
+    override fun getRecyclerView(view: View): RecyclerView = view.findViewById(R.id.baseList)
+    override fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
     override val viewModel: BaseListViewModel<Channel> by lazy {
         ViewModelProvider(
             this, ChannelListViewModel.Factory(channelType, getChannelUseCase)
@@ -95,7 +94,7 @@ class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.Channe
             private val getChannelsUseCase: GetChannelsUseCase
         ) : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return ChannelListViewModel(channelType, getChannelsUseCase) as T
             }
         }

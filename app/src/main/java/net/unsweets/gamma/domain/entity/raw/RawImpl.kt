@@ -1,8 +1,8 @@
 package net.unsweets.gamma.domain.entity.raw
 
 import android.os.Parcelable
-import kotlinx.android.parcel.IgnoredOnParcel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 class RawImpl : Raw<Raw.RawValue>, Parcelable {

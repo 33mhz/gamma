@@ -1,7 +1,7 @@
 package net.unsweets.gamma.domain.entity
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import net.unsweets.gamma.domain.model.UriInfo
 
 @Parcelize

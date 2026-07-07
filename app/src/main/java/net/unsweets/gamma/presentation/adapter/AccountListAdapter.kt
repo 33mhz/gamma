@@ -7,12 +7,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.RequestOptions
-import com.google.android.material.button.MaterialButton
-import kotlinx.android.synthetic.main.account_list_footer_item.view.*
-import kotlinx.android.synthetic.main.account_list_item.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.AccountListFooterItemBinding
+import net.unsweets.gamma.databinding.AccountListItemBinding
 import net.unsweets.gamma.domain.model.Account
-import net.unsweets.gamma.presentation.util.GlideApp
+import com.bumptech.glide.Glide
 
 class AccountListAdapter(
     private val accounts: List<Account>,
@@ -67,18 +66,19 @@ class AccountListAdapter(
                 }
             }
             ItemViewType.Footer -> (holder as? FooterViewHolder)?.also {
-                it.addAccountButton.setOnClickListener { listener.onAddAccount() }
+                it.binding.addAccountButton.setOnClickListener { listener.onAddAccount() }
             }
         }
     }
 
 
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val avatarView: ImageView = itemView.accountListItemAvatarImageView
-        private val usernameView: TextView = itemView.accountListItemScreenNameTextView
-        private val nameView: TextView = itemView.accountListItemNameTextView
+        val binding = AccountListItemBinding.bind(itemView)
+        private val avatarView: ImageView = binding.accountListItemAvatarImageView
+        private val usernameView: TextView = binding.accountListItemScreenNameTextView
+        private val nameView: TextView = binding.accountListItemNameTextView
         fun bindTo(account: Account) {
-            GlideApp.with(itemView.context).load(account.getAvatarUrl())
+            Glide.with(itemView.context).load(account.getAvatarUrl())
                 .apply(RequestOptions.circleCropTransform())
                 .into(avatarView)
             usernameView.text = account.usernameWithAt
@@ -87,6 +87,6 @@ class AccountListAdapter(
     }
 
     class FooterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val addAccountButton: MaterialButton = itemView.addAccountButton
+        val binding = AccountListFooterItemBinding.bind(itemView)
     }
 }

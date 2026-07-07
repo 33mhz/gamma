@@ -7,20 +7,21 @@ import androidx.appcompat.widget.AppCompatImageButton
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.android.synthetic.main.compose_poll_body_item.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.ComposePollBodyItemBinding
 import net.unsweets.gamma.domain.entity.PollPostBody
 
 class ComposePollViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+    private val binding = ComposePollBodyItemBinding.bind(itemView)
     private val dragHandleImageButton: AppCompatImageButton =
-        itemView.pollBodyItemDragHandleImageButton
+        binding.pollBodyItemDragHandleImageButton
     private val textInputEditText: TextInputEditText =
-        itemView.pollBodyItemTextInputEditText
+        binding.pollBodyItemTextInputEditText
     private val pollBodyItemTextInputLayout: TextInputLayout =
-        itemView.pollBodyItemTextInputLayout
+        binding.pollBodyItemTextInputLayout
     private val closeImageButton: AppCompatImageButton =
-        itemView.pollBodyItemCloseImageButton
+        binding.pollBodyItemCloseImageButton
 
     interface Callback {
         fun removeOption(position: Int)

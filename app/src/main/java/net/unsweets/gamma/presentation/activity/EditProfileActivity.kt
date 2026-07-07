@@ -27,7 +27,7 @@ class EditProfileActivity : BaseActivity(), EditProfileFragment.Callback {
     }
 
     private val userId by lazy {
-        intent.getStringExtra(BundleKey.UserId.name)
+        intent.getStringExtra(BundleKey.UserId.name).orEmpty()
     }
 
     override fun onBackPressed() {

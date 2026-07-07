@@ -1,47 +1,50 @@
 package net.unsweets.gamma
 
 import android.app.Activity
+import android.app.Application
 import android.content.Intent
-import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.emoji.bundled.BundledEmojiCompatConfig
 import androidx.emoji.text.EmojiCompat
-import dagger.android.AndroidInjector
-import dagger.android.support.DaggerApplication
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.runBlocking
-import net.unsweets.gamma.di.AppModule
-import net.unsweets.gamma.di.DaggerAppComponent
+import net.unsweets.gamma.domain.repository.IAccountRepository
+import net.unsweets.gamma.domain.repository.IPnutRepository
+import net.unsweets.gamma.domain.repository.IPreferenceRepository
 import net.unsweets.gamma.domain.usecases.SetupTokenUseCase
 import net.unsweets.gamma.presentation.activity.LoginActivity
 import net.unsweets.gamma.presentation.util.ThemeColorUtil
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import javax.inject.Inject
 
 
-open class GammaApplication : DaggerApplication(), CoroutineScope by MainScope() {
-  val module by lazy { AppModule(this) }
-  override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-    return appComponent
-  }
+@HiltAndroidApp
+open class GammaApplication : Application(), CoroutineScope by MainScope() {
 
-  private lateinit var appComponent: AndroidInjector<GammaApplication>
+  @Inject
+  lateinit var preferenceRepository: IPreferenceRepository
+  @Inject
+  lateinit var pnutRepository: IPnutRepository
+  @Inject
+  lateinit var accountRepository: IAccountRepository
+
   override fun onCreate() {
+    super.onCreate()
     updateBaseTheme()
     updateTheme()
-    appComponent = DaggerAppComponent.builder().appModule(module).build()
-    super.onCreate()
     val config = BundledEmojiCompatConfig(this)
       .setReplaceAll(true)
     EmojiCompat.init(config)
-    FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+      FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
 
 //        if (!setToken()) return backToLoginActivity() // failed
 
   }
 
   fun updateBaseTheme() {
-    val darkMode = module.providePreferenceRepository().darkMode
+    val darkMode = preferenceRepository.darkMode
     AppCompatDelegate.setDefaultNightMode(darkMode.value)
   }
 
@@ -55,19 +58,14 @@ open class GammaApplication : DaggerApplication(), CoroutineScope by MainScope()
   private fun setToken(): Boolean {
     return runBlocking {
       SetupTokenUseCase(
-        module.providePnutRepository(),
-        module.provideAccountRepository()
+        pnutRepository,
+        accountRepository
       ).run(Unit)
     }.existDefaultAccount
   }
 
   fun updateTheme() {
     ThemeColorUtil.applyTheme(this)
-  }
-
-  @VisibleForTesting
-  fun updateAppComponent(appComponent: AndroidInjector<GammaApplication>) {
-    this.appComponent = appComponent
   }
 
   companion object {

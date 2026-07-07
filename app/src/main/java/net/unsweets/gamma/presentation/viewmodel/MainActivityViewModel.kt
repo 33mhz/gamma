@@ -9,7 +9,7 @@ import net.unsweets.gamma.presentation.activity.MainActivity
 
 class MainActivityViewModel(private val getAuthenticatedUserUseCase: GetAuthenticatedUserUseCase) : EventViewModel<MainActivity.Event>() {
     private val token = MutableLiveData<Token>()
-    val user = Transformations.map(token) { it?.user }
+    val user = token.map { it?.user }
     val showAccountMenu = MutableLiveData<Boolean>().apply { value = false }
     init {
         getUserInfo()
@@ -35,11 +35,10 @@ class MainActivityViewModel(private val getAuthenticatedUserUseCase: GetAuthenti
     fun toggleNavigationViewMenu() {
         showAccountMenu.value = !(showAccountMenu.value ?: false)
     }
-    class Factory(private val getAuthenticatedUserUseCase: GetAuthenticatedUserUseCase): ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    class Factory(private val getAuthenticatedUserUseCase: GetAuthenticatedUserUseCase) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return MainActivityViewModel(getAuthenticatedUserUseCase) as T
         }
-
     }
 }

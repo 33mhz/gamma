@@ -1,236 +1,213 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:transitionName="transition"
     tools:context=".presentation.fragment.ComposePostFragment">
 
-    <data>
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_close_black_24dp"
+        android:theme="@style/AppTheme">
 
-        <variable
-            name="viewModel"
-            type="net.unsweets.gamma.presentation.fragment.ComposePostFragment.ComposePostViewModel" />
-
-        <import type="net.unsweets.gamma.presentation.util.BindingUtil" />
-
-        <import type="net.unsweets.gamma.presentation.util.DateUtil" />
-    </data>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/rootLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:transitionName="transition">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/counterTextView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:navigationIcon="@drawable/ic_close_black_24dp"
-            android:theme="@style/AppTheme"
-            tools:title="@string/compose_post">
+            android:layout_gravity="end"
+            android:layout_marginStart="@dimen/margin_regular"
+            android:layout_marginEnd="@dimen/margin_regular"
+            android:gravity="end"
+            tools:text="256" />
+    </com.google.android.material.appbar.MaterialToolbar>
 
-            <TextView
-                android:id="@+id/counterTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginStart="@dimen/margin_regular"
-                android:layout_marginEnd="@dimen/margin_regular"
-                android:gravity="end"
-                android:text="@{viewModel.counterStr}"
-                tools:text="256" />
-        </com.google.android.material.appbar.MaterialToolbar>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@+id/bottomToolbar"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-        <androidx.core.widget.NestedScrollView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:fillViewport="true"
-            app:layout_constraintBottom_toTopOf="@+id/bottomToolbar"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar">
+            android:animateLayoutChanges="true"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <androidx.cardview.widget.CardView
+                android:id="@+id/replyTargetCardView"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:animateLayoutChanges="true"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:orientation="vertical">
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/margin_half"
-                    android:visibility="@{safeUnbox(viewModel.replyTargetVisibility)}"
-                    app:cardElevation="4dp">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/replyAvatarImageView"
-                            android:layout_width="@dimen/size_post_item_avatar"
-                            android:layout_height="@dimen/size_post_item_avatar"
-                            android:layout_marginStart="@dimen/margin_regular"
-                            android:layout_marginTop="@dimen/margin_regular"
-                            android:contentDescription="@string/description_avatar_picture"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            tools:src="@tools:sample/avatars" />
-
-                        <TextView
-                            android:id="@+id/replyScreenNameTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/margin_regular"
-                            android:layout_marginTop="@dimen/margin_regular"
-                            android:text="@{viewModel.replyTarget.user.username}"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                            app:layout_constraintStart_toEndOf="@id/replyAvatarImageView"
-                            app:layout_constraintTop_toTopOf="parent"
-                            tools:text="\@screen_name" />
-
-                        <TextView
-                            android:id="@+id/replyNameTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/margin_half"
-                            android:text="@{viewModel.replyTarget.user.name}"
-                            app:layout_constraintBaseline_toBaselineOf="@id/replyScreenNameTextView"
-                            app:layout_constraintStart_toEndOf="@id/replyScreenNameTextView"
-                            tools:text="handle name" />
-
-                        <TextView
-                            android:id="@+id/replyDateTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/margin_regular"
-                            android:text="@{DateUtil.getShortDateStr(context, viewModel.replyTarget.createdAt)}"
-                            app:layout_constraintBottom_toBottomOf="@id/replyNameTextView"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            tools:text="1d" />
-
-                        <TextView
-                            android:id="@+id/replyBodyTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/margin_regular"
-                            android:layout_marginBottom="@dimen/margin_regular"
-                            android:text="@{viewModel.replyTarget.content.text}"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="@id/replyScreenNameTextView"
-                            app:layout_constraintTop_toBottomOf="@id/replyScreenNameTextView"
-                            tools:text="@tools:sample/lorem[10]" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </androidx.cardview.widget.CardView>
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_half"
+                app:cardElevation="4dp"
+                tools:visibility="visible">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:minHeight="100dp">
+                    android:layout_height="wrap_content">
 
                     <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/myAccountAvatarImageView"
-                        android:layout_width="@dimen/size_post_item_avatar_mini"
-                        android:layout_height="@dimen/size_post_item_avatar_mini"
+                        android:id="@+id/replyAvatarImageView"
+                        android:layout_width="@dimen/size_post_item_avatar"
+                        android:layout_height="@dimen/size_post_item_avatar"
                         android:layout_marginStart="@dimen/margin_regular"
                         android:layout_marginTop="@dimen/margin_regular"
-                        android:clickable="true"
                         android:contentDescription="@string/description_avatar_picture"
-                        android:focusable="true"
-                        android:foreground="@drawable/fg_profile_avatar"
-                        android:onClick="@{() -> viewModel.showAccountList()}"
-                        app:glideAvatarSrc="@{viewModel.myAccountAvatarUrl}"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         tools:src="@tools:sample/avatars" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/composeTextEditText"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
+                    <TextView
+                        android:id="@+id/replyScreenNameTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_regular"
+                        android:layout_marginTop="@dimen/margin_regular"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        app:layout_constraintStart_toEndOf="@id/replyAvatarImageView"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="\@screen_name" />
+
+                    <TextView
+                        android:id="@+id/replyNameTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/margin_half"
-                        android:layout_marginEnd="@dimen/margin_half"
-                        android:background="@android:color/transparent"
-                        android:gravity="top|start"
-                        android:inputType="textMultiLine"
-                        android:minLines="5"
-                        android:padding="16dp"
-                        android:text="@={viewModel.text}"
+                        app:layout_constraintBaseline_toBaselineOf="@id/replyScreenNameTextView"
+                        app:layout_constraintStart_toEndOf="@id/replyScreenNameTextView"
+                        tools:text="handle name" />
+
+                    <TextView
+                        android:id="@+id/replyDateTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/margin_regular"
+                        app:layout_constraintBottom_toBottomOf="@id/replyNameTextView"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:text="1d" />
+
+                    <TextView
+                        android:id="@+id/replyBodyTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/margin_regular"
+                        android:layout_marginBottom="@dimen/margin_regular"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/myAccountAvatarImageView"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintStart_toStartOf="@id/replyScreenNameTextView"
+                        app:layout_constraintTop_toBottomOf="@id/replyScreenNameTextView"
+                        tools:text="@tools:sample/lorem[10]" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/thumbnailRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:clipChildren="false"
-                    android:clipToPadding="false"
-                    android:minHeight="200dp"
-                    android:orientation="horizontal"
-                    android:paddingStart="@dimen/margin_compose_post_start"
-                    android:visibility="@{safeUnbox(viewModel.previewAttachmentsVisibility)}"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:ignore="RtlSymmetry"
-                    tools:listitem="@layout/compose_thumbnail_image" />
-
-                <FrameLayout
-                    android:id="@+id/pollLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_compose_post_start"
-                    android:layout_marginTop="@dimen/margin_half"
-                    android:layout_marginEnd="@dimen/margin_half"
-                    android:layout_marginBottom="@dimen/margin_half" />
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/bottomToolbar"
-            android:layout_width="0dp"
-            android:layout_height="?attr/actionBarSize"
-            android:clipToPadding="false"
-            app:contentInsetStart="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            </androidx.cardview.widget.CardView>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false">
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="100dp">
 
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/viewLeftActionMenuView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:elevation="0dp"
-                    app:contentInsetStart="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/myAccountAvatarImageView"
+                    android:layout_width="@dimen/size_post_item_avatar_mini"
+                    android:layout_height="@dimen/size_post_item_avatar_mini"
+                    android:layout_marginStart="@dimen/margin_regular"
+                    android:layout_marginTop="@dimen/margin_regular"
+                    android:clickable="true"
+                    android:contentDescription="@string/description_avatar_picture"
+                    android:focusable="true"
+                    android:foreground="@drawable/fg_profile_avatar"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:menu="@menu/compose_left" />
+                    tools:src="@tools:sample/avatars" />
 
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/viewRightActionMenuView"
-                    android:layout_width="wrap_content"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/composeTextEditText"
+                    android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:elevation="0dp"
-                    app:contentInsetStart="0dp"
+                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_marginEnd="@dimen/margin_half"
+                    android:background="@android:color/transparent"
+                    android:gravity="top|start"
+                    android:inputType="textMultiLine"
+                    android:minLines="5"
+                    android:padding="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:menu="@menu/compose_right" />
+                    app:layout_constraintStart_toEndOf="@id/myAccountAvatarImageView"
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.appcompat.widget.Toolbar>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/thumbnailRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:minHeight="200dp"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/margin_compose_post_start"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:ignore="RtlSymmetry"
+                tools:listitem="@layout/compose_thumbnail_image" />
+
+            <FrameLayout
+                android:id="@+id/pollLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_compose_post_start"
+                android:layout_marginTop="@dimen/margin_half"
+                android:layout_marginEnd="@dimen/margin_half"
+                android:layout_marginBottom="@dimen/margin_half" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/bottomToolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:clipToPadding="false"
+        app:contentInsetStart="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/viewLeftActionMenuView"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:elevation="0dp"
+                app:contentInsetStart="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:menu="@menu/compose_left" />
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/viewRightActionMenuView"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:elevation="0dp"
+                app:contentInsetStart="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:menu="@menu/compose_right" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.appcompat.widget.Toolbar>
+</androidx.constraintlayout.widget.ConstraintLayout>

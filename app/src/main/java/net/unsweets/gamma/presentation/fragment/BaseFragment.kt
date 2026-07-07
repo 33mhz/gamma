@@ -1,12 +1,13 @@
 package net.unsweets.gamma.presentation.fragment
 
 import androidx.fragment.app.Fragment
-import dagger.android.support.DaggerFragment
+import dagger.hilt.android.AndroidEntryPoint
 import net.unsweets.gamma.domain.repository.IPreferenceRepository
 import net.unsweets.gamma.presentation.util.FragmentHelper
 import javax.inject.Inject
 
-abstract class BaseFragment : DaggerFragment() {
+@AndroidEntryPoint
+abstract class BaseFragment : Fragment() {
 
     @Inject
     lateinit var preferenceRepository: IPreferenceRepository

@@ -7,11 +7,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_login.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.ActivityLoginBinding
 import net.unsweets.gamma.presentation.util.LoginUtil
 import net.unsweets.gamma.util.showAsError
 
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
     enum class IntentKey {
         Error
@@ -26,11 +29,14 @@ class LoginActivity : AppCompatActivity() {
         intent.getStringExtra(IntentKey.Error.name)
     }
 
+    private lateinit var binding: ActivityLoginBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
-        loginButton.setOnClickListener { launchLoginBrowserActivity() }
-        signUpButton.setOnClickListener { launchSignUpBrowserActivity() }
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.loginButton.setOnClickListener { launchLoginBrowserActivity() }
+        binding.signUpButton.setOnClickListener { launchSignUpBrowserActivity() }
         showSnackBarWhenRaisedError()
     }
 

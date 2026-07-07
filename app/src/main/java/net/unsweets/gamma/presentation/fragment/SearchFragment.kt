@@ -15,7 +15,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.*
 import androidx.viewpager.widget.ViewPager
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.FragmentSearchBinding
 import net.unsweets.gamma.presentation.util.ShareUtil
@@ -113,7 +113,7 @@ class SearchFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false)
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         binding.searchTabLayout.setupWithViewPager(binding.searchViewPager)
         binding.searchViewPager.addOnPageChangeListener(pageChangeListener)
@@ -212,7 +212,7 @@ class SearchFragment : BaseFragment() {
 
         class Factory : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return SearchViewModel() as T
             }
         }
@@ -227,8 +227,8 @@ class SearchFragment : BaseFragment() {
             keyword.value = ""
         }
 
-        val clearButtonVisibility = Transformations.map(keyword) {
-            if (it.isEmpty()) View.GONE else View.VISIBLE
+        val clearButtonVisibility: LiveData<Int> = keyword.map {
+            if (it.isNullOrEmpty()) View.GONE else View.VISIBLE
         }
     }
 

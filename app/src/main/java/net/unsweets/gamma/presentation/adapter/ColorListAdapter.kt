@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.choose_primary_color_dialog_list_item.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.ChoosePrimaryColorDialogListItemBinding
 import net.unsweets.gamma.presentation.util.ThemeColorUtil
 
 class ColorListAdapter(private val listener: Callback, currentColor: ThemeColorUtil.ThemeColor?) :
@@ -60,7 +60,8 @@ class ColorListAdapter(private val listener: Callback, currentColor: ThemeColorU
 
     class ColorListViewHolder(itemView: View, private val listener: CallbackInternal) :
         RecyclerView.ViewHolder(itemView) {
-        private val themeColorCheck: ImageView = itemView.themeColorCheck
+        private val binding = ChoosePrimaryColorDialogListItemBinding.bind(itemView)
+        private val themeColorCheck: ImageView = binding.themeColorCheck
         fun bindTo(
             themeColor: ThemeColorUtil.ThemeColor,
             checked: Boolean,
@@ -70,7 +71,7 @@ class ColorListAdapter(private val listener: Callback, currentColor: ThemeColorU
                 it.applyStyle(themeColor.themeResource, true)
             }
             val tv = TypedValue()
-            theme.resolveAttribute(R.attr.colorPrimary, tv, true)
+            theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, tv, true)
             val color = tv.data
             itemView.setBackgroundColor(color)
             themeColorCheck.visibility = if (checked) View.VISIBLE else View.GONE

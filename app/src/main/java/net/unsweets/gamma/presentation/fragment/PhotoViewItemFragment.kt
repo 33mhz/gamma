@@ -18,10 +18,10 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import kotlinx.android.synthetic.main.fragment_photo_view_item.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.FragmentPhotoViewItemBinding
 import net.unsweets.gamma.domain.model.ThumbAndFull
-import net.unsweets.gamma.presentation.util.GlideApp
+import com.bumptech.glide.Glide
 
 
 class PhotoViewItemFragment : Fragment() {
@@ -34,11 +34,20 @@ class PhotoViewItemFragment : Fragment() {
         requireArguments().getBoolean(BundleKey.SharedElementTarget.name, false)
     }
 
+    private var _binding: FragmentPhotoViewItemBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_photo_view_item, container, false)
+        _binding = FragmentPhotoViewItemBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,13 +58,13 @@ class PhotoViewItemFragment : Fragment() {
             start()
             centerRadius = 30f
         }
-        GlideApp.with(view).load(path.full).placeholder(progress)
+        Glide.with(view).load(path.full).placeholder(progress)
             .transition(DrawableTransitionOptions.withCrossFade(0))
             .listener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(
                     e: GlideException?,
                     model: Any?,
-                    target: Target<Drawable>?,
+                    target: Target<Drawable>,
                     isFirstResource: Boolean
                 ): Boolean {
                     if (isSharedElementTarget)
@@ -64,13 +73,12 @@ class PhotoViewItemFragment : Fragment() {
                 }
 
                 override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any?,
+                    resource: Drawable,
+                    model: Any,
                     target: Target<Drawable>?,
-                    dataSource: DataSource?,
+                    dataSource: DataSource,
                     isFirstResource: Boolean
                 ): Boolean {
-                    if (resource == null) return false
                     val width = resource.intrinsicWidth
                     val height = resource.intrinsicWidth
                     val ratio = height.toFloat() / width.toFloat()
@@ -83,12 +91,12 @@ class PhotoViewItemFragment : Fragment() {
                     resource.draw(canvas)
                     val palette = Palette.from(bmp).generate()
                     val color = palette.mutedSwatch?.rgb ?: Color.BLACK
-                    photoViewWrapper.setBackgroundColor(color)
+                    binding.photoViewWrapper.setBackgroundColor(color)
                     if (isSharedElementTarget)
                         requireActivity().startPostponedEnterTransition()
                     return false
                 }
-            }).into(photoView)
+            }).into(binding.photoView)
     }
 
     private enum class BundleKey { Path, SharedElementTarget }

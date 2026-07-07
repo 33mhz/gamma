@@ -12,9 +12,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.interaction_item.view.*
 import kotlinx.coroutines.launch
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.InteractionItemBinding
 import net.unsweets.gamma.domain.entity.Interaction
 import net.unsweets.gamma.domain.entity.Interaction.Action
 import net.unsweets.gamma.domain.entity.PnutResponse
@@ -166,11 +166,12 @@ class InteractionFragment :
     override val baseListListener = this
 
     class InteractionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val messageTextView: TextView = view.messageTextView
-        val iconView: ImageView = view.iconView
-        val bodyTextView: TextView = view.bodyTextView
-        val timeTextView: TextView = view.timeTextView
-        val reactionUsersRecyclerView: RecyclerView = view.reactionUsersRecyclerView
+        val binding = InteractionItemBinding.bind(view)
+        val messageTextView: TextView = binding.messageTextView
+        val iconView: ImageView = binding.iconView
+        val bodyTextView: TextView = binding.bodyTextView
+        val timeTextView: TextView = binding.timeTextView
+        val reactionUsersRecyclerView: RecyclerView = binding.reactionUsersRecyclerView
 
         init {
             addSpacerDecoration()
@@ -232,7 +233,7 @@ class InteractionFragment :
 
         ) :
             ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
                 return InteractionViewModel(
                     getInteractionUseCase,

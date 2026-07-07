@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import kotlinx.android.synthetic.main.list_with_toolbar.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.ListWithToolbarBinding
 import net.unsweets.gamma.domain.entity.Post
 import net.unsweets.gamma.domain.model.StreamType
 
@@ -23,16 +23,17 @@ class ThreadFragment : PostItemFragment() {
     override val reverse = true
 
     override fun getFragmentLayout(): Int = R.layout.list_with_toolbar
-    override fun getRecyclerView(view: View): RecyclerView = view.itemList
-    override fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout = view.swipeRefreshLayout
+    override fun getRecyclerView(view: View): RecyclerView = ListWithToolbarBinding.bind(view).itemList
+    override fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout = ListWithToolbarBinding.bind(view).swipeRefreshLayout
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.toolbar.setNavigationOnClickListener {
+        val binding = ListWithToolbarBinding.bind(view)
+        binding.toolbar.setNavigationOnClickListener {
             backToPrevFragment()
         }
-        view.toolbar.setTitle(R.string.thread)
+        binding.toolbar.setTitle(R.string.thread)
 //        getRecyclerView(view).let {
 //            it.layoutManager = LinearLayoutManager(view.context, RecyclerView.VERTICAL, true).apply {
 //                stackFromEnd = true

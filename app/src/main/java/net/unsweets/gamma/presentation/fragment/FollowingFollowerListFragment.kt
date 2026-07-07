@@ -3,15 +3,15 @@ package net.unsweets.gamma.presentation.fragment
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.list_with_toolbar.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.ListWithToolbarBinding
 import net.unsweets.gamma.domain.entity.User
 import net.unsweets.gamma.domain.model.UserListType
 
 
 abstract class FollowingFollowerListFragment : UserListFragment() {
     override fun getFragmentLayout(): Int = R.layout.list_with_toolbar
-    override fun getRecyclerView(view: View): RecyclerView = view.itemList
+    override fun getRecyclerView(view: View): RecyclerView = ListWithToolbarBinding.bind(view).itemList
     private enum class BundleKey { User }
 
     protected val user by lazy {
@@ -21,7 +21,8 @@ abstract class FollowingFollowerListFragment : UserListFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.toolbar.setNavigationOnClickListener { backToPrevFragment() }
+        val binding = ListWithToolbarBinding.bind(view)
+        binding.toolbar.setNavigationOnClickListener { backToPrevFragment() }
         val count = when (userListType) {
             is UserListType.Following -> user.counts.following
             is UserListType.Followers -> user.counts.followers
@@ -33,10 +34,10 @@ abstract class FollowingFollowerListFragment : UserListFragment() {
             else -> null
         }
         val title = res?.let { getString(it, user.username) }
-        view.toolbar.title = title
+        binding.toolbar.title = title
         if (count != null) {
             val subtitle = resources.getQuantityString(R.plurals.user, count, count)
-            view.toolbar.subtitle = subtitle
+            binding.toolbar.subtitle = subtitle
         }
 
     }

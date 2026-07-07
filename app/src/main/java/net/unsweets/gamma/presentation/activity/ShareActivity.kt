@@ -3,13 +3,16 @@ package net.unsweets.gamma.presentation.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import dagger.android.support.DaggerAppCompatActivity
+//import dagger.android.support.DaggerAppCompatActivity
 import net.unsweets.gamma.R
 import net.unsweets.gamma.domain.model.UriInfo
 import net.unsweets.gamma.presentation.fragment.ComposePostFragment
+import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
 import net.unsweets.gamma.presentation.util.ThemeColorUtil
 
-class ShareActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class ShareActivity : AppCompatActivity() {
     override fun finish() {
         super.finish()
         overridePendingTransition(0, 0)

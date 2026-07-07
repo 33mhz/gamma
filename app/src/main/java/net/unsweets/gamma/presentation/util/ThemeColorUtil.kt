@@ -44,7 +44,7 @@ object ThemeColorUtil {
                 applyStyle(themeResource, true)
             }
             val typedValue = TypedValue()
-            theme.resolveAttribute(R.attr.colorPrimary, typedValue, true)
+            theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true)
             return typedValue.data
         }
 

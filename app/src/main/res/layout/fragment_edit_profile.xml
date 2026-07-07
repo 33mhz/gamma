@@ -24,7 +24,7 @@
             android:layout_marginStart="@dimen/margin_regular"
             android:layout_marginEnd="@dimen/margin_regular"
             android:indeterminate="true"
-            android:visibility="@{viewModel.show(safeUnbox(viewModel.loading) == true)}"
+            android:visibility="@{viewModel.show(viewModel.loading == true)}"
             tools:visibility="gone" />
 
         <LinearLayout
@@ -49,7 +49,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingBottom="@dimen/margin_regular"
-                    android:visibility="@{viewModel.show(safeUnbox(viewModel.loading) == false)}">
+                    android:visibility="@{viewModel.show(viewModel.loading == false)}">
 
                     <ImageView
                         android:id="@+id/viewCoverImage"

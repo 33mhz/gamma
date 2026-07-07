@@ -6,24 +6,25 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.button.MaterialButton
-import kotlinx.android.synthetic.main.fragment_user_item.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.FragmentUserItemBinding
 import net.unsweets.gamma.domain.Relationship
 import net.unsweets.gamma.domain.entity.User
 import net.unsweets.gamma.presentation.util.ColorResource
 import net.unsweets.gamma.presentation.util.EntityOnTouchListener
-import net.unsweets.gamma.presentation.util.GlideApp
+import com.bumptech.glide.Glide
 import net.unsweets.gamma.presentation.util.Util
 
 
 class UserViewHolder(mView: View) :
     RecyclerView.ViewHolder(mView) {
-    private val avatarView: ImageView = itemView.avatarImageView
-    private val screenNameTextView: TextView = itemView.screenNameTextView
-    private val handleNameTextView: TextView = itemView.handleNameTextView
-    private val bodyTextView: TextView = itemView.bodyTextView
-    private val relationshipTextView: TextView = itemView.relationshipTextView
-    private val actionButton: MaterialButton = itemView.actionButton
+    private val binding = FragmentUserItemBinding.bind(mView)
+    private val avatarView: ImageView = binding.avatarImageView
+    private val screenNameTextView: TextView = binding.screenNameTextView
+    private val handleNameTextView: TextView = binding.handleNameTextView
+    private val bodyTextView: TextView = binding.bodyTextView
+    private val relationshipTextView: TextView = binding.relationshipTextView
+    private val actionButton: MaterialButton = binding.actionButton
     private val entityListener: View.OnTouchListener = EntityOnTouchListener()
     private val context = itemView.context
 
@@ -32,7 +33,7 @@ class UserViewHolder(mView: View) :
     }
 
     fun bind(user: User, listener: Callback) {
-        GlideApp.with(itemView.context)
+        Glide.with(itemView.context)
             .load(user.content.avatarImage.link)
             .apply(RequestOptions.circleCropTransform())
             .into(avatarView)
@@ -92,4 +93,3 @@ class UserViewHolder(mView: View) :
     )
 
 }
-

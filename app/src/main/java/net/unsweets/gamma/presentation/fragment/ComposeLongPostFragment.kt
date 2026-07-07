@@ -6,13 +6,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.FragmentComposeLongPostBinding
 import net.unsweets.gamma.domain.entity.raw.LongPost
 import net.unsweets.gamma.presentation.util.BackPressedHookable
@@ -44,7 +43,8 @@ class ComposeLongPostFragment : Fragment(), BackPressedHookable {
         listener?.onUpdateLongPost(longPost)
     }
 
-    private lateinit var binding: FragmentComposeLongPostBinding
+    private var _binding: FragmentComposeLongPostBinding? = null
+    private val binding get() = _binding!!
     private var listener: Callback? = null
     private val viewModel by lazy {
         ViewModelProvider(this)[ComposeLongPostViewModel::class.java]
@@ -69,22 +69,37 @@ class ComposeLongPostFragment : Fragment(), BackPressedHookable {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_compose_long_post, container, false)
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = this
+        _binding = FragmentComposeLongPostBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.longPostToolbar.setNavigationOnClickListener {
+            viewModel.back()
+        }
+        binding.titleEditText.setText(viewModel.title.value)
+        binding.titleEditText.doAfterTextChanged { 
+            viewModel.title.value = it?.toString()
+        }
+        binding.bodyEditText.setText(viewModel.body.value)
+        binding.bodyEditText.doAfterTextChanged { 
+            viewModel.body.value = it?.toString()
+        }
+
         binding.bodyEditText.requestFocus()
-        viewModel.body.observeOnce(this, Observer {
+        viewModel.body.observeOnce(viewLifecycleOwner, Observer {
             binding.bodyEditText.also { view ->
                 view.requestFocus()
                 view.setSelection(it.length)
             }
         })
         Util.showKeyboard(binding.bodyEditText)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onAttach(context: Context) {

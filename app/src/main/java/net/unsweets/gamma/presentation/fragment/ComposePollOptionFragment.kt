@@ -11,13 +11,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dagger.android.support.DaggerDialogFragment
+import androidx.fragment.app.DialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.FragmentComposePollOptionBinding
 import net.unsweets.gamma.domain.entity.PollPostBody
 import net.unsweets.gamma.domain.model.PollDeadline
 
-class ComposePollOptionFragment : DaggerDialogFragment(), DialogInterface.OnClickListener {
+@AndroidEntryPoint
+class ComposePollOptionFragment : DialogFragment(), DialogInterface.OnClickListener {
     override fun onClick(dialog: DialogInterface?, which: Int) {
         when (which) {
             DialogInterface.BUTTON_POSITIVE -> ok()
@@ -176,7 +178,7 @@ class ComposePollOptionFragment : DaggerDialogFragment(), DialogInterface.OnClic
         class Factory(private val pollPostBody: PollPostBody) :
             ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return ComposePollOptionViewModel(pollPostBody) as T
             }
         }

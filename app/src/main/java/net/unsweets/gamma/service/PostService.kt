@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import dagger.android.AndroidInjection
+import dagger.hilt.android.AndroidEntryPoint
 import net.unsweets.gamma.BuildConfig
 import net.unsweets.gamma.domain.entity.Post
 import net.unsweets.gamma.domain.entity.PostBodyOuter
@@ -17,14 +17,15 @@ import net.unsweets.gamma.util.ErrorIntent
 import net.unsweets.gamma.util.LogUtil
 import javax.inject.Inject
 
-private const val actionPrefix = "${BuildConfig.APPLICATION_ID}.service.PostService"
+private const val actionPrefix = "net.unsweets.gamma.service.PostService"
 
+@AndroidEntryPoint
 class PostService : IntentService("PostService") {
     private enum class IntentKey { PostBody, PostId, NewState }
     enum class Actions {
         SendPost, Star, Repost, DeletePost;
 
-        fun getActionName() = "$actionPrefix.$name"
+        fun getActionName() = actionPrefix + "." + name
 
         companion object {
             fun getAction(actionName: String): Actions? {
@@ -54,7 +55,6 @@ class PostService : IntentService("PostService") {
     lateinit var createPollUseCase: CreatePollUseCase
 
     override fun onCreate() {
-        AndroidInjection.inject(this)
         super.onCreate()
     }
 

@@ -13,7 +13,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
-import dagger.android.HasAndroidInjector
 import kotlinx.coroutines.*
 import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.FragmentEditProfileBinding
@@ -34,7 +33,7 @@ import javax.inject.Inject
 
 class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
     GalleryItemListDialogFragment.Listener,
-    BaseFragment(), HasAndroidInjector {
+    BaseFragment() {
 
     interface Callback {
         fun onRequestToFinish()
@@ -221,7 +220,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
     ): View? {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_edit_profile, container, false)
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 //        binding.viewCurrentAvatarImage.setShape(preferenceRepository.shapeOfAvatar)
         return binding.root
@@ -252,12 +251,12 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
             }
             RequestCode.Avatar.ordinal -> {
                 if (resultCode != Activity.RESULT_OK || data == null) return
-                val res = EditPhotoActivity.parseIntent(data)
+                val res = EditPhotoActivity.parseIntent(data) ?: return
                 viewModel.newAvatarUri.value = ImageState.NewImage(res.uri)
             }
             RequestCode.Cover.ordinal -> {
                 if (resultCode != Activity.RESULT_OK || data == null) return
-                val res = EditPhotoActivity.parseIntent(data)
+                val res = EditPhotoActivity.parseIntent(data) ?: return
                 viewModel.newCoverUri.value = ImageState.NewImage(res.uri)
             }
             else -> super.onActivityResult(requestCode, resultCode, data)
@@ -500,7 +499,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
         ) :
             ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return EditProfileViewModel(
                     userId,
                     getProfileUseCase,
@@ -512,6 +511,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
         }
     }
 
+    @Suppress("DEPRECATION")
     companion object {
         fun newInstance(userId: String) = EditProfileFragment().apply {
             arguments = Bundle().apply {
@@ -519,6 +519,6 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
             }
         }
 
-        fun parseResultIntent(intent: Intent): User = intent.getParcelableExtra(IntentKey.User.name)
+        fun parseResultIntent(intent: Intent): User? = intent.getParcelableExtra(IntentKey.User.name)
     }
 }

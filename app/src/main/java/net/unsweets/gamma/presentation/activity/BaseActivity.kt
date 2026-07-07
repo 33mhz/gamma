@@ -3,13 +3,16 @@ package net.unsweets.gamma.presentation.activity
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.MenuItem
-import dagger.android.support.DaggerAppCompatActivity
+//import dagger.android.support.DaggerAppCompatActivity
 import net.unsweets.gamma.GammaApplication
 import net.unsweets.gamma.domain.repository.IPreferenceRepository
 import net.unsweets.gamma.presentation.util.ThemeColorUtil
+import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-abstract class BaseActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+abstract class BaseActivity : AppCompatActivity() {
     private lateinit var darkThemeMode: String
     private var themeColorWhenCreated: ThemeColorUtil.ThemeColor? = null
 
@@ -57,11 +60,11 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         (application as? GammaApplication)?.updateTheme()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             android.R.id.home -> {
                 finishAfterTransition()
-                return true
+                true
             }
             else -> super.onOptionsItemSelected(item)
         }

@@ -48,7 +48,6 @@ object FragmentHelper {
 
     private fun getFragmentManagerFromContext(context: Context): FragmentManager? {
         return when (context) {
-            is Fragment -> context.parentFragmentManager
             is AppCompatActivity -> context.supportFragmentManager
             else -> null
         }

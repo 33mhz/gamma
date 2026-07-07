@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.list_with_toolbar.view.*
 import net.unsweets.gamma.R
+import net.unsweets.gamma.databinding.ListWithToolbarBinding
 import net.unsweets.gamma.domain.model.StreamType
 import net.unsweets.gamma.presentation.util.FragmentHelper
 import net.unsweets.gamma.presentation.util.SmoothScroller
@@ -16,11 +16,12 @@ import net.unsweets.gamma.presentation.util.Util
 sealed class ExploreFragment : PostItemFragment(), Util.DrawerContentFragment {
 
     override fun getFragmentLayout(): Int = R.layout.list_with_toolbar
-    override fun getRecyclerView(view: View): RecyclerView = view.itemList
+    override fun getRecyclerView(view: View): RecyclerView = ListWithToolbarBinding.bind(view).itemList
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupToolbar(view.toolbar)
+        val binding = ListWithToolbarBinding.bind(view)
+        setupToolbar(binding.toolbar)
     }
 
     private fun setupToolbar(toolbar: Toolbar) {

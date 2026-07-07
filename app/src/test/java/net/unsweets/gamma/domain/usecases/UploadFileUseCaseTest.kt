@@ -55,7 +55,7 @@ class UploadFileUseCaseTest {
       sha256 = "sha256",
       size = 1,
       source = Clients.testClient,
-      type = Constants.Gamma,
+      type = Constants.GAMMA,
       user = Users.me,
       fileToken = "fileToken"
     )

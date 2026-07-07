@@ -7,22 +7,19 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.preference.ListPreference
+import androidx.preference.ListPreference
 import android.preference.PreferenceManager
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.snackbar.Snackbar
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.AndroidSupportInjection
-import dagger.android.support.HasSupportFragmentInjector
-import kotlinx.android.synthetic.main.activity_settings.*
+import dagger.hilt.android.AndroidEntryPoint
 import net.unsweets.gamma.BuildConfig
 import net.unsweets.gamma.GammaApplication
 import net.unsweets.gamma.R
@@ -32,28 +29,30 @@ import net.unsweets.gamma.domain.usecases.LogoutUseCase
 import net.unsweets.gamma.presentation.fragment.BasicDialogFragment
 import net.unsweets.gamma.presentation.fragment.ChoosePrimaryColorDialogFragment
 import net.unsweets.gamma.presentation.util.ColorSummaryProvider
-import net.unsweets.gamma.presentation.util.GlideApp
+import com.bumptech.glide.Glide
 import net.unsweets.gamma.presentation.util.ThemeColorUtil
 import net.unsweets.gamma.presentation.view.ThemeColorPreference
 import net.unsweets.gamma.service.ClearGlideCacheService
 import net.unsweets.gamma.service.ClearStreamCacheService
 import net.unsweets.gamma.util.Constants
 import javax.inject.Inject
+import androidx.core.net.toUri
 
 
+@AndroidEntryPoint
 class SettingsActivity : BaseActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     override fun onPreferenceStartFragment(
-        caller: PreferenceFragmentCompat?,
+        caller: PreferenceFragmentCompat,
         pref: Preference
     ): Boolean {
         val args = pref.extras
+        val fragmentName = pref.fragment ?: return false
         val fragment = supportFragmentManager.fragmentFactory.instantiate(
             classLoader,
-            pref.fragment
+            fragmentName
         ).apply {
             arguments = args
-            setTargetFragment(caller, 0)
         }
         supportFragmentManager.beginTransaction()
             .setCustomAnimations(
@@ -74,6 +73,7 @@ class SettingsActivity : BaseActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         val currentAccount = getCurrentAccountUseCase.run(Unit).account ?: return
 
@@ -86,8 +86,8 @@ class SettingsActivity : BaseActivity(),
     }
 
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             android.R.id.home -> {
                 onBackPressed()
                 true
@@ -97,8 +97,9 @@ class SettingsActivity : BaseActivity(),
     }
 
     // settings list fragment
+    @AndroidEntryPoint
     class SettingsFragment : BasePreferenceFragment() {
-        val username by lazy {
+        private val username by lazy {
             "@${arguments?.getString(BundleKey.Username.name, "")}"
         }
         override val rootKey: Int = R.string.pref_settings_root_key
@@ -114,7 +115,7 @@ class SettingsActivity : BaseActivity(),
             findPreference<Preference>((getString(R.string.pref_version_key)))?.let {
                 it.summary = BuildConfig.VERSION_NAME
                 it.intent = Intent(Intent.ACTION_VIEW).apply {
-                    data = Uri.parse(Constants.PlayStoreUrl)
+                    data = Constants.PLAY_STORE_URL.toUri()
                 }
             }
         }
@@ -129,15 +130,10 @@ class SettingsActivity : BaseActivity(),
         }
     }
 
-    abstract class BasePreferenceFragment : PreferenceFragmentCompat(), HasSupportFragmentInjector {
-        @Inject
-        lateinit var childFragmentInjector: DispatchingAndroidInjector<Fragment>
-
-
-        override fun supportFragmentInjector(): AndroidInjector<Fragment> = childFragmentInjector
+    @AndroidEntryPoint
+    abstract class BasePreferenceFragment : PreferenceFragmentCompat() {
 
         override fun onCreate(savedInstanceState: Bundle?) {
-            AndroidSupportInjection.inject(this)
             super.onCreate(savedInstanceState)
         }
 
@@ -160,6 +156,7 @@ class SettingsActivity : BaseActivity(),
         abstract val rootKey: Int
     }
 
+    @AndroidEntryPoint
     class BehaviorAppearancePreferenceFragment : BasePreferenceFragment(),
         ChoosePrimaryColorDialogFragment.Callback {
         override fun updateColor(themeColor: ThemeColorUtil.ThemeColor?) {
@@ -219,6 +216,7 @@ class SettingsActivity : BaseActivity(),
         }
     }
 
+    @AndroidEntryPoint
     class StreamPreferenceFragment : BasePreferenceFragment(),
         ClearStreamCacheService.Receiver.Listener, ClearGlideCacheService.Receiver.Listener {
         override fun onClearGlideCache() {
@@ -280,7 +278,7 @@ class SettingsActivity : BaseActivity(),
                 false
             }
             clearGlideCacheButton?.isEnabled =
-                context?.let { GlideApp.getPhotoCacheDir(it)?.exists() } ?: true
+                context?.let { Glide.getPhotoCacheDir(it)?.exists() } ?: true
             clearStreamCacheButton?.isEnabled =
                 context?.let { PnutCacheRepository.getUserCacheDir(it)?.exists() } ?: true
         }
@@ -306,6 +304,7 @@ class SettingsActivity : BaseActivity(),
         private enum class RequestCode { ClearStreamCache, ClearGlideCache }
         private enum class DialogKey { ClearStreamCache, ClearGlideCache }
 
+        @Suppress("DEPRECATION")
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             when (requestCode) {
                 RequestCode.ClearStreamCache.ordinal -> {
@@ -324,6 +323,7 @@ class SettingsActivity : BaseActivity(),
         override val rootKey: Int = R.string.pref_stream_key
     }
 
+    @AndroidEntryPoint
     class AccountPreferenceFragment : BasePreferenceFragment() {
         override val rootKey: Int = R.string.pref_account_key
         @Inject
@@ -379,29 +379,6 @@ class SettingsActivity : BaseActivity(),
                         else
                             null
                     )
-
-//            } else if (preference is RingtonePreference) {
-//                // For ringtone preferences, look up the correct display value
-//                // using RingtoneManager.
-//                if (TextUtils.isEmpty(stringValue)) {
-//                    // Empty values correspond to 'silent' (no ringtone).
-//                    preference.setSummary(R.string.pref_ringtone_silent)
-//
-//                } else {
-//                    val ringtone = RingtoneManager.getRingtone(
-//                        preference.getContext(), Uri.parse(stringValue)
-//                    )
-//
-//                    if (ringtone == null) {
-//                        // Clear the summary if there was a lookup showAsError.
-//                        preference.setSummary(null)
-//                    } else {
-//                        // Set the summary to reflect the new ringtone display
-//                        // name.
-//                        val name = ringtone.getTitle(preference.getContext())
-//                        preference.setSummary(name)
-//                    }
-//                }
 
                 } else {
                     // For all other preferences, set the summary to the value's
