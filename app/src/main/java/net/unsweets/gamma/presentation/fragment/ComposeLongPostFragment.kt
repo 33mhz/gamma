@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
@@ -40,12 +42,14 @@ class ComposeLongPostFragment : Fragment(), BackPressedHookable {
         } else {
             null
         }
-        listener?.onUpdateLongPost(longPost)
+        setFragmentResult(
+            RequestKey.UpdateLongPost.name,
+            bundleOf(ResponseKey.LongPost.name to longPost)
+        )
     }
 
     private var _binding: FragmentComposeLongPostBinding? = null
     private val binding get() = _binding!!
-    private var listener: Callback? = null
     private val viewModel by lazy {
         ViewModelProvider(this)[ComposeLongPostViewModel::class.java]
     }
@@ -54,6 +58,9 @@ class ComposeLongPostFragment : Fragment(), BackPressedHookable {
     }
 
     private enum class BundleKey { LongPost }
+
+    enum class RequestKey { UpdateLongPost }
+    enum class ResponseKey { LongPost }
 
     interface Callback {
         fun onUpdateLongPost(longPost: LongPost?)
@@ -102,14 +109,8 @@ class ComposeLongPostFragment : Fragment(), BackPressedHookable {
         _binding = null
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        listener = targetFragment as? Callback
-    }
-
     override fun onDetach() {
         super.onDetach()
-        listener = null
     }
 
     sealed class Event {

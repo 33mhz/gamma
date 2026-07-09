@@ -8,6 +8,8 @@ import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.os.Looper
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.FragmentManager
@@ -265,6 +267,17 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         binding.fab.setOnClickListener {
             viewModel.composePost()
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (binding.drawerLayout.isDrawerVisible(GravityCompat.START)) {
+                    closeDrawer()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
 
     private fun setupBottomAppBar() {
@@ -374,7 +387,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     private fun openMyProfile(user: User) {
         closeDrawer()
 
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             val fragment = ProfileFragment.newInstance(user.id, user.content.avatarImage.link, user)
             addFragment(supportFragmentManager, fragment, user.id)
             uncheckMenuItem(binding.navigationView.menu)
@@ -390,13 +403,6 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         drawerToggle.onConfigurationChanged(newConfig)
     }
 
-    @Suppress("OVERRIDE_DEPRECATION")
-    override fun onBackPressed() {
-        when {
-            binding.drawerLayout.isDrawerVisible(GravityCompat.START) -> closeDrawer()
-            else -> super.onBackPressed()
-        }
-    }
 
     private fun goToHome() {
         supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
