@@ -262,6 +262,10 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         setupFragment(savedInstanceState == null)
         setupNavigation()
         setupBottomAppBar()
+
+        binding.fab.setOnClickListener {
+            viewModel.composePost()
+        }
     }
 
     private fun setupBottomAppBar() {

@@ -54,7 +54,9 @@ import net.unsweets.gamma.util.observeOnce
 import java.util.ArrayList
 import java.util.Date
 import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listener,
     AnimationCallback,
     BackPressedHookable, ComposeLongPostFragment.Callback, SpoilerDialogFragment.Callback,

@@ -51,9 +51,11 @@ import net.unsweets.gamma.presentation.util.Util
 import net.unsweets.gamma.util.SingleLiveEvent
 import java.util.*
 import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.collections.set
 import kotlin.math.abs
 
+@AndroidEntryPoint
 class ProfileFragment : BaseFragment() {
     private enum class BundleKey {
         ID, IconUrl, User, IconTransitionName

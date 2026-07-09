@@ -2,6 +2,7 @@ package net.unsweets.gamma.presentation.fragment
 
 import android.os.Bundle
 import net.unsweets.gamma.domain.model.StreamType
+import dagger.hilt.android.AndroidEntryPoint
 
 abstract class SpecificUserPostFragment: PostItemFragment() {
     override val streamType: StreamType by lazy {
@@ -12,6 +13,7 @@ abstract class SpecificUserPostFragment: PostItemFragment() {
 
     abstract fun setStreamTypeWithUserId(userId: String): StreamType
 
+    @AndroidEntryPoint
     class UserPostFragment : SpecificUserPostFragment() {
         override fun setStreamTypeWithUserId(userId: String): StreamType = StreamType.User(userId)
         companion object {
@@ -23,6 +25,7 @@ abstract class SpecificUserPostFragment: PostItemFragment() {
         }
     }
 
+    @AndroidEntryPoint
     class StarsPostFragment: SpecificUserPostFragment() {
         override fun setStreamTypeWithUserId(userId: String): StreamType =  StreamType.Stars(userId)
         companion object {

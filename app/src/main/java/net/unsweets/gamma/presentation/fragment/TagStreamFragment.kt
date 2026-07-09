@@ -9,7 +9,9 @@ import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.ListWithToolbarBinding
 import net.unsweets.gamma.domain.model.StreamType
 import net.unsweets.gamma.presentation.util.ShareUtil
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class TagStreamFragment : PostItemFragment() {
     private val hashTag: String by lazy { arguments?.getString(BundleKey.Tag.name, "") ?: "" }
     override val streamType: StreamType by lazy {

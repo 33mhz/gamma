@@ -7,6 +7,7 @@ import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.ListWithToolbarBinding
 import net.unsweets.gamma.domain.entity.User
 import net.unsweets.gamma.domain.model.UserListType
+import dagger.hilt.android.AndroidEntryPoint
 
 
 abstract class FollowingFollowerListFragment : UserListFragment() {
@@ -43,6 +44,7 @@ abstract class FollowingFollowerListFragment : UserListFragment() {
     }
 
 
+    @AndroidEntryPoint
     class FollowerListFragment : FollowingFollowerListFragment() {
         override val userListType by lazy {
             UserListType.Followers(user.id)
@@ -57,6 +59,7 @@ abstract class FollowingFollowerListFragment : UserListFragment() {
         }
     }
 
+    @AndroidEntryPoint
     class FollowingListFragment : FollowingFollowerListFragment() {
         override val userListType by lazy {
             UserListType.Following(user.id)

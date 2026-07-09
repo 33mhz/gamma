@@ -27,6 +27,7 @@ import net.unsweets.gamma.domain.usecases.UpdateRelationshipUseCase
 import net.unsweets.gamma.presentation.adapter.BaseListRecyclerViewAdapter
 import net.unsweets.gamma.presentation.adapter.UserViewHolder
 import net.unsweets.gamma.util.SingleLiveEvent
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
@@ -199,6 +200,7 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
         }
     }
 
+    @AndroidEntryPoint
     class SearchUserListFragment : UserListFragment() {
         override val userListType by lazy {
             UserListType.Search(keyword)

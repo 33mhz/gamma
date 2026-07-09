@@ -16,8 +16,10 @@ import net.unsweets.gamma.domain.model.params.single.PaginationParam
 import net.unsweets.gamma.domain.usecases.GetFilesUseCase
 import net.unsweets.gamma.presentation.adapter.BaseListRecyclerViewAdapter
 import net.unsweets.gamma.util.toFormatString
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class FileListFragment : BaseListFragment<File, FileListFragment.FileViewHolder>(),
     BaseListRecyclerViewAdapter.IBaseList<File, FileListFragment.FileViewHolder> {
     override fun onClickSegmentListener(
