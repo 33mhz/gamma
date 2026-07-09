@@ -9,13 +9,13 @@ import com.bumptech.glide.request.RequestOptions
 import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.ReactionUserItemBinding
 import net.unsweets.gamma.domain.entity.User
-import net.unsweets.gamma.domain.model.preference.ShapeOfAvatar
+//import net.unsweets.gamma.domain.model.preference.ShapeOfAvatar
 import com.bumptech.glide.Glide
 
 class ReactionUsersAdapter(
     private val reactionUsers: List<User>,
     val listener: Listener,
-    private val shapeOfAvatar: ShapeOfAvatar
+//    private val shapeOfAvatar: ShapeOfAvatar
 ) :
     RecyclerView.Adapter<ReactionUsersAdapter.ViewHolder>() {
     interface Listener {
@@ -25,9 +25,10 @@ class ReactionUsersAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.reaction_user_item, parent, false)
-        return ViewHolder(view).also {
+        return ViewHolder(view)
+//            .also {
             //            it.avatarView.setShape(shapeOfAvatar)
-        }
+//        }
     }
 
     override fun getItemCount(): Int = reactionUsers.size

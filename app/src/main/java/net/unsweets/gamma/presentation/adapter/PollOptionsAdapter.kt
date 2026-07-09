@@ -16,9 +16,9 @@ import net.unsweets.gamma.util.LogUtil
 class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var poll: Poll? = null) :
     RecyclerView.Adapter<PollOptionsAdapter.OptionsViewHolder>() {
     val reachedLimit: Boolean
-        get() = poll?.maxOptions ?: 1 < choosedPositions.size
+        get() = (poll?.maxOptions ?: 1) < chosenPositions.size
     val votable
-        get() = !reachedLimit && choosedPositions.size > 0
+        get() = !reachedLimit && chosenPositions.size > 0
     private val options
         get() = poll?.options ?: pollLikeValue.options
 
@@ -36,25 +36,25 @@ class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var p
 
     fun setPollDetail(poll: Poll) {
         this.poll = poll
-        choosedPositions.clear()
+        chosenPositions.clear()
         LogUtil.e("poll $poll")
         val positions =
             poll.options.withIndex().filter { it.value.isYourResponse == true }.map { it.index }
         LogUtil.e("positions $positions")
-        choosedPositions.addAll(positions)
+        chosenPositions.addAll(positions)
         notifyDataSetChanged()
     }
 
-    private val choosedPositions = mutableSetOf<Int>()
-    val getChoosedPositions
-        get() = choosedPositions.toSet()
+    private val chosenPositions = mutableSetOf<Int>()
+    val getChosenPositions
+        get() = chosenPositions.toSet()
 
     override fun getItemCount(): Int = options.size
 
     override fun onBindViewHolder(holder: OptionsViewHolder, position: Int) {
         val option = options[position]
         val pollLocal = poll
-        holder.bindTo(option, choosedPositions, pollLocal) {
+        holder.bindTo(option, chosenPositions, pollLocal) {
             listener?.onUpdateChoiceState(votable)
 
         }
@@ -69,7 +69,7 @@ class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var p
         private val pollOptionLayout: ViewGroup = binding.pollOptionLayout
         fun bindTo(
             option: Poll.PollOption,
-            choosedPositions: MutableSet<Int>,
+            chosenPositions: MutableSet<Int>,
             poll: Poll?,
             callback: () -> Unit
         ) {
@@ -83,13 +83,13 @@ class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var p
             val alreadyClosed = poll?.alreadyClosed ?: false
             pollOptionCheckBox.isEnabled = !alreadyClosed
             pollOptionCheckBox.isChecked =
-                if (poll?.alreadyClosed == false) choosedPositions.contains(adapterPosition) else option.isYourResponse == true
+                if (poll?.alreadyClosed == false) chosenPositions.contains(adapterPosition) else option.isYourResponse == true
             pollOptionLayout.setOnClickListener { if (!alreadyClosed) pollOptionCheckBox.performClick() }
             pollOptionCheckBox.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
-                    choosedPositions.add(adapterPosition)
+                    chosenPositions.add(adapterPosition)
                 } else {
-                    choosedPositions.remove(adapterPosition)
+                    chosenPositions.remove(adapterPosition)
                 }
                 callback()
             }

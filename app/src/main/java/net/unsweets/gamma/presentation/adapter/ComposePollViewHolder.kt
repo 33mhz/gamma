@@ -14,8 +14,8 @@ import net.unsweets.gamma.domain.entity.PollPostBody
 class ComposePollViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private val binding = ComposePollBodyItemBinding.bind(itemView)
-    private val dragHandleImageButton: AppCompatImageButton =
-        binding.pollBodyItemDragHandleImageButton
+//    private val dragHandleImageButton: AppCompatImageButton =
+//        binding.pollBodyItemDragHandleImageButton
     private val textInputEditText: TextInputEditText =
         binding.pollBodyItemTextInputEditText
     private val pollBodyItemTextInputLayout: TextInputLayout =

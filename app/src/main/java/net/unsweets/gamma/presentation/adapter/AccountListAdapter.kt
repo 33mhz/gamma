@@ -28,7 +28,7 @@ class AccountListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return when (ItemViewType.values()[viewType]) {
+        return when (ItemViewType.entries[viewType]) {
             ItemViewType.Body -> ItemViewHolder(
                 inflater.inflate(
                     R.layout.account_list_item,
@@ -57,7 +57,7 @@ class AccountListAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val ordinal = getItemViewType(position)
-        when (ItemViewType.values()[ordinal]) {
+        when (ItemViewType.entries[ordinal]) {
             ItemViewType.Body -> {
                 (holder as? ItemViewHolder)?.also {
                     val account = accounts[position]

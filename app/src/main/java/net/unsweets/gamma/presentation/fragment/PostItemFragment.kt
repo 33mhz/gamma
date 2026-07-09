@@ -475,7 +475,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             it.adapter = if (isMainItem) ReactionUsersAdapter(
                 item.mainPost.reactionUsers,
                 reactionUsersAdapterListener,
-                preferenceRepository.shapeOfAvatar
+//                preferenceRepository.shapeOfAvatar
             ) else null
         }
         viewHolder.clientNameTextView.text = item.mainPost.source?.name
@@ -545,7 +545,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
                 viewHolder.pollVoteButton.setOnClickListener {
                     viewModel.vote(
                         poll,
-                        item.pollOptionsAdapter?.getChoosedPositions,
+                        item.pollOptionsAdapter?.getChosenPositions,
                         item.id
                     )
                 }

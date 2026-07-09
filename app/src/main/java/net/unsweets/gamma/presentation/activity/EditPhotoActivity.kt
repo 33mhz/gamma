@@ -58,7 +58,7 @@ class EditPhotoActivity : BaseActivity() {
     }
 
     private fun rotate() {
-        binding.cropImageView.rotatedDegrees = binding.cropImageView.rotatedDegrees + 90
+        binding.cropImageView.rotatedDegrees += 90
     }
 
     private fun requestToCrop() {

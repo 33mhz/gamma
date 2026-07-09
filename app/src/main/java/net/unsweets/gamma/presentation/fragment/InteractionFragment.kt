@@ -115,7 +115,7 @@ class InteractionFragment :
                 ReactionUsersAdapter(
                     concreteItem.users.orEmpty(),
                     reactionUsersAdapterListener,
-                    preferenceRepository.shapeOfAvatar
+//                    preferenceRepository.shapeOfAvatar
                 )
             }
             else -> null

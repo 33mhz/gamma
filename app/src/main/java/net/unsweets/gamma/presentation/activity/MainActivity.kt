@@ -35,11 +35,8 @@ import net.unsweets.gamma.domain.usecases.GetCurrentAccountUseCase
 import net.unsweets.gamma.domain.usecases.UpdateDefaultAccountUseCase
 import net.unsweets.gamma.presentation.adapter.AccountListAdapter
 import net.unsweets.gamma.presentation.fragment.BaseListFragment
-import net.unsweets.gamma.presentation.fragment.BasicDialogFragment
-import net.unsweets.gamma.presentation.fragment.ChangeAccountDialogFragment
 import net.unsweets.gamma.presentation.fragment.ChannelListFragment
 import net.unsweets.gamma.presentation.fragment.ChannelsFragment
-import net.unsweets.gamma.presentation.activity.ComposePostActivity
 import net.unsweets.gamma.presentation.fragment.ExploreFragment
 import net.unsweets.gamma.presentation.fragment.HomeFragment
 import net.unsweets.gamma.presentation.fragment.ProfileFragment
@@ -56,6 +53,8 @@ import net.unsweets.gamma.util.LogUtil
 import net.unsweets.gamma.util.oneline
 import net.unsweets.gamma.util.showAsError
 import javax.inject.Inject
+import androidx.core.view.size
+import androidx.core.view.get
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callback,
@@ -177,12 +176,12 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         }
         when (showAccountMenu) {
             true -> {
-                binding.navigationView.getHeaderView(accountHeaderPosition).visibility =
+                binding.navigationView.getHeaderView(ACCOUNTHEADERPOSITION).visibility =
                     View.VISIBLE
                 setMenuItemVisibilities(false)
             }
             false -> {
-                binding.navigationView.getHeaderView(accountHeaderPosition).visibility = View.GONE
+                binding.navigationView.getHeaderView(ACCOUNTHEADERPOSITION).visibility = View.GONE
                 setMenuItemVisibilities(true)
             }
         }
@@ -190,8 +189,8 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
     private fun setMenuItemVisibilities(visible: Boolean) {
         binding.navigationView.menu.let {
-            for (i in 0 until it.size()) {
-                it.getItem(i).isVisible = visible
+            for (i in 0 until it.size) {
+                it[i].isVisible = visible
             }
         }
 
@@ -350,9 +349,9 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     }
 
     private fun uncheckMenuItem(menu: Menu) {
-        val size = menu.size()
+        val size = menu.size
         for (i in 0 until size) {
-            val item = menu.getItem(i)
+            val item = menu[i]
             if (item.hasSubMenu()) {
                 item.subMenu?.let { uncheckMenuItem(it) }
             } else {
@@ -464,6 +463,6 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     )
 
     companion object {
-        private const val accountHeaderPosition = 1
+        private const val ACCOUNTHEADERPOSITION = 1
     }
 }

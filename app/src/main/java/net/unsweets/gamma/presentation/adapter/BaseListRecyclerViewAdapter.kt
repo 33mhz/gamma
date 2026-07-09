@@ -3,10 +3,7 @@ package net.unsweets.gamma.presentation.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
 import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.SegmentItemBinding
 import net.unsweets.gamma.domain.entity.PnutResponse
@@ -70,7 +67,7 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): V {
         val inflater = LayoutInflater.from(parent.context)
         @Suppress("UNCHECKED_CAST")
-        return when (ViewType.values()[viewType]) {
+        return when (ViewType.entries[viewType]) {
             ViewType.Body -> {
                 val view = inflater
                     .inflate(options.listener.getItemLayout(), parent, false)
@@ -100,7 +97,7 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
     override fun onBindViewHolder(holder: V, position: Int) {
 //        val offset = if (options.reverse) -1 else 0
         //        LogUtil.e("options.itemList[itemPosition] ${options.itemList[itemPosition]}")
-        when (ViewType.values()[getItemViewType(position)]) {
+        when (ViewType.entries[getItemViewType(position)]) {
             ViewType.Body -> {
                 val itemWrapper =
                     options.itemList[position] as? PageableItemWrapper.Item ?: return
