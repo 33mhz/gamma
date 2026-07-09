@@ -4,6 +4,7 @@ import android.app.IntentService
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import androidx.core.content.IntentCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import dagger.hilt.android.AndroidEntryPoint
 import net.unsweets.gamma.BuildConfig
@@ -71,7 +72,11 @@ class PostService : IntentService("PostService") {
     private fun handleIntent(intent: Intent) {
         val resultIntent: Result<Intent> = when (intent.action) {
             Actions.SendPost.getActionName() -> {
-                val postBodyOuter = intent.getParcelableExtra<PostBodyOuter>(IntentKey.PostBody.name) ?: return
+                val postBodyOuter = IntentCompat.getParcelableExtra(
+                    intent,
+                    IntentKey.PostBody.name,
+                    PostBodyOuter::class.java
+                ) ?: return
                 val raw = mutableListOf<PostRaw<*>>().apply { addAll(postBodyOuter.postBody.raw) }
                 val replacementFileRawList = postBodyOuter.files
                     .map {
@@ -184,7 +189,8 @@ class PostService : IntentService("PostService") {
             context?.startService(intent)
         }
 
-        fun getPost(intent: Intent): Post? = intent.getParcelableExtra(ResultIntentKey.Post.name)
+        fun getPost(intent: Intent): Post? =
+            IntentCompat.getParcelableExtra(intent, ResultIntentKey.Post.name, Post::class.java)
 
         fun getIntentFilter() = IntentFilter().also { intentFilter ->
             Actions.values().forEach {

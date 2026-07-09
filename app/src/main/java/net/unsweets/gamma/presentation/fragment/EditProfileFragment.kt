@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.IntentCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.setFragmentResultListener
@@ -558,7 +559,6 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
         }
     }
 
-    @Suppress("DEPRECATION")
     companion object {
         fun newInstance(userId: String) = EditProfileFragment().apply {
             arguments = Bundle().apply {
@@ -566,6 +566,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
             }
         }
 
-        fun parseResultIntent(intent: Intent): User? = intent.getParcelableExtra(IntentKey.User.name)
+        fun parseResultIntent(intent: Intent): User? =
+            IntentCompat.getParcelableExtra(intent, IntentKey.User.name, User::class.java)
     }
 }

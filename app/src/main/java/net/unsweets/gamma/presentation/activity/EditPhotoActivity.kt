@@ -11,13 +11,15 @@ import com.canhub.cropper.CropImageView
 import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.ActivityEditPhotoBinding
 import java.io.File
+import androidx.core.content.IntentCompat
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class EditPhotoActivity : BaseActivity() {
 
     private val uri: Uri by lazy {
-        intent.getParcelableExtra<Uri>(IntentKey.Uri.name) ?: throw IllegalArgumentException("Must set Uri")
+        IntentCompat.getParcelableExtra(intent, IntentKey.Uri.name, Uri::class.java)
+            ?: throw IllegalArgumentException("Must set Uri")
     }
     private val index by lazy {
         intent.getIntExtra(IntentKey.Index.name, -1)
@@ -77,8 +79,7 @@ class EditPhotoActivity : BaseActivity() {
     }
 
     private val mode by lazy {
-        @Suppress("DEPRECATION")
-        intent.getSerializableExtra(IntentKey.Mode.name) as? Mode ?: Mode.Free
+        IntentCompat.getSerializableExtra(intent, IntentKey.Mode.name, Mode::class.java) ?: Mode.Free
     }
 
     private enum class IntentKey { Uri, Index, Mode }
@@ -95,7 +96,8 @@ class EditPhotoActivity : BaseActivity() {
             putExtra(IntentKey.Index.name, index)
         }
         fun parseIntent(intent: Intent): EditPhotoResult? {
-            val uri = intent.getParcelableExtra<Uri>(IntentKey.Uri.name) ?: return null
+            val uri = IntentCompat.getParcelableExtra(intent, IntentKey.Uri.name, Uri::class.java)
+                ?: return null
             val index = intent.getIntExtra(IntentKey.Index.name, -1)
             return EditPhotoResult(uri, index)
         }

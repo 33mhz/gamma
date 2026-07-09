@@ -8,6 +8,7 @@ import net.unsweets.gamma.R
 import net.unsweets.gamma.domain.model.UriInfo
 import net.unsweets.gamma.presentation.fragment.ComposePostFragment
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
 import dagger.hilt.android.AndroidEntryPoint
 import net.unsweets.gamma.presentation.util.ThemeColorUtil
 
@@ -24,10 +25,24 @@ class ShareActivity : AppCompatActivity() {
     private val intentExtraDataList by lazy {
         when (intent.action) {
             Intent.ACTION_SEND -> {
-                normalizeMediaFileUriList(arrayListOf(intent.getParcelableExtra(Intent.EXTRA_STREAM)))
+                normalizeMediaFileUriList(
+                    arrayListOf(
+                        IntentCompat.getParcelableExtra(
+                            intent,
+                            Intent.EXTRA_STREAM,
+                            Uri::class.java
+                        )
+                    )
+                )
             }
             Intent.ACTION_SEND_MULTIPLE -> {
-                normalizeMediaFileUriList(intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM))
+                normalizeMediaFileUriList(
+                    IntentCompat.getParcelableArrayListExtra(
+                        intent,
+                        Intent.EXTRA_STREAM,
+                        Uri::class.java
+                    )
+                )
             }
             else -> null
         }

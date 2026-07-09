@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.app.SharedElementCallback
+import androidx.core.content.IntentCompat
 import androidx.core.view.marginBottom
 import androidx.core.view.marginLeft
 import androidx.core.view.marginRight
@@ -88,7 +89,7 @@ class PhotoViewActivity : BaseActivity() {
     }
 
     private val photos by lazy {
-        intent.getParcelableArrayListExtra<ThumbAndFull>(IntentKey.Photos.name)
+        IntentCompat.getParcelableArrayListExtra(intent, IntentKey.Photos.name, ThumbAndFull::class.java)
     }
 
     private val index by lazy {

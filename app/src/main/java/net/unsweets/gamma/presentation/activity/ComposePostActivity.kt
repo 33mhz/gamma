@@ -15,6 +15,7 @@ import com.google.android.material.transition.platform.MaterialContainerTransfor
 import net.unsweets.gamma.R
 import net.unsweets.gamma.presentation.fragment.ComposePostFragment
 import net.unsweets.gamma.presentation.util.Util
+import androidx.core.content.IntentCompat
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,7 +25,11 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
     }
 
     private val composePostOption by lazy {
-        intent.getParcelableExtra<ComposePostFragment.ComposePostFragmentOption>(BundleKey.Option.name)
+        IntentCompat.getParcelableExtra(
+            intent,
+            BundleKey.Option.name,
+            ComposePostFragment.ComposePostFragmentOption::class.java
+        )
     }
 
 
