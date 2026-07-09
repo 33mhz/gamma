@@ -1,15 +1,18 @@
 package net.unsweets.gamma.presentation.activity
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.activity.OnBackPressedCallback
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.transition.platform.MaterialArcMotion
 import com.google.android.material.transition.platform.MaterialContainerTransform
 import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import net.unsweets.gamma.R
+import net.unsweets.gamma.domain.entity.User
 import net.unsweets.gamma.presentation.fragment.EditProfileFragment
 
 class EditProfileActivity : BaseActivity(), EditProfileFragment.Callback {
@@ -17,21 +20,33 @@ class EditProfileActivity : BaseActivity(), EditProfileFragment.Callback {
         supportFinishAfterTransition()
     }
 
+    override fun onSaved(user: User) {
+        val data = Intent().apply {
+            putExtra("User", user)
+        }
+        setResult(Activity.RESULT_OK, data)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setupAnimation()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
         replaceFragment(savedInstanceState == null)
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (!editProfileFragment.requestToFinish()) {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
 
     private val userId by lazy {
         intent.getStringExtra(BundleKey.UserId.name).orEmpty()
     }
 
-    override fun onBackPressed() {
-        if (editProfileFragment.requestToFinish()) return
-        super.onBackPressed()
-    }
 
     private fun setupAnimation() {
         setEnterSharedElementCallback(object : MaterialContainerTransformSharedElementCallback() {

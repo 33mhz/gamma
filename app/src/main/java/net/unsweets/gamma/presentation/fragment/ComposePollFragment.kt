@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.*
 import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.FragmentComposePollBinding
@@ -77,6 +78,11 @@ class ComposePollFragment : BaseFragment(), ComposePollOptionFragment.Callback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.event.observe(this, eventObserver)
+        setFragmentResultListener(RequestCode.Discard.name) { _, bundle ->
+            if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
+                discard()
+            }
+        }
     }
 
     override fun onCreateView(
@@ -112,7 +118,8 @@ class ComposePollFragment : BaseFragment(), ComposePollOptionFragment.Callback {
             val fragment = BasicDialogFragment.Builder()
                 .setMessage(R.string.this_operation_cannot_be_undone)
                 .setPositive(R.string.discard)
-                .build(RequestCode.Discard.ordinal)
+                .setRequestKey(RequestCode.Discard.name)
+                .build()
             fragment.show(childFragmentManager, DialogKey.Discard.name)
         } else {
             discard()
@@ -120,16 +127,6 @@ class ComposePollFragment : BaseFragment(), ComposePollOptionFragment.Callback {
     }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            RequestCode.Discard.ordinal -> {
-                if (resultCode != Activity.RESULT_OK) return
-                discard()
-            }
-            else -> super.onActivityResult(requestCode, resultCode, data)
-        }
-
-    }
 
     private fun discard() {
         viewModel.pollPostBody.value = null

@@ -6,7 +6,9 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResult
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.unsweets.gamma.R
 import java.io.Serializable
@@ -35,9 +37,14 @@ class BasicDialogFragment : DialogFragment(), DialogInterface.OnClickListener {
 
     private enum class IntentKey { Extra }
 
+    enum class ResponseKey { ResultCode, IntentData }
+
     private fun emitResult(data: Intent = Intent(), resultCode: Int = Activity.RESULT_OK) {
-        data.putExtra(IntentKey.Extra.name, extra)
-        parentFragment?.onActivityResult(requestCode, resultCode, data)
+        val key = arguments?.getString(BundleKey.RequestKey.name) ?: requestCode.toString()
+        setFragmentResult(key, bundleOf(
+            ResponseKey.ResultCode.name to resultCode,
+            ResponseKey.IntentData.name to data
+        ))
     }
 
     private val title by lazy {
@@ -102,7 +109,7 @@ class BasicDialogFragment : DialogFragment(), DialogInterface.OnClickListener {
         data class Literal(val text: String) : BundledValue()
     }
 
-    private enum class BundleKey { Title, Message, Positive, Negative, Neutral, RequestCode, Extra }
+    private enum class BundleKey { Title, Message, Positive, Negative, Neutral, RequestCode, Extra, RequestKey }
 
     class Builder {
         private var title: BundledValue? = null
@@ -111,6 +118,7 @@ class BasicDialogFragment : DialogFragment(), DialogInterface.OnClickListener {
         private var negative: BundledValue? = BundledValue.ResourceId(R.string.cancel)
         private var neutral: BundledValue? = null
         private var extra: Bundle? = null
+        private var requestKey: String? = null
 
         fun setTitle(res: Int): Builder {
             title = BundledValue.ResourceId(res)
@@ -167,7 +175,12 @@ class BasicDialogFragment : DialogFragment(), DialogInterface.OnClickListener {
             return this
         }
 
-        fun build(requestCode: Int) = BasicDialogFragment().also {
+        fun setRequestKey(key: String): Builder {
+            requestKey = key
+            return this
+        }
+
+        fun build(requestCode: Int = -1) = BasicDialogFragment().also {
             it.arguments = Bundle().also { b ->
                 b.putSerializable(BundleKey.Title.name, title)
                 b.putSerializable(BundleKey.Message.name, message)
@@ -176,6 +189,7 @@ class BasicDialogFragment : DialogFragment(), DialogInterface.OnClickListener {
                 b.putSerializable(BundleKey.Neutral.name, neutral)
                 b.putInt(BundleKey.RequestCode.name, requestCode)
                 b.putBundle(BundleKey.Extra.name, extra)
+                b.putString(BundleKey.RequestKey.name, requestKey)
             }
         }
     }

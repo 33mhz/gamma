@@ -1,6 +1,8 @@
 package net.unsweets.gamma.presentation.fragment
 
 
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityOptionsCompat
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityOptions
@@ -349,30 +351,24 @@ class ProfileFragment : BaseFragment() {
         initExitSharedElementCallback()
     }
 
+    private val updateProfileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.let {
+                viewModel.user.value = EditProfileFragment.parseResultIntent(it)
+            }
+        }
+    }
+
     private enum class RequestCode { UpdateProfile }
 
     private fun showEditProfileDialog() {
         val intent = EditProfileActivity.newIntent(requireContext(), userId)
-        val activityOptions = ActivityOptions.makeSceneTransitionAnimation(
+        val activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
             requireActivity(),
             binding.userMainActionButton,
             getString(R.string.shared_element_edit_profile)
         )
-        startActivityForResult(
-            intent,
-            RequestCode.UpdateProfile.ordinal,
-            activityOptions.toBundle()
-        )
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            RequestCode.UpdateProfile.ordinal -> {
-                if (resultCode != Activity.RESULT_OK || data == null) return
-                viewModel.user.value = EditProfileFragment.parseResultIntent(data)
-            }
-            else -> super.onActivityResult(requestCode, resultCode, data)
-        }
+        updateProfileLauncher.launch(intent, activityOptions)
     }
 
     class ProfileViewModel(

@@ -17,6 +17,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -145,8 +147,8 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         }
 
         override fun onClick(uri: Uri, index: Int) {
-            val newIntent = EditPhotoActivity.newIntent(context, uri, index)
-            startActivityForResult(newIntent, RequestCode.EditPhoto.ordinal)
+            val newIntent = EditPhotoActivity.newIntent(requireContext(), uri, index)
+            editPhotoLauncher.launch(newIntent)
         }
 
         override fun onRemove() {
@@ -296,6 +298,12 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         viewModel.counter.observe(this, counterObserver)
         viewModel.enablePoll.observe(this, enablePollObserver)
         uriInfo?.let { viewModel.media = it }
+
+        setFragmentResultListener(RequestCode.Discard.name) { _, bundle ->
+            if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
+                cancelToCompose(true)
+            }
+        }
     }
 
     override fun onCreateView(
@@ -307,29 +315,20 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         return binding.root
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            RequestCode.EditPhoto.ordinal -> {
-                focusToEditText()
-                if (resultCode != Activity.RESULT_OK || data == null) return
-                updatePhoto(data)
-            }
-            RequestCode.Discard.ordinal -> {
-                if (resultCode != Activity.RESULT_OK) return
-                cancelToCompose(true)
-            }
-            else -> {
-                focusToEditText()
-                super.onActivityResult(requestCode, resultCode, data)
-            }
-        }
-    }
 
     private fun updatePhoto(data: Intent) {
         val editPhotoResult = EditPhotoActivity.parseIntent(data) ?: return
         val uriInfo = adapter.getItems()[editPhotoResult.index].copy(uri = editPhotoResult.uri)
         adapter.replace(uriInfo, editPhotoResult.index)
     }
+
+    private val editPhotoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        focusToEditText()
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.let { updatePhoto(it) }
+        }
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -516,7 +515,8 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
             val fragment = BasicDialogFragment.Builder()
                 .setMessage(R.string.discard_changes)
                 .setPositive(R.string.discard)
-                .build(RequestCode.Discard.ordinal)
+                .setRequestKey(RequestCode.Discard.name)
+                .build()
             fragment.show(childFragmentManager, DialogKey.Discard.name)
             return false
         } else {

@@ -19,6 +19,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContentResolverCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
+import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
@@ -94,53 +95,40 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
 
     enum class RequestCode { TakePhoto, Library }
 
+    private val takePhotoLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) {
+            galleryAddPic()
+            currentPhotoPath?.let {
+                listener?.onGalleryItemClicked(it, tag)
+                dismiss()
+            }
+        }
+    }
+
+    private val libraryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) {
+            listener?.onGalleryItemClicked(uri, tag)
+            dismiss()
+        }
+    }
+
     // https://developer.android.com/training/camera/photobasics
     private fun openCamera() {
-        val packageManager = activity?.packageManager ?: return
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            takePictureIntent.resolveActivity(packageManager)?.also {
-                val photoFile = createImageFile()
-                photoFile?.also {
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                        requireContext(),
-                        "com.example.android.fileprovider",
-                        it
-                    )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent, RequestCode.TakePhoto.ordinal)
-                }
-            }
+        val photoFile = createImageFile()
+        photoFile?.also {
+            val photoURI: Uri = FileProvider.getUriForFile(
+                requireContext(),
+                "${requireContext().packageName}.fileprovider",
+                it
+            )
+            takePhotoLauncher.launch(photoURI)
         }
     }
 
     private fun openLibrary() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "image/*"
-        }
-        startActivityForResult(intent, RequestCode.Library.ordinal)
+        libraryLauncher.launch("image/*")
     }
 
-    @Suppress("DEPRECATION")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            RequestCode.TakePhoto.ordinal -> {
-                if (resultCode != Activity.RESULT_OK) return
-                galleryAddPic()
-                currentPhotoPath?.let {
-                    listener?.onGalleryItemClicked(it, tag)
-                    dismiss()
-                }
-            }
-            RequestCode.Library.ordinal -> {
-                if (resultCode != Activity.RESULT_OK || data == null) return
-                val uri = data.data ?: return
-                listener?.onGalleryItemClicked(uri, tag)
-                dismiss()
-            }
-            else -> super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
 
 
     override fun onAttach(context: Context) {

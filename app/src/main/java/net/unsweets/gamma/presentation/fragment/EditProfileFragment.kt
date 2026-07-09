@@ -10,6 +10,8 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.widget.doAfterTextChanged
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
@@ -40,6 +42,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
 
     interface Callback {
         fun onRequestToFinish()
+        fun onSaved(user: User)
     }
 
     override fun onAttach(context: Context) {
@@ -108,12 +111,12 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
     override fun onGalleryItemClicked(uri: Uri, tag: String?) {
         when (tag) {
             DialogKey.Cover.name -> {
-                val newIntent = EditPhotoActivity.newIntent(context, uri)
-                startActivityForResult(newIntent, RequestCode.Cover.ordinal)
+                val newIntent = EditPhotoActivity.newIntent(requireContext(), uri)
+                coverLauncher.launch(newIntent)
             }
             DialogKey.Avatar.name -> {
-                val newIntent = EditPhotoActivity.newIntentSquareMode(context, uri)
-                startActivityForResult(newIntent, RequestCode.Avatar.ordinal)
+                val newIntent = EditPhotoActivity.newIntentSquareMode(requireContext(), uri)
+                avatarLauncher.launch(newIntent)
             }
         }
     }
@@ -149,10 +152,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
     private enum class IntentKey { User }
 
     private fun saved(user: User) {
-        val data = Intent().apply {
-            putExtra(IntentKey.User.name, user)
-        }
-        targetFragment?.onActivityResult(targetRequestCode, Activity.RESULT_OK, data)
+        listener?.onSaved(user)
         finish()
     }
 
@@ -215,6 +215,26 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
         viewModel.saving.observe(this, savingObserver)
         viewModel.event.observe(this, eventObserver)
         viewModel.loading.observe(this, loadingObserver)
+
+        setFragmentResultListener(RequestCode.Discard.name) { _, bundle ->
+            if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
+                finish()
+            }
+        }
+    }
+
+    private val coverLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val res = result.data?.let { EditPhotoActivity.parseIntent(it) } ?: return@registerForActivityResult
+            viewModel.newCoverUri.value = ImageState.NewImage(res.uri)
+        }
+    }
+
+    private val avatarLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val res = result.data?.let { EditPhotoActivity.parseIntent(it) } ?: return@registerForActivityResult
+            viewModel.newAvatarUri.value = ImageState.NewImage(res.uri)
+        }
     }
 
     override fun onCreateView(
@@ -286,23 +306,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            RequestCode.Discard.ordinal -> {
-                if (resultCode != Activity.RESULT_OK) return
-                finish()
-            }
-            RequestCode.Avatar.ordinal -> {
-                if (resultCode != Activity.RESULT_OK || data == null) return
-                val res = EditPhotoActivity.parseIntent(data) ?: return
-                viewModel.newAvatarUri.value = ImageState.NewImage(res.uri)
-            }
-            RequestCode.Cover.ordinal -> {
-                if (resultCode != Activity.RESULT_OK || data == null) return
-                val res = EditPhotoActivity.parseIntent(data) ?: return
-                viewModel.newCoverUri.value = ImageState.NewImage(res.uri)
-            }
-            else -> super.onActivityResult(requestCode, resultCode, data)
-        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -352,7 +356,8 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
             val fragment = BasicDialogFragment.Builder()
                 .setMessage(R.string.discard_changes)
                 .setPositive(R.string.discard)
-                .build(RequestCode.Discard.ordinal)
+                .setRequestKey(RequestCode.Discard.name)
+                .build()
             fragment.show(childFragmentManager, DialogKey.Discard.name)
             true
         } else {

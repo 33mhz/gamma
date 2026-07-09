@@ -6,6 +6,11 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
+import androidx.activity.OnBackPressedCallback
+import androidx.core.view.MenuProvider
+import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.Lifecycle
 import androidx.preference.ListPreference
 import android.preference.PreferenceManager
 import android.view.MenuItem
@@ -87,7 +92,7 @@ class SettingsActivity : BaseActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                onBackPressed()
+                onBackPressedDispatcher.onBackPressed()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -131,17 +136,19 @@ class SettingsActivity : BaseActivity(),
     @AndroidEntryPoint
     abstract class BasePreferenceFragment : PreferenceFragmentCompat() {
 
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-        }
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+            requireActivity().addMenuProvider(object : MenuProvider {
+                override fun onCreateMenu(menu: android.view.Menu, menuInflater: android.view.MenuInflater) {}
 
-        override fun onOptionsItemSelected(item: MenuItem): Boolean {
-            val id = item.itemId
-            if (id == android.R.id.home) {
-                startActivity(Intent(activity, SettingsActivity::class.java))
-                return true
-            }
-            return super.onOptionsItemSelected(item)
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    if (menuItem.itemId == android.R.id.home) {
+                        startActivity(Intent(activity, SettingsActivity::class.java))
+                        return true
+                    }
+                    return false
+                }
+            }, viewLifecycleOwner, Lifecycle.State.RESUMED)
         }
 
         fun findPreference(@StringRes id: Int): Preference? = findPreference(getString(id))
@@ -170,7 +177,7 @@ class SettingsActivity : BaseActivity(),
         }
 
         private fun recreateActivity() {
-            Handler().post {
+            Handler(Looper.getMainLooper()).post {
                 activity?.recreate()
             }
         }
@@ -205,7 +212,7 @@ class SettingsActivity : BaseActivity(),
                     activity?.let { activity ->
                         GammaApplication.getInstance(activity).updateBaseTheme()
                     }
-                    Handler().post {
+                    Handler(Looper.getMainLooper()).post {
                         activity?.recreate()
                     }
                     true
@@ -261,7 +268,8 @@ class SettingsActivity : BaseActivity(),
                     .setMessage(R.string.this_operation_cannot_be_undone)
                     .setPositive(R.string.ok)
                     .setNegative(R.string.cancel)
-                    .build(RequestCode.ClearStreamCache.ordinal)
+                    .setRequestKey(RequestCode.ClearStreamCache.name)
+                    .build()
                 fragment.show(childFragmentManager, DialogKey.ClearStreamCache.name)
                 false
             }
@@ -271,7 +279,8 @@ class SettingsActivity : BaseActivity(),
                     .setMessage(R.string.this_operation_cannot_be_undone)
                     .setPositive(R.string.ok)
                     .setNegative(R.string.cancel)
-                    .build(RequestCode.ClearGlideCache.ordinal)
+                    .setRequestKey(RequestCode.ClearGlideCache.name)
+                    .build()
                 fragment.show(childFragmentManager, DialogKey.ClearGlideCache.name)
                 false
             }
@@ -279,17 +288,30 @@ class SettingsActivity : BaseActivity(),
                 context?.let { Glide.getPhotoCacheDir(it)?.exists() } ?: true
             clearStreamCacheButton?.isEnabled =
                 context?.let { PnutCacheRepository.getUserCacheDir(it)?.exists() } ?: true
+
+            setFragmentResultListener(RequestCode.ClearStreamCache.name) { _, bundle ->
+                if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
+                    ClearStreamCacheService.startService(context)
+                }
+            }
+            setFragmentResultListener(RequestCode.ClearGlideCache.name) { _, bundle ->
+                if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
+                    ClearGlideCacheService.startService(context)
+                }
+            }
         }
 
         override fun onResume() {
             super.onResume()
             activity?.registerReceiver(
                 clearStreamCacheReceiver,
-                ClearStreamCacheService.intentFilter
+                ClearStreamCacheService.intentFilter,
+                Context.RECEIVER_NOT_EXPORTED
             )
             activity?.registerReceiver(
                 clearGlideCacheReceiver,
-                ClearGlideCacheService.intentFilter
+                ClearGlideCacheService.intentFilter,
+                Context.RECEIVER_NOT_EXPORTED
             )
         }
 
@@ -301,22 +323,6 @@ class SettingsActivity : BaseActivity(),
 
         private enum class RequestCode { ClearStreamCache, ClearGlideCache }
         private enum class DialogKey { ClearStreamCache, ClearGlideCache }
-
-        @Suppress("DEPRECATION")
-        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-            when (requestCode) {
-                RequestCode.ClearStreamCache.ordinal -> {
-                    if (resultCode != Activity.RESULT_OK) return
-                    ClearStreamCacheService.startService(context)
-                }
-                RequestCode.ClearGlideCache.ordinal -> {
-                    if (resultCode != Activity.RESULT_OK) return
-                    ClearGlideCacheService.startService(context)
-                }
-                else -> super.onActivityResult(requestCode, resultCode, data)
-            }
-
-        }
 
         override val rootKey: Int = R.string.pref_stream_key
     }
@@ -342,7 +348,6 @@ class SettingsActivity : BaseActivity(),
             val anotherAccountId = logoutUseCase.run(Unit).anotherAccountId
             activity?.finish()
             val intentClass = if (anotherAccountId != null) {
-                activity?.overridePendingTransition(R.anim.scale_up, R.anim.scale_down)
                 MainActivity::class
             } else {
                 LoginActivity::class
@@ -350,7 +355,10 @@ class SettingsActivity : BaseActivity(),
             val newIntent = Intent(activity, intentClass.java).also {
                 it.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             }
-            startActivity(newIntent)
+            val options = activity?.let {
+                androidx.core.app.ActivityOptionsCompat.makeCustomAnimation(it, R.anim.scale_up, R.anim.scale_down)
+            }
+            startActivity(newIntent, options?.toBundle())
             return true
         }
     }
