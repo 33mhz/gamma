@@ -34,6 +34,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import net.unsweets.gamma.R
 import net.unsweets.gamma.broadcast.PostReceiver
@@ -911,6 +912,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 //        viewModel.loadNewPosts()
 //    }
 
+    @AndroidEntryPoint
     class HomeStream : PostItemFragment() {
         override val streamType = StreamType.Home
         override val generalPostParam: GeneralPostParam by lazy {
@@ -921,10 +923,12 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         }
     }
 
+    @AndroidEntryPoint
     class MentionsStream : PostItemFragment() {
         override val streamType = StreamType.Mentions
     }
 
+    @AndroidEntryPoint
     class SearchPostsFragment : PostItemFragment() {
         private val keyword by lazy {
             arguments?.getString(BundleKey.Keyword.name, "").orEmpty()

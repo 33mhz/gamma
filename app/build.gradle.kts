@@ -53,7 +53,7 @@ android {
     versionCode = 6
     versionName = "0.5.0"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    renderscriptTargetApi = 30
+    renderscriptTargetApi = 33
     renderscriptSupportModeEnabled = true
   }
   buildTypes {
@@ -91,8 +91,8 @@ android {
     }
   }
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
   }
   lint {
     abortOnError = false
@@ -121,7 +121,7 @@ android {
 
 tasks.withType<KotlinCompile>().configureEach {
   compilerOptions {
-    jvmTarget.set(JvmTarget.JVM_1_8)
+    jvmTarget.set(JvmTarget.JVM_17)
   }
 }
 val kotlinVersion = extra["kotlinVersion"] as String
@@ -140,7 +140,7 @@ dependencies {
   implementation("androidx.constraintlayout:constraintlayout:2.2.1")
   implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
-  implementation("com.google.android.material:material:1.12.0")
+  implementation("com.google.android.material:material:1.14.0")
   implementation("androidx.appcompat:appcompat:1.7.1")
   implementation("androidx.recyclerview:recyclerview:1.3.2")
   implementation("com.squareup.retrofit2:retrofit:2.11.0")

@@ -2,9 +2,9 @@ package net.unsweets.gamma.presentation.util
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import net.unsweets.gamma.R
 import net.unsweets.gamma.domain.entity.Token
+import androidx.core.net.toUri
 
 object LoginUtil {
     private val scopes = arrayOf(
@@ -14,9 +14,9 @@ object LoginUtil {
         Token.Scope.FOLLOW,
         Token.Scope.UPDATE_PROFILE,
         Token.Scope.PRESENCE,
-        Token.Scope.MESSAGES,
-        Token.Scope.FILES,
-        Token.Scope.POLLS
+        Token.Scope.MESSAGES_CHAT,
+        Token.Scope.MESSAGES_PM,
+        Token.Scope.FILES_DELTA
     )
 
 
@@ -28,6 +28,6 @@ object LoginUtil {
 
     fun getLoginIntent(context: Context): Intent {
         val url = createLoginURL(context)
-        return Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        return Intent(Intent.ACTION_VIEW, url.toUri())
     }
 }

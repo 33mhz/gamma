@@ -2,7 +2,9 @@ package net.unsweets.gamma.presentation.activity
 
 import android.os.Bundle
 import net.unsweets.gamma.databinding.ActivityFilesBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class FilesActivity : BaseActivity() {
 
     private lateinit var binding: ActivityFilesBinding

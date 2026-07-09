@@ -11,8 +11,9 @@ import com.canhub.cropper.CropImageView
 import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.ActivityEditPhotoBinding
 import java.io.File
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class EditPhotoActivity : BaseActivity() {
 
     private val uri: Uri by lazy {

@@ -19,7 +19,6 @@ import android.view.ViewGroup
 import androidx.core.app.SharedElementCallback
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
@@ -44,6 +43,7 @@ import net.unsweets.gamma.domain.usecases.UpdateRelationshipUseCase
 import net.unsweets.gamma.presentation.activity.EditProfileActivity
 import net.unsweets.gamma.presentation.activity.PhotoViewActivity
 import net.unsweets.gamma.presentation.adapter.ProfilePagerAdapter
+import net.unsweets.gamma.presentation.util.BindingUtil
 import net.unsweets.gamma.presentation.util.EntityOnTouchListener
 import com.bumptech.glide.Glide
 import net.unsweets.gamma.presentation.util.ShareUtil
@@ -110,8 +110,7 @@ class ProfileFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
+        binding = FragmentProfileBinding.inflate(inflater, container, false)
         arguments?.let { bundle ->
             val iconUrl = bundle.getString(BundleKey.IconUrl.name, "")
             if (iconUrl != null && iconUrl.isNotBlank()) {
@@ -122,7 +121,52 @@ class ProfileFragment : BaseFragment() {
 //            binding.circleImageView.transitionName = iconTransitionName
             viewModel.user.value = user
         }
-        binding.viewModel = viewModel
+
+        viewModel.user.observe(viewLifecycleOwner) {
+            if (it == null) return@observe
+            binding.toolbar.title = it.name
+            binding.toolbar.subtitle = "@${it.username}"
+            binding.handleNameTextView.text = it.name
+            binding.verifiedDomainTextView.text = it.verified?.domain
+            binding.profileDescriptionTextView.text = it.content.getSpannableStringBuilder(requireContext())
+            binding.followingCountButton.text = resources.getQuantityString(R.plurals.following, it.counts.following, it.counts.following)
+            binding.followerCountButton.text = resources.getQuantityString(R.plurals.follower, it.counts.followers, it.counts.followers)
+        }
+        viewModel.iconUrl.observe(viewLifecycleOwner) {
+            BindingUtil.glideAvatarSrc(binding.circleImageView, it)
+        }
+        viewModel.usernameWithAt.observe(viewLifecycleOwner) {
+            binding.screenNameTextView.text = it
+        }
+        viewModel.since.observe(viewLifecycleOwner) {
+            binding.sinceTextView.text = getString(R.string.since, it)
+        }
+        viewModel.relation.observe(viewLifecycleOwner) {
+            if (it != null && it > 0) binding.relationTextView.setText(it) else binding.relationTextView.text = ""
+        }
+        viewModel.toolbarTextColor.observe(viewLifecycleOwner) {
+            binding.toolbar.setTitleTextColor(it)
+            binding.toolbar.setSubtitleTextColor(it)
+        }
+        viewModel.toolbarBgColor.observe(viewLifecycleOwner) {
+            binding.toolbar.setBackgroundColor(it)
+        }
+        viewModel.loading.observe(viewLifecycleOwner) {
+            binding.userMainActionButton.isEnabled = !it
+            BindingUtil.setLoadingIndicator(binding.userMainActionButton, it)
+        }
+        viewModel.mainActionButtonText.observe(viewLifecycleOwner) {
+            binding.userMainActionButton.text = it
+        }
+        viewModel.actionButtonTextColor.observe(viewLifecycleOwner) {
+            binding.userMainActionButton.setTextColor(it)
+        }
+        viewModel.actionButtonTintColor.observe(viewLifecycleOwner) {
+            BindingUtil.setBackgroundTint(binding.userMainActionButton, it)
+        }
+        viewModel.verifiedDomainVisibility.observe(viewLifecycleOwner) {
+            binding.verifiedDomainTextView.visibility = it
+        }
 
         binding.toolbar.let { toolbar ->
             toolbar.setNavigationOnClickListener { backToPrevFragment() }
@@ -135,6 +179,13 @@ class ProfileFragment : BaseFragment() {
         val pagerAdapter = ProfilePagerAdapter(requireContext(), childFragmentManager, userId)
         binding.profileViewPager.adapter = pagerAdapter
         binding.profileViewPagerTab.setupWithViewPager(binding.profileViewPager)
+
+        binding.coverImageView.setOnClickListener { viewModel.showCover() }
+        binding.userMainActionButton.setOnClickListener { viewModel.mainAction() }
+        binding.verifiedDomainTextView.setOnClickListener { viewModel.openVerifiedDomain() }
+        binding.followingCountButton.setOnClickListener { viewModel.openFollowingList() }
+        binding.followerCountButton.setOnClickListener { viewModel.openFollowerList() }
+        binding.circleImageView.setOnClickListener { viewModel.showAvatar() }
 
         toolbarSetup(binding.appBar, binding.swipeRefreshLayout)
 //        setEnterSharedElementCallback(object : SharedElementCallback() {

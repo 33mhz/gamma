@@ -17,7 +17,10 @@ import net.unsweets.gamma.domain.usecases.VerifyTokenUseCase
 import net.unsweets.gamma.presentation.viewmodel.EventViewModel
 import net.unsweets.gamma.util.ErrorCollections
 import javax.inject.Inject
+import androidx.core.net.toUri
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class VerifyTokenActivity : BaseActivity() {
     @Inject
     lateinit var verifyTokenUseCase: VerifyTokenUseCase
@@ -46,7 +49,7 @@ class VerifyTokenActivity : BaseActivity() {
         val uri =
             intent.data ?: return failure(Exception(getString(R.string.cannot_get_intent_data)))
         // uri will receive gamma://authenticate#error_description=resource+owner+denied+your+app+access&error=access_denied
-        val modUri = Uri.parse(uri.toString().replace("#", "?"))
+        val modUri = uri.toString().replace("#", "?").toUri()
         intent
         if (modUri.getQueryParameter("error") == "access_denied") {
             try {

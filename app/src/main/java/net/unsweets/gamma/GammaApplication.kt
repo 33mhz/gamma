@@ -37,7 +37,9 @@ open class GammaApplication : Application(), CoroutineScope by MainScope() {
     val config = BundledEmojiCompatConfig(this)
       .setReplaceAll(true)
     EmojiCompat.init(config)
+    runCatching {
       FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
+    }
 
 //        if (!setToken()) return backToLoginActivity() // failed
 

@@ -9,7 +9,9 @@ import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.ListWithToolbarBinding
 import net.unsweets.gamma.domain.entity.Post
 import net.unsweets.gamma.domain.model.StreamType
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ThreadFragment : PostItemFragment() {
     private enum class BundleKey { Post }
 

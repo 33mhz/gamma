@@ -40,13 +40,13 @@ class LoginActivityTest {
       "FOLLOW",
       "UPDATE_PROFILE",
       "PRESENCE",
-      "MESSAGES",
-      "FILES",
-      "POLLS"
+      "messages:io.pnut.core.chat",
+      "messages:io.pnut.core.pm",
+      "files:io.pnut.delta"
     ).joinToString(",")
 
     assertThat(intent).hasAction(Intent.ACTION_VIEW)
-    assertThat(intent).hasData(Uri.parse("https://pnut.io/oauth/authorize?client_id=WYEwPba2HqCw0g3ygspd2CSNfxAGlMyS&redirect_uri=gamma://authenticate&scope=${scopes}&response_type=token&simple_login=0"))
+    assertThat(intent).hasData(Uri.parse("https://pnut.io/oauth/authorize?client_id=WYEwPba2HqCw0g3ygspd2CSNfxAGlMyS&redirect_uri=gamma://authenticate&scope=${scopes}&response_type=token&simple_login=1"))
   }
 
   @Test

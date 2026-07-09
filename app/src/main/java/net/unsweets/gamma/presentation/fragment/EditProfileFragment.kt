@@ -9,7 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
-import androidx.databinding.DataBindingUtil
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
@@ -24,13 +24,16 @@ import net.unsweets.gamma.domain.usecases.GetProfileUseCase
 import net.unsweets.gamma.domain.usecases.UpdateProfileUseCase
 import net.unsweets.gamma.domain.usecases.UpdateUserImageUseCase
 import net.unsweets.gamma.presentation.activity.EditPhotoActivity
+import net.unsweets.gamma.presentation.util.BindingUtil
 import net.unsweets.gamma.presentation.util.ComputedLiveData
 import net.unsweets.gamma.presentation.util.Util
 import net.unsweets.gamma.util.ErrorCollections
 import net.unsweets.gamma.util.SingleLiveEvent
 import net.unsweets.gamma.util.showAsError
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
     GalleryItemListDialogFragment.Listener,
     BaseFragment() {
@@ -218,11 +221,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_edit_profile, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.viewModel = viewModel
-//        binding.viewCurrentAvatarImage.setShape(preferenceRepository.shapeOfAvatar)
+        binding = FragmentEditProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -231,6 +230,49 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
 
         setupTimezoneView()
         setupLocaleView()
+
+        viewModel.user.observe(viewLifecycleOwner) {
+            binding.viewScreenName.text = "@${it.username}"
+        }
+        viewModel.loading.observe(viewLifecycleOwner) {
+            binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE
+            binding.constraintLayout.visibility = if (it) View.GONE else View.VISIBLE
+        }
+        viewModel.name.observe(viewLifecycleOwner) {
+            if (binding.viewNameEditText.text.toString() != it) {
+                binding.viewNameEditText.setText(it)
+            }
+        }
+        viewModel.description.observe(viewLifecycleOwner) {
+            if (binding.viewDescriptionEditText.text.toString() != it) {
+                binding.viewDescriptionEditText.setText(it)
+            }
+        }
+        viewModel.timezone.observe(viewLifecycleOwner) {
+            binding.timezoneEditText.setText(it)
+        }
+        viewModel.locale.observe(viewLifecycleOwner) {
+            binding.localeEditText.setText(it)
+        }
+        viewModel.coverUri.observe(viewLifecycleOwner) {
+            BindingUtil.glideSrc(binding.viewCoverImage, it)
+        }
+        viewModel.avatarUri.observe(viewLifecycleOwner) {
+            BindingUtil.glideAvatarSrc(binding.viewCurrentAvatarImage, it)
+        }
+
+        binding.viewNameEditText.doAfterTextChanged {
+            viewModel.name.value = it.toString()
+        }
+        binding.viewDescriptionEditText.doAfterTextChanged {
+            viewModel.description.value = it.toString()
+        }
+        binding.viewCoverImage.setOnClickListener {
+            viewModel.showDialogToChangeCover()
+        }
+        binding.viewCurrentAvatarImage.setOnClickListener {
+            viewModel.showDialogToChangeAvatar()
+        }
 
         binding.toolbar.setNavigationOnClickListener {
             requestToFinish()

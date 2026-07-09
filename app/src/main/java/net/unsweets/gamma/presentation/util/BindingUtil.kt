@@ -75,16 +75,16 @@ object BindingUtil {
 
     @BindingAdapter("backgroundTint")
     @JvmStatic
-    fun MaterialButton.setBackgroundTint(@ColorInt color: Int) {
-        this.setBackgroundColor(color)
+    fun setBackgroundTint(view: MaterialButton, @ColorInt color: Int) {
+        view.setBackgroundColor(color)
     }
 
     @BindingAdapter("loading")
     @JvmStatic
-    fun MaterialButton.setLoadingIndicator(loading: Boolean) {
-        icon = if (loading) {
-            val progress = CircularProgressDrawable(context).apply {
-                val gray = context.getColor(R.color.colorGrayLighter)
+    fun setLoadingIndicator(view: MaterialButton, loading: Boolean) {
+        view.icon = if (loading) {
+            val progress = CircularProgressDrawable(view.context).apply {
+                val gray = view.context.getColor(R.color.colorGrayLighter)
                 setColorFilter(gray, PorterDuff.Mode.SRC_IN)
                 start()
             }

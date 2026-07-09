@@ -2,7 +2,6 @@ package net.unsweets.gamma.presentation.activity
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +12,7 @@ import net.unsweets.gamma.presentation.util.LoginUtil
 import net.unsweets.gamma.util.showAsError
 
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.core.net.toUri
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
@@ -56,7 +56,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun launchSignUpBrowserActivity() {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.sign_up_url)))
+        val intent = Intent(Intent.ACTION_VIEW, getString(R.string.sign_up_url).toUri())
         startActivity(intent)
     }
 

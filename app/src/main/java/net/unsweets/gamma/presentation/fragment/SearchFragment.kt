@@ -21,9 +21,11 @@ import net.unsweets.gamma.databinding.FragmentSearchBinding
 import net.unsweets.gamma.presentation.util.ShareUtil
 import net.unsweets.gamma.presentation.util.Util
 import net.unsweets.gamma.util.SingleLiveEvent
+import dagger.hilt.android.AndroidEntryPoint
 import java.net.URLEncoder
 import java.nio.charset.Charset
 
+@AndroidEntryPoint
 class SearchFragment : BaseFragment() {
 
     private val menuItemClickListener = Toolbar.OnMenuItemClickListener {

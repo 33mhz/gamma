@@ -15,7 +15,9 @@ import com.google.android.material.transition.platform.MaterialContainerTransfor
 import net.unsweets.gamma.R
 import net.unsweets.gamma.presentation.fragment.ComposePostFragment
 import net.unsweets.gamma.presentation.util.Util
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
     private val composePostFragment by lazy {
         ComposePostFragment.newInstance(composePostOption)

@@ -16,8 +16,10 @@ import net.unsweets.gamma.domain.model.params.composed.GetChannelsParam
 import net.unsweets.gamma.domain.model.params.single.PaginationParam
 import net.unsweets.gamma.domain.usecases.GetChannelsUseCase
 import net.unsweets.gamma.presentation.adapter.BaseListRecyclerViewAdapter
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.ChannelViewHolder>(),
     BaseListRecyclerViewAdapter.IBaseList<Channel, ChannelListFragment.ChannelViewHolder> {
     private val channelType: ChannelType by lazy {

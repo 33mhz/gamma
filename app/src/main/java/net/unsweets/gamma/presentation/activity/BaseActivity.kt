@@ -3,7 +3,6 @@ package net.unsweets.gamma.presentation.activity
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.MenuItem
-//import dagger.android.support.DaggerAppCompatActivity
 import net.unsweets.gamma.GammaApplication
 import net.unsweets.gamma.domain.repository.IPreferenceRepository
 import net.unsweets.gamma.presentation.util.ThemeColorUtil

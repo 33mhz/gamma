@@ -3,6 +3,7 @@ package net.unsweets.gamma.presentation.activity
 import android.app.Activity
 import android.content.Intent
 import android.view.View
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.runBlocking
@@ -13,6 +14,7 @@ import javax.inject.Inject
 import kotlin.reflect.KClass
 
 
+@AndroidEntryPoint
 class EntryActivity : BaseActivity(), CoroutineScope by MainScope() {
   @Inject
   lateinit var setupTokenUseCase: SetupTokenUseCase

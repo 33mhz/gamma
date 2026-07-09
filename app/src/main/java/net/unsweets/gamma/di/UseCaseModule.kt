@@ -169,4 +169,9 @@ object UseCaseModule {
     fun provideVoteUseCase(
         pnutRepository: IPnutRepository
     ): VoteUseCase = VoteUseCase(pnutRepository)
+
+    @Provides
+    fun provideGetChannelsUseCase(
+        pnutRepository: IPnutRepository
+    ): GetChannelsUseCase = GetChannelsUseCase(pnutRepository)
 }

@@ -32,8 +32,10 @@ import net.unsweets.gamma.presentation.adapter.BaseListRecyclerViewAdapter
 import net.unsweets.gamma.presentation.adapter.ReactionUsersAdapter
 import net.unsweets.gamma.presentation.util.DateUtil
 import net.unsweets.gamma.util.LogUtil
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class InteractionFragment :
     BaseListFragment<Interaction, InteractionFragment.InteractionViewHolder>(),
     BaseListRecyclerViewAdapter.IBaseList<Interaction, InteractionFragment.InteractionViewHolder> {
