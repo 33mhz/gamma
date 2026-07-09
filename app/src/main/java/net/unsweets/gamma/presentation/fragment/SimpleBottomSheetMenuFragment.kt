@@ -49,7 +49,7 @@ class SimpleBottomSheetMenuFragment : BaseBottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSimpleBottomSheetMenuBinding.inflate(inflater, container, false)
         binding.navigationView.inflateMenu(menuRes)
         binding.navigationView.setNavigationItemSelectedListener {

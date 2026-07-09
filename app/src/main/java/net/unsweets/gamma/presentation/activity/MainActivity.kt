@@ -89,10 +89,10 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         showActionResultSnackBar(
             post,
             Action.Repost,
-            SnackbarCallback(R.string.undo, View.OnClickListener {
+            SnackbarCallback(R.string.undo) {
                 val currentState = post.youReposted ?: true
                 PostService.newRepostIntent(this, post.id, !currentState)
-            })
+            }
         )
     }
 
@@ -100,10 +100,10 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         showActionResultSnackBar(
             post,
             Action.Star,
-            SnackbarCallback(R.string.undo, View.OnClickListener {
+            SnackbarCallback(R.string.undo) {
                 val currentState = post.youBookmarked ?: true
                 PostService.newStarIntent(this, post.id, !currentState)
-            })
+            }
         )
     }
 
@@ -241,11 +241,11 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     }
 
 
-    private val eventObserver = Observer<MainActivity.Event> {
+    private val eventObserver = Observer<Event> {
         when (it) {
-            is MainActivity.Event.ComposePost -> openComposePostDialog()
-            is MainActivity.Event.OpenMyProfile -> openMyProfile(it.user)
-            is MainActivity.Event.Failed -> LogUtil.e(it.t.message)
+            is Event.ComposePost -> openComposePostDialog()
+            is Event.OpenMyProfile -> openMyProfile(it.user)
+            is Event.Failed -> LogUtil.e(it.t.message)
         }
     }
 
@@ -448,10 +448,10 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         startActivity(intent)
     }
 
-    private fun goToFiles() {
-        val intent = Intent(this, FilesActivity::class.java)
-        startActivity(intent)
-    }
+//    private fun goToFiles() {
+//        val intent = Intent(this, FilesActivity::class.java)
+//        startActivity(intent)
+//    }
 
     sealed class Event {
         object ComposePost : Event()

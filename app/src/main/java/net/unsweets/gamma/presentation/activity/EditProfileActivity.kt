@@ -1,6 +1,5 @@
 package net.unsweets.gamma.presentation.activity
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -24,7 +23,7 @@ class EditProfileActivity : BaseActivity(), EditProfileFragment.Callback {
         val data = Intent().apply {
             putExtra("User", user)
         }
-        setResult(Activity.RESULT_OK, data)
+        setResult(RESULT_OK, data)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -19,7 +19,7 @@ class ChannelsFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentChannelsBinding.inflate(inflater, container, false)
         binding.channelsTabLayout.setupWithViewPager(binding.channelsViewPager)
         binding.toolbar.setNavigationOnClickListener { backToPrevFragment() }

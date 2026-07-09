@@ -18,7 +18,7 @@ class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var p
     val reachedLimit: Boolean
         get() = (poll?.maxOptions ?: 1) < chosenPositions.size
     val votable
-        get() = !reachedLimit && chosenPositions.size > 0
+        get() = !reachedLimit && chosenPositions.isNotEmpty()
     private val options
         get() = poll?.options ?: pollLikeValue.options
 

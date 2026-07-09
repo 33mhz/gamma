@@ -151,11 +151,11 @@ class InteractionFragment :
     }
 
 
-    private fun handlePoll(objects: List<Interaction.PollResponse.InteractionPoll>): CharSequence? {
+    private fun handlePoll(objects: List<Interaction.PollResponse.InteractionPoll>): CharSequence {
         return objects[0].prompt
     }
 
-    private fun handleUser(objects: List<User>): CharSequence? {
+    private fun handleUser(objects: List<User>): CharSequence {
         return objects[0].username
     }
 
@@ -196,7 +196,7 @@ class InteractionFragment :
         private val getCachedInteractionListUseCase: GetCachedInteractionListUseCase,
         private val cacheInteractionUseCase: CacheInteractionUseCase
     ) :
-        BaseListFragment.BaseListViewModel<Interaction>() {
+        BaseListViewModel<Interaction>() {
         override fun storeItems() {
             viewModelScope.launch {
                 runCatching {

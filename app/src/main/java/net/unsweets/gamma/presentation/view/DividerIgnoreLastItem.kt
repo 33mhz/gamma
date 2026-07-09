@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.roundToInt
+import androidx.core.graphics.withSave
 
 class DividerIgnoreLastItem(context: Context?, orientation: Int, private val reverse: Boolean = false) :
     DividerItemDecoration(context, orientation) {
@@ -39,33 +40,33 @@ class DividerIgnoreLastItem(context: Context?, orientation: Int, private val rev
     }
 
     private fun drawVertical(canvas: Canvas, parent: RecyclerView) {
-        canvas.save()
-        val left: Int
-        val right: Int
+        canvas.withSave {
+            val left: Int
+            val right: Int
 
-        if (parent.clipToPadding) {
-            left = parent.paddingLeft
-            right = parent.width - parent.paddingRight
-            canvas.clipRect(
-                left, parent.paddingTop, right,
-                parent.height - parent.paddingBottom
-            )
-        } else {
-            left = 0
-            right = parent.width
+            if (parent.clipToPadding) {
+                left = parent.paddingLeft
+                right = parent.width - parent.paddingRight
+                clipRect(
+                    left, parent.paddingTop, right,
+                    parent.height - parent.paddingBottom
+                )
+            } else {
+                left = 0
+                right = parent.width
+            }
+            val childCount = parent.childCount
+            for (i in 0 until childCount) {
+                val child = parent.getChildAt(i)
+                // ignore last item
+                if (isLastItem(parent, i)) continue
+                parent.getDecoratedBoundsWithMargins(child, mBounds)
+                val bottom = mBounds.bottom + child.translationY.roundToInt()
+                val top = bottom - mDivider!!.intrinsicHeight
+                mDivider!!.setBounds(left, top, right, bottom)
+                mDivider!!.draw(this)
+            }
         }
-        val childCount = parent.childCount
-        for (i in 0 until childCount) {
-            val child = parent.getChildAt(i)
-            // ignore last item
-            if (isLastItem(parent, i)) continue
-            parent.getDecoratedBoundsWithMargins(child, mBounds)
-            val bottom = mBounds.bottom + child.translationY.roundToInt()
-            val top = bottom - mDivider!!.intrinsicHeight
-            mDivider!!.setBounds(left, top, right, bottom)
-            mDivider!!.draw(canvas)
-        }
-        canvas.restore()
     }
 
 
@@ -81,34 +82,34 @@ class DividerIgnoreLastItem(context: Context?, orientation: Int, private val rev
 
 
     private fun drawHorizontal(canvas: Canvas, parent: RecyclerView) {
-        canvas.save()
-        val top: Int
-        val bottom: Int
+        canvas.withSave {
+            val top: Int
+            val bottom: Int
 
-        if (parent.clipToPadding) {
-            top = parent.paddingTop
-            bottom = parent.height - parent.paddingBottom
-            canvas.clipRect(
-                parent.paddingLeft, top,
-                parent.width - parent.paddingRight, bottom
-            )
-        } else {
-            top = 0
-            bottom = parent.height
-        }
+            if (parent.clipToPadding) {
+                top = parent.paddingTop
+                bottom = parent.height - parent.paddingBottom
+                clipRect(
+                    parent.paddingLeft, top,
+                    parent.width - parent.paddingRight, bottom
+                )
+            } else {
+                top = 0
+                bottom = parent.height
+            }
 
-        val childCount = parent.childCount
-        for (i in 0 until childCount) {
-            val child = parent.getChildAt(i)
-            // ignore last item
-            if (isLastItem(parent, i)) continue
-            parent.layoutManager!!.getDecoratedBoundsWithMargins(child, mBounds)
-            val right = mBounds.right + child.translationX.roundToInt()
-            val left = right - mDivider!!.intrinsicWidth
-            mDivider!!.setBounds(left, top, right, bottom)
-            mDivider!!.draw(canvas)
+            val childCount = parent.childCount
+            for (i in 0 until childCount) {
+                val child = parent.getChildAt(i)
+                // ignore last item
+                if (isLastItem(parent, i)) continue
+                parent.layoutManager!!.getDecoratedBoundsWithMargins(child, mBounds)
+                val right = mBounds.right + child.translationX.roundToInt()
+                val left = right - mDivider!!.intrinsicWidth
+                mDivider!!.setBounds(left, top, right, bottom)
+                mDivider!!.draw(this)
+            }
         }
-        canvas.restore()
     }
 
     override fun getItemOffsets(

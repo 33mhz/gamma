@@ -7,7 +7,6 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.activity.OnBackPressedCallback
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
@@ -290,12 +289,12 @@ class SettingsActivity : BaseActivity(),
                 context?.let { PnutCacheRepository.getUserCacheDir(it)?.exists() } ?: true
 
             setFragmentResultListener(RequestCode.ClearStreamCache.name) { _, bundle ->
-                if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
+                if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == RESULT_OK) {
                     ClearStreamCacheService.startService(context)
                 }
             }
             setFragmentResultListener(RequestCode.ClearGlideCache.name) { _, bundle ->
-                if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
+                if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == RESULT_OK) {
                     ClearGlideCacheService.startService(context)
                 }
             }
@@ -306,12 +305,12 @@ class SettingsActivity : BaseActivity(),
             activity?.registerReceiver(
                 clearStreamCacheReceiver,
                 ClearStreamCacheService.intentFilter,
-                Context.RECEIVER_NOT_EXPORTED
+                RECEIVER_NOT_EXPORTED
             )
             activity?.registerReceiver(
                 clearGlideCacheReceiver,
                 ClearGlideCacheService.intentFilter,
-                Context.RECEIVER_NOT_EXPORTED
+                RECEIVER_NOT_EXPORTED
             )
         }
 

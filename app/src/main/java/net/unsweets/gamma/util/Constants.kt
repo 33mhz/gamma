@@ -1,7 +1,5 @@
 package net.unsweets.gamma.util
 
-import net.unsweets.gamma.BuildConfig
-
 object Constants {
     const val GAMMA = "Gamma"
     const val MAX_POST_TEXT_LENGTH = 256

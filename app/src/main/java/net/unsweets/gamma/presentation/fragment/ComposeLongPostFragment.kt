@@ -1,7 +1,6 @@
 package net.unsweets.gamma.presentation.fragment
 
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -95,12 +94,12 @@ class ComposeLongPostFragment : Fragment(), BackPressedHookable {
         }
 
         binding.bodyEditText.requestFocus()
-        viewModel.body.observeOnce(viewLifecycleOwner, Observer {
+        viewModel.body.observeOnce(viewLifecycleOwner) {
             binding.bodyEditText.also { view ->
                 view.requestFocus()
                 view.setSelection(it.length)
             }
-        })
+        }
         Util.showKeyboard(binding.bodyEditText)
     }
 

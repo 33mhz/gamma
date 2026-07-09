@@ -103,8 +103,8 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
     }
 
 
-    private val currentFragment
-        get() = supportFragmentManager.findFragmentById(R.id.compose_post_placeholder)
+//    private val currentFragment
+//        get() = supportFragmentManager.findFragmentById(R.id.compose_post_placeholder)
 
     override fun addFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()

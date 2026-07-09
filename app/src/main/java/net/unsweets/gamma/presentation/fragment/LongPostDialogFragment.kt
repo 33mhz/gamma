@@ -11,7 +11,7 @@ import net.unsweets.gamma.domain.entity.raw.LongPost
 
 class LongPostDialogFragment : BaseBottomSheetDialogFragment() {
     private val longPost: LongPost by lazy {
-        arguments?.getParcelable<LongPost>(BundleKey.LongPost.name)
+        arguments?.getParcelable(BundleKey.LongPost.name)
             ?: throw NullPointerException("You must set LongPost")
     }
 
@@ -21,7 +21,7 @@ class LongPostDialogFragment : BaseBottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentLongPostDialogBinding.inflate(inflater, container, false)
         val title = longPost.value.title
         binding.longPostViewToolbar.setNavigationOnClickListener { dismiss() }

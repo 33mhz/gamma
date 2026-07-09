@@ -4,7 +4,6 @@ package net.unsweets.gamma.presentation.fragment
 import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -88,7 +87,7 @@ class ComposePollFragment : BaseFragment(), ComposePollOptionFragment.Callback {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_compose_poll, container, false)
         binding.viewModel = viewModel

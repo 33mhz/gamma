@@ -27,7 +27,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import kotlinx.parcelize.Parcelize
 import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.ComposeThumbnailImageBinding
@@ -121,7 +120,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
 
     private val enablePollObserver = Observer<Boolean> {
         updatePollMenuItem()
-        togglePollView(it == true)
+        togglePollView(it)
     }
 
     private val pollFragment: ComposePollFragment?
@@ -218,7 +217,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
     }
 
     private val replyTarget: Post? by lazy {
-        arguments?.getParcelable<Post>(BundleKey.ReplyTarget.name)
+        arguments?.getParcelable(BundleKey.ReplyTarget.name)
     }
 
     private var _binding: FragmentComposePostBinding? = null
@@ -385,9 +384,9 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
             binding.counterTextView.text = it
         }
 
-        viewModel.text.observeOnce(viewLifecycleOwner, Observer<String> {
+        viewModel.text.observeOnce(viewLifecycleOwner) {
             binding.composeTextEditText.setSelection(it.length)
-        })
+        }
         if (viewModel.initialized) {
             focusToEditText()
         } else {

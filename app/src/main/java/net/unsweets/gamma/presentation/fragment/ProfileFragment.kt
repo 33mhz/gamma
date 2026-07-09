@@ -5,20 +5,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityOptionsCompat
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.ActivityOptions
 import android.app.Application
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.format.DateFormat
-import android.transition.Fade
-import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.SharedElementCallback
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
@@ -54,7 +50,6 @@ import net.unsweets.gamma.util.SingleLiveEvent
 import java.util.*
 import javax.inject.Inject
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.collections.set
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -517,7 +512,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     sealed class Event {
-        object EditProfile : ProfileFragment.Event()
+        object EditProfile : Event()
         data class FollowerList(val user: User) : Event()
         data class FollowingList(val user: User) : Event()
         data class ShowAvatar(val url: String?) : Event()

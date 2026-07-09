@@ -1,6 +1,5 @@
 package net.unsweets.gamma.presentation.activity
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -74,7 +73,7 @@ class EditPhotoActivity : BaseActivity() {
             putExtra(IntentKey.Index.name, index)
             putExtra(IntentKey.Uri.name, result.uriContent)
         }
-        setResult(Activity.RESULT_OK, data)
+        setResult(RESULT_OK, data)
         finish()
     }
 

@@ -41,7 +41,7 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
         return when (options.reverse) {
             true -> {
 //                val isFirstItem = position == 0
-                return when {
+                when {
 //                    isFirstItem -> ViewType.Segment
                     else -> when (options.itemList[position]) {
                         is PageableItemWrapper.Pager -> ViewType.Segment
@@ -213,7 +213,7 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
     fun updateItem(item: PageableItemWrapper<T>) {
         LogUtil.e(item.toString())
         val index = options.itemList.indexOfFirst {
-            LogUtil.e("${it} ${it.uniqueKey}")
+            LogUtil.e("$it ${it.uniqueKey}")
             it.uniqueKey == item.uniqueKey
         }
         LogUtil.e("index $index")
@@ -257,15 +257,14 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
             options.itemList.add(index, segment)
             notifyItemInserted(index)
         } else if (response.meta.more == false && index == options.itemList.size) {
-            val footerIndex = index
             LogUtil.e("add footer segment")
             // Add the footer segment if insert position is end of list and more is false
             options.itemList.add(
-                footerIndex,
+                index,
                 PageableItemWrapper.Pager.createFromMeta(response.meta, requestPager)
             )
-            notifyItemInserted(footerIndex)
-        } else if (response.meta.more == false && 0 == index && 0 == options.itemList.size) {
+            notifyItemInserted(index)
+        } else if (response.meta.more == false && 0 == index && options.itemList.isEmpty()) {
             // no items footer segment
             options.itemList.add(
                 PageableItemWrapper.Pager.createFromMeta(

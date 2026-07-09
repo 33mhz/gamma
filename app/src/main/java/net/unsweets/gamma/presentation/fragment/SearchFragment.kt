@@ -193,7 +193,7 @@ class SearchFragment : BaseFragment() {
 
         override fun getItem(position: Int): Fragment = fragments[position].fragment
 
-        override fun getPageTitle(position: Int): CharSequence? =
+        override fun getPageTitle(position: Int): CharSequence =
             context.getString(fragments[position].searchType.titleRes)
 
         override fun getCount(): Int = if (pagerInfo.keyword.isNotEmpty()) fragments.size else 0

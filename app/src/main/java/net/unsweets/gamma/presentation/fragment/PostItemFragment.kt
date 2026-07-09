@@ -872,11 +872,11 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             }
         }
 
-        fun vote(poll: Poll, choosedPositions: Set<Int>?, postId: String) {
-            if (choosedPositions == null) return
+        fun vote(poll: Poll, chosenPositions: Set<Int>?, postId: String) {
+            if (chosenPositions == null) return
             viewModelScope.launch {
                 runCatching {
-                    voteUseCase.run(VoteInputData(poll.id, poll.pollToken, choosedPositions))
+                    voteUseCase.run(VoteInputData(poll.id, poll.pollToken, chosenPositions))
                 }.onSuccess {
                     updatePoll.emit(GetPoll(postId, it.poll))
                 }

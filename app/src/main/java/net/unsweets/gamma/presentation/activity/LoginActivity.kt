@@ -3,7 +3,6 @@ package net.unsweets.gamma.presentation.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import net.unsweets.gamma.R
@@ -43,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
     private fun showSnackBarWhenRaisedError() {
         errorMessage?.let {
             Snackbar
-                .make(findViewById<View>(android.R.id.content), it, Snackbar.LENGTH_LONG)
+                .make(findViewById(android.R.id.content), it, Snackbar.LENGTH_LONG)
                 .showAsError()
         }
     }

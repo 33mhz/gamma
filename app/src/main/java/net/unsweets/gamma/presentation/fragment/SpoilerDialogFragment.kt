@@ -124,12 +124,12 @@ class SpoilerDialogFragment : DialogFragment(), DialogInterface.OnClickListener 
         updateOkButtonEnabled(dialog, spoiler != null)
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         binding.spoilerEditText.requestFocus()
-        viewModel.topic.observeOnce(this, Observer {
+        viewModel.topic.observeOnce(this) {
             binding.spoilerEditText.also { view ->
                 view.requestFocus()
                 view.setSelection(it.length)
             }
-        })
+        }
         Util.showKeyboard(binding.spoilerEditText)
         return dialog
     }

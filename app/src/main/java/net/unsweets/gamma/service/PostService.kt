@@ -7,7 +7,6 @@ import android.content.IntentFilter
 import androidx.core.content.IntentCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import dagger.hilt.android.AndroidEntryPoint
-import net.unsweets.gamma.BuildConfig
 import net.unsweets.gamma.domain.entity.Post
 import net.unsweets.gamma.domain.entity.PostBodyOuter
 import net.unsweets.gamma.domain.entity.raw.PostRaw
@@ -26,7 +25,7 @@ class PostService : IntentService("PostService") {
     enum class Actions {
         SendPost, Star, Repost, DeletePost;
 
-        fun getActionName() = actionPrefix + "." + name
+        fun getActionName() = "$actionPrefix.$name"
 
         companion object {
             fun getAction(actionName: String): Actions? {
@@ -85,7 +84,7 @@ class PostService : IntentService("PostService") {
                         inputStream?.close()
                         res
                     }
-                postBodyOuter.pollPostBody?.let {
+                postBodyOuter.pollPostBody?.let { it ->
                     LogUtil.e("pollPostBody $it")
                     runCatching {
                         createPollUseCase.run(CreatePollInputData(it))
@@ -193,7 +192,7 @@ class PostService : IntentService("PostService") {
             IntentCompat.getParcelableExtra(intent, ResultIntentKey.Post.name, Post::class.java)
 
         fun getIntentFilter() = IntentFilter().also { intentFilter ->
-            Actions.values().forEach {
+            Actions.entries.forEach {
                 intentFilter.addAction(it.getActionName())
             }
         }

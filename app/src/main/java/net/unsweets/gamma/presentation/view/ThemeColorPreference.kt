@@ -1,13 +1,13 @@
 package net.unsweets.gamma.presentation.view
 
 import android.content.Context
-import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import android.widget.ImageView
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import net.unsweets.gamma.R
 import net.unsweets.gamma.presentation.util.ThemeColorUtil
+import androidx.core.graphics.drawable.toDrawable
 
 
 class ThemeColorPreference @JvmOverloads constructor(
@@ -27,6 +27,6 @@ class ThemeColorPreference @JvmOverloads constructor(
         val colorPreviewImageView =
             holder.findViewById(R.id.colorPreviewImageView) as? ImageView ?: return
         val color = themeColor?.getColor(context) ?: context.getColor(R.color.colorPrimary)
-        colorPreviewImageView.setImageDrawable(ColorDrawable(color))
+        colorPreviewImageView.setImageDrawable(color.toDrawable())
     }
 }

@@ -5,14 +5,13 @@ import android.util.AttributeSet
 import android.widget.SeekBar
 import androidx.preference.PreferenceViewHolder
 import androidx.preference.SeekBarPreference
-import net.unsweets.gamma.R
 import kotlin.math.round
 
 
 class SeekBarPreferenceMod @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : androidx.preference.SeekBarPreference(context, attrs), SeekBar.OnSeekBarChangeListener {
+) : SeekBarPreference(context, attrs), SeekBar.OnSeekBarChangeListener {
     private val step: Int
 
     init {

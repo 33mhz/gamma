@@ -31,7 +31,7 @@ class ChannelsPagerAdapter(
 
     override fun getItem(position: Int): Fragment = fragments[position].fragment
 
-    override fun getPageTitle(position: Int): CharSequence? =
+    override fun getPageTitle(position: Int): CharSequence =
         context.getString(fragments[position].titleRes)
 
     override fun getCount(): Int = fragments.size

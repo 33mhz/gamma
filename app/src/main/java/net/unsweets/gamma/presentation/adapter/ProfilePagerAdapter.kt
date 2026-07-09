@@ -17,5 +17,5 @@ class ProfilePagerAdapter(val context: Context, fm: FragmentManager, userId: Str
     override fun getItem(position: Int): Fragment = fragments[position].fragment
 
     override fun getCount(): Int  = fragments.size
-    override fun getPageTitle(position: Int): CharSequence? = context.getString(fragments[position].titleRes)
+    override fun getPageTitle(position: Int): CharSequence = context.getString(fragments[position].titleRes)
 }

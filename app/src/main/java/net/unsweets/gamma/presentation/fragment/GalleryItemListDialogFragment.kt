@@ -1,6 +1,5 @@
 package net.unsweets.gamma.presentation.fragment
 
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
@@ -52,10 +51,10 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
         val adapter = GalleryItemAdapter(galleryItemList)
         val pictureList = view.findViewById<RecyclerView>(R.id.pictureList)
         val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
-        Thread(Runnable {
+        Thread {
             galleryItemList.addAll(getImages())
             pictureList.post { adapter.notifyDataSetChanged() }
-        }).start()
+        }.start()
         toolbar.setNavigationOnClickListener { dismiss() }
         toolbar.setOnMenuItemClickListener(::onOptionsItemSelected)
         pictureList.adapter = adapter
@@ -178,10 +177,10 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
         listener?.onDismiss()
     }
 
-    private inner class ViewHolder internal constructor(inflater: LayoutInflater, parent: ViewGroup) :
+    private inner class ViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
         RecyclerView.ViewHolder(inflater.inflate(R.layout.fragment_gallery_item_list_dialog_item, parent, false)) {
 
-        internal val imageView: ImageView = itemView.findViewById(R.id.imageView)
+        val imageView: ImageView = itemView.findViewById(R.id.imageView)
 
         init {
             imageView.setOnClickListener {
@@ -213,7 +212,7 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
 
     data class GalleryItem(val uri: Uri)
 
-    private inner class GalleryItemAdapter internal constructor(val items: ArrayList<GalleryItem>) :
+    private inner class GalleryItemAdapter(val items: ArrayList<GalleryItem>) :
         RecyclerView.Adapter<ViewHolder>() {
         private inner class ErrorHandling(
             val position: Int

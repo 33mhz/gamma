@@ -1,7 +1,6 @@
 package net.unsweets.gamma.presentation.fragment
 
 
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -22,6 +21,7 @@ import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.FragmentPhotoViewItemBinding
 import net.unsweets.gamma.domain.model.ThumbAndFull
 import com.bumptech.glide.Glide
+import androidx.core.graphics.createBitmap
 
 
 class PhotoViewItemFragment : Fragment() {
@@ -40,7 +40,7 @@ class PhotoViewItemFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentPhotoViewItemBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -85,7 +85,7 @@ class PhotoViewItemFragment : Fragment() {
                     val resizedWidth = 100
                     val resizedHeight = (100 * ratio).toInt()
                     val bmp =
-                        Bitmap.createBitmap(resizedWidth, resizedHeight, Bitmap.Config.ARGB_8888)
+                        createBitmap(resizedWidth, resizedHeight)
                     val canvas = Canvas(bmp)
                     resource.setBounds(0, 0, canvas.width, canvas.height)
                     resource.draw(canvas)
