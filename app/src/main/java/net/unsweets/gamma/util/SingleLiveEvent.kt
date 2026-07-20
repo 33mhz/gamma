@@ -71,7 +71,6 @@ class SingleLiveEvent<T> : MutableLiveData<T>() {
 
     fun emit(t: T?) {
         value = t
-        value = null
     }
 
     companion object {

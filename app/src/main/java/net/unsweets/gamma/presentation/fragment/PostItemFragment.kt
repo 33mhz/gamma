@@ -81,7 +81,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         }
     }
 
-    private val updatePollObserver = Observer<GetPoll> { getPoll ->
+    private val updatePollObserver = Observer<GetPoll?> { getPoll ->
         if (getPoll == null) return@Observer
         val items = viewModel.items
         val index = items.indexOfFirst { it.uniqueKey == getPoll.postId }
