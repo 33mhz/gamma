@@ -45,6 +45,6 @@ class ComposePollListAdapter(
     }
 
     private fun updateAddButtonState() {
-        enableAddOptionButton.value = options.size < PollPostBody.MaxOptionSize
+        enableAddOptionButton.value = options.size < PollPostBody.MAX_OPTION_SIZE
     }
 }

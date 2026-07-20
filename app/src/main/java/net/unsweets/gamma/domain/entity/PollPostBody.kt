@@ -45,7 +45,7 @@ data class PollPostBody(
 
 
     companion object {
-        const val MaxOptionSize = 10
+        const val MAX_OPTION_SIZE = 10
         val defaultValue
             get() = PollPostBody(
                 "",

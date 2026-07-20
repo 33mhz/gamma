@@ -16,7 +16,7 @@ import net.unsweets.gamma.domain.entity.PnutResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
+import java.util.Date
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 

@@ -12,7 +12,8 @@ import net.unsweets.gamma.domain.entity.raw.RawValue
 import net.unsweets.gamma.domain.entity.raw.Spoiler
 import net.unsweets.gamma.presentation.adapter.PollOptionsAdapter
 import net.unsweets.gamma.util.LogUtil
-import java.util.*
+import java.util.Date
+import java.util.Calendar
 
 @Parcelize
 @JsonClass(generateAdapter = true)

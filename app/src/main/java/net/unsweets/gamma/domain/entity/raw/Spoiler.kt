@@ -3,7 +3,7 @@ package net.unsweets.gamma.domain.entity.raw
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
-import java.util.*
+import java.util.Date
 
 @Parcelize
 data class Spoiler(

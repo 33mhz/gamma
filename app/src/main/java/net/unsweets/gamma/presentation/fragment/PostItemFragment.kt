@@ -61,7 +61,6 @@ import net.unsweets.gamma.presentation.util.*
 import net.unsweets.gamma.service.PostWorker
 import net.unsweets.gamma.util.LogUtil
 import net.unsweets.gamma.util.SingleLiveEvent
-import java.util.*
 import javax.inject.Inject
 import kotlin.collections.set
 import kotlin.math.abs

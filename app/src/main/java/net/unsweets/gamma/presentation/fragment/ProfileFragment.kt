@@ -48,7 +48,7 @@ import com.bumptech.glide.Glide
 import net.unsweets.gamma.presentation.util.ShareUtil
 import net.unsweets.gamma.presentation.util.Util
 import net.unsweets.gamma.util.SingleLiveEvent
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 import dagger.hilt.android.AndroidEntryPoint
 import net.unsweets.gamma.util.Constants.API_BASE_URL

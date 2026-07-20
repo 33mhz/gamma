@@ -9,7 +9,7 @@ import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import net.unsweets.gamma.R
-import java.util.*
+import java.util.Date
 
 sealed class Interaction(
     override val paginationId: String,

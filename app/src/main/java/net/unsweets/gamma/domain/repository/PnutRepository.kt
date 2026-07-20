@@ -19,7 +19,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.net.URLConnection
-import java.util.*
+import java.util.Locale
 
 class PnutRepository(private val context: Context, defaultAccountToken: String? = null) :
     IPnutRepository {

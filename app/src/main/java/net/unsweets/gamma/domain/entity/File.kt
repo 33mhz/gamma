@@ -4,7 +4,7 @@ import android.os.Parcelable
 import com.squareup.moshi.Json
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import java.util.*
+import java.util.Date
 
 @Parcelize
 data class File(
@@ -17,9 +17,9 @@ data class File(
   @Json(name = "is_complete") val isComplete: Boolean,
   @Json(name = "is_public") val isPublic: Boolean,
   val kind: FileKind,
-  val link: String? = null,
-  @Json(name = "link_expires_at") val linkExpiresAt: Date? = null,
-  @Json(name = "link_short") val linkShort: String? = null,
+  val url: String? = null,
+  @Json(name = "url_expires_at") val linkExpiresAt: Date? = null,
+  @Json(name = "url_short") val linkShort: String? = null,
   @Json(name = "mime_type") val mimeType: String? = null,
   val name: String,
   val sha256: String,

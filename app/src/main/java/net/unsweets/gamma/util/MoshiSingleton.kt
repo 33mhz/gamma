@@ -11,7 +11,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import net.unsweets.gamma.domain.entity.Interaction
 import net.unsweets.gamma.domain.entity.raw.OEmbed
 import net.unsweets.gamma.presentation.util.PageableItemWrapperConverter
-import java.util.*
+import java.util.Date
 
 object MoshiSingleton {
     private class UriAdapter : JsonAdapter<Uri>() {

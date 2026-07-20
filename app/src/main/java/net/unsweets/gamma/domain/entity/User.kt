@@ -11,7 +11,7 @@ import net.unsweets.gamma.domain.entity.entities.HaveEntities
 import net.unsweets.gamma.domain.entity.image.Avatar
 import net.unsweets.gamma.domain.entity.image.Cover
 import net.unsweets.gamma.util.Constants.API_BASE_URL
-import java.util.*
+import java.util.Date
 
 @Parcelize
 @JsonClass(generateAdapter = true)

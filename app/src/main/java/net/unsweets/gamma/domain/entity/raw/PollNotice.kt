@@ -5,7 +5,7 @@ import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
 import net.unsweets.gamma.domain.entity.Poll
 import net.unsweets.gamma.domain.entity.PollLikeValue
-import java.util.*
+import java.util.Date
 
 @Parcelize
 data class PollNotice(

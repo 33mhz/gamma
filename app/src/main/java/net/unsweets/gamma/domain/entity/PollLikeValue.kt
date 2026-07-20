@@ -3,7 +3,9 @@ package net.unsweets.gamma.domain.entity
 import android.content.Context
 import net.unsweets.gamma.R
 import net.unsweets.gamma.util.toFormatString
-import java.util.*
+import java.util.Date
+import java.util.Calendar
+import java.util.TimeZone
 
 interface PollLikeValue {
     val prompt: String

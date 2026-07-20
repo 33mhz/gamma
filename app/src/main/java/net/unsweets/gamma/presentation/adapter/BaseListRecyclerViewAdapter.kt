@@ -10,7 +10,7 @@ import net.unsweets.gamma.domain.entity.PnutResponse
 import net.unsweets.gamma.domain.entity.UniquePageable
 import net.unsweets.gamma.domain.model.PageableItemWrapper
 import net.unsweets.gamma.util.LogUtil
-import java.util.*
+import java.util.Locale
 
 class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolder>(
     private val options: BaseListRecyclerViewAdapterOptions<T, V>
