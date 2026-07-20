@@ -142,7 +142,7 @@ dependencies {
 
   implementation("com.google.android.material:material:1.14.0")
   implementation("androidx.appcompat:appcompat:1.7.1")
-  implementation("androidx.recyclerview:recyclerview:1.3.2")
+  implementation("androidx.recyclerview:recyclerview:1.4.0")
   implementation("com.squareup.retrofit2:retrofit:2.11.0")
   implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
   implementation("androidx.preference:preference-ktx:1.2.1")
@@ -160,12 +160,12 @@ dependencies {
   val glideVersion = "4.16.0"
   implementation("com.github.bumptech.glide:glide:$glideVersion")
 
-  val coroutinesVersion = "1.8.1"
+  val coroutinesVersion = "1.11.0"
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
 
   implementation("androidx.palette:palette-ktx:1.0.0")
-  implementation("androidx.browser:browser:1.8.0")
+  implementation("androidx.browser:browser:1.10.0")
   implementation("androidx.emoji:emoji:1.2.0")
   implementation("androidx.emoji:emoji-bundled:1.2.0")
 
@@ -180,7 +180,7 @@ dependencies {
   implementation("com.github.CanHub:Android-Image-Cropper:4.5.0")
   implementation("com.github.thefuntasty.hauler:library:2.0.0")
 
-  implementation("com.google.android.gms:play-services-oss-licenses:17.1.0")
+  implementation("com.google.android.gms:play-services-oss-licenses:17.5.1")
 
   implementation("com.google.firebase:firebase-analytics-ktx:22.5.0")
   implementation("com.google.firebase:firebase-crashlytics-ktx:19.4.4")
@@ -189,18 +189,18 @@ dependencies {
   implementation("me.zhanghai.android.materialprogressbar:library:1.6.1")
 
   testImplementation("junit:junit:4.13.2")
-  testImplementation("org.mockito:mockito-core:5.12.0")
-  testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
-  androidTestImplementation("org.mockito:mockito-android:5.12.0")
-  testImplementation("org.robolectric:robolectric:4.13")
-  val espressoVersion = "3.6.1"
+  testImplementation("org.mockito:mockito-core:5.23.0")
+  testImplementation("org.mockito.kotlin:mockito-kotlin:6.3.0")
+  androidTestImplementation("org.mockito:mockito-android:5.23.0")
+  testImplementation("org.robolectric:robolectric:4.16.1")
+  val espressoVersion = "3.7.0"
   androidTestImplementation("androidx.test.espresso:espresso-core:$espressoVersion")
   androidTestImplementation("androidx.test.espresso:espresso-intents:$espressoVersion")
-  val testVersion = "1.6.1"
+  val testVersion = "1.7.0"
   androidTestImplementation("androidx.test:core:$testVersion")
   androidTestImplementation("androidx.test:rules:$testVersion")
-  androidTestImplementation("androidx.test.ext:junit:1.2.1")
-  androidTestImplementation("androidx.test.ext:truth:1.6.0")
+  androidTestImplementation("androidx.test.ext:junit:1.3.0")
+  androidTestImplementation("androidx.test.ext:truth:1.7.0")
   androidTestImplementation("com.google.truth:truth:1.4.5")
   testImplementation("org.powermock:powermock-module-junit4:2.0.9")
   testImplementation("org.powermock:powermock-api-mockito2:2.0.9")
@@ -208,7 +208,7 @@ dependencies {
     exclude(group = "org.jetbrains.kotlin", module = "kotlin-android-extensions-runtime")
   }
   // Kotlin
-  val navVersion = "2.7.7"
+  val navVersion = "2.9.8"
   implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
   implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
 }
