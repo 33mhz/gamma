@@ -9,7 +9,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.runBlocking
 import net.unsweets.gamma.BuildConfig
 import net.unsweets.gamma.domain.usecases.SetupTokenUseCase
-import net.unsweets.gamma.service.ClearCacheService
+import net.unsweets.gamma.service.ClearCacheWorker
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
@@ -25,7 +25,7 @@ class EntryActivity : BaseActivity(), CoroutineScope by MainScope() {
   }
 
   private fun proceed() {
-    if (!BuildConfig.DEBUG) ClearCacheService.startService(this)
+    if (!BuildConfig.DEBUG) ClearCacheWorker.enqueue(this)
     findViewById<View>(android.R.id.content).systemUiVisibility =
       View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 

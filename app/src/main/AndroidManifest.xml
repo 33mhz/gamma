@@ -36,15 +36,16 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".service.ClearCacheService"
-            android:exported="false" />
-        <service
-            android:name=".service.ClearStreamCacheService"
-            android:exported="false" />
-        <service
-            android:name=".service.ClearGlideCacheService"
-            android:exported="false" />
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            xmlns:tools="http://schemas.android.com/tools">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -55,9 +56,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-        <service
-            android:name=".service.PostService"
-            android:exported="false" />
 
         <activity
             android:name=".presentation.activity.EditPhotoActivity"

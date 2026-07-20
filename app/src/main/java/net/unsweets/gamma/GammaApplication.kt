@@ -6,6 +6,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.emoji.bundled.BundledEmojiCompatConfig
 import androidx.emoji.text.EmojiCompat
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +23,7 @@ import javax.inject.Inject
 
 
 @HiltAndroidApp
-open class GammaApplication : Application(), CoroutineScope by MainScope() {
+open class GammaApplication : Application(), CoroutineScope by MainScope(), Configuration.Provider {
 
   @Inject
   lateinit var preferenceRepository: IPreferenceRepository
@@ -29,6 +31,13 @@ open class GammaApplication : Application(), CoroutineScope by MainScope() {
   lateinit var pnutRepository: IPnutRepository
   @Inject
   lateinit var accountRepository: IAccountRepository
+  @Inject
+  lateinit var workerFactory: HiltWorkerFactory
+
+  override val workManagerConfiguration: Configuration
+    get() = Configuration.Builder()
+      .setWorkerFactory(workerFactory)
+      .build()
 
   override fun onCreate() {
     super.onCreate()

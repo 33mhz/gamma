@@ -58,7 +58,7 @@ import net.unsweets.gamma.presentation.adapter.PollOptionsAdapter
 import net.unsweets.gamma.presentation.adapter.ReactionUsersAdapter
 import net.unsweets.gamma.presentation.adapter.ThumbnailViewPagerAdapter
 import net.unsweets.gamma.presentation.util.*
-import net.unsweets.gamma.service.PostService
+import net.unsweets.gamma.service.PostWorker
 import net.unsweets.gamma.util.LogUtil
 import net.unsweets.gamma.util.SingleLiveEvent
 import java.util.*
@@ -146,7 +146,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        receiverManager?.registerReceiver(postReceiver, PostService.getIntentFilter())
+        receiverManager?.registerReceiver(postReceiver, PostWorker.getIntentFilter())
     }
 
     override fun onDetach() {
@@ -200,7 +200,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
     }
 
     override fun ok(position: Int, post: Post) {
-        PostService.newDeletePostIntent(context, post.id)
+        context?.let { PostWorker.enqueueDeletePost(it, post.id) }
         adapter.removeItem(PageableItemWrapper.Item(post))
     }
 
@@ -631,7 +631,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             RepostButtonType.DeleteRepost,
             RepostButtonType.Repost -> {
                 val newState = item.mainPost.youReposted == false
-                PostService.newRepostIntent(context, item.mainPost.id, newState)
+                context?.let { PostWorker.enqueueRepost(it, item.mainPost.id, newState) }
                 item.mainPost.youReposted = newState
             }
         }
@@ -646,7 +646,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 
     private fun toggleStar(item: Post, adapterPosition: Int) {
         val newState = item.mainPost.youBookmarked == false
-        PostService.newStarIntent(context, item.mainPost.id, newState)
+        context?.let { PostWorker.enqueueStar(it, item.mainPost.id, newState) }
         // TODO: revert state when raised error
         // star "this post"
         item.mainPost.youBookmarked = newState

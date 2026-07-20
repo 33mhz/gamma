@@ -14,7 +14,7 @@ class ErrorReceiver(private val listener: Callback) : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action ?: return
         val message = intent.getStringExtra(Intent.EXTRA_TEXT).orEmpty()
-        if (ErrorIntent.action == action) {
+        if (ErrorIntent.ACTION == action) {
             listener.onReceiveError(message)
         }
     }

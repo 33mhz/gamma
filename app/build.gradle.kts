@@ -210,6 +210,12 @@ dependencies {
   val navVersion = "2.9.8"
   implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
   implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
+
+  val workVersion = "2.11.2"
+  implementation("androidx.work:work-runtime-ktx:$workVersion")
+  implementation("androidx.hilt:hilt-work:1.4.0")
+  ksp("androidx.hilt:hilt-compiler:1.4.0")
+  implementation("androidx.startup:startup-runtime:1.2.0")
 }
 
 if (file("google-services.json").exists()) {

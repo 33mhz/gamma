@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import net.unsweets.gamma.domain.entity.Post
-import net.unsweets.gamma.service.PostService
+import net.unsweets.gamma.service.PostWorker
 
 class PostReceiver(private val listener: Callback) : BroadcastReceiver() {
 
@@ -17,12 +17,12 @@ class PostReceiver(private val listener: Callback) : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action ?: return
-        val postAction = PostService.Actions.getAction(action) ?: return
+        val postAction = PostWorker.Actions.getAction(action) ?: return
         when (postAction) {
-            PostService.Actions.SendPost -> listener.onPostReceive(PostService.getPost(intent) ?: return)
-            PostService.Actions.Star -> listener.onStarReceive(PostService.getPost(intent) ?: return)
-            PostService.Actions.Repost -> listener.onRepostReceive(PostService.getPost(intent) ?: return)
-            PostService.Actions.DeletePost -> listener.onDeletePostReceive(PostService.getPost(intent) ?: return)
+            PostWorker.Actions.SendPost -> listener.onPostReceive(PostWorker.getPost(intent) ?: return)
+            PostWorker.Actions.Star -> listener.onStarReceive(PostWorker.getPost(intent) ?: return)
+            PostWorker.Actions.Repost -> listener.onRepostReceive(PostWorker.getPost(intent) ?: return)
+            PostWorker.Actions.DeletePost -> listener.onDeletePostReceive(PostWorker.getPost(intent) ?: return)
         }
 
     }

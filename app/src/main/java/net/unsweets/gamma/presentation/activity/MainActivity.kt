@@ -49,7 +49,7 @@ import net.unsweets.gamma.presentation.util.LoginUtil
 import net.unsweets.gamma.presentation.util.SnackbarCallback
 import net.unsweets.gamma.presentation.util.Util
 import net.unsweets.gamma.presentation.viewmodel.MainActivityViewModel
-import net.unsweets.gamma.service.PostService
+import net.unsweets.gamma.service.PostWorker
 import net.unsweets.gamma.util.ErrorIntent
 import net.unsweets.gamma.util.LogUtil
 import net.unsweets.gamma.util.oneLine
@@ -91,7 +91,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
             Action.Repost,
             SnackbarCallback(R.string.undo) {
                 val currentState = post.youReposted ?: true
-                PostService.newRepostIntent(this, post.id, !currentState)
+                PostWorker.enqueueRepost(this, post.id, !currentState)
             }
         )
     }
@@ -102,7 +102,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
             Action.Star,
             SnackbarCallback(R.string.undo) {
                 val currentState = post.youBookmarked ?: true
-                PostService.newStarIntent(this, post.id, !currentState)
+                PostWorker.enqueueStar(this, post.id, !currentState)
             }
         )
     }
@@ -305,7 +305,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
     override fun onStart() {
         super.onStart()
-        receiverManager.registerReceiver(postReceiver, PostService.getIntentFilter())
+        receiverManager.registerReceiver(postReceiver, PostWorker.getIntentFilter())
         receiverManager.registerReceiver(errorReceiver, ErrorIntent.getIntentFilter())
     }
 

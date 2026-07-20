@@ -33,8 +33,8 @@ import net.unsweets.gamma.presentation.util.ColorSummaryProvider
 import com.bumptech.glide.Glide
 import net.unsweets.gamma.presentation.util.ThemeColorUtil
 import net.unsweets.gamma.presentation.view.ThemeColorPreference
-import net.unsweets.gamma.service.ClearGlideCacheService
-import net.unsweets.gamma.service.ClearStreamCacheService
+import net.unsweets.gamma.service.ClearGlideCacheWorker
+import net.unsweets.gamma.service.ClearStreamCacheWorker
 import net.unsweets.gamma.util.Constants
 import javax.inject.Inject
 import androidx.core.net.toUri
@@ -221,7 +221,7 @@ class SettingsActivity : BaseActivity(),
 
     @AndroidEntryPoint
     class StreamPreferenceFragment : BasePreferenceFragment(),
-        ClearStreamCacheService.Receiver.Listener, ClearGlideCacheService.Receiver.Listener {
+        ClearStreamCacheWorker.Receiver.Listener, ClearGlideCacheWorker.Receiver.Listener {
         override fun onClearGlideCache() {
             clearGlideCacheButton?.isEnabled = false
             val contentView = activity?.findViewById<View>(android.R.id.content) ?: return
@@ -242,11 +242,11 @@ class SettingsActivity : BaseActivity(),
         }
 
         private val clearStreamCacheReceiver by lazy {
-            ClearStreamCacheService.Receiver(this)
+            ClearStreamCacheWorker.Receiver(this)
         }
 
         private val clearGlideCacheReceiver by lazy {
-            ClearGlideCacheService.Receiver(this)
+            ClearGlideCacheWorker.Receiver(this)
         }
 
         private val clearStreamCacheButton by lazy {
@@ -289,12 +289,12 @@ class SettingsActivity : BaseActivity(),
 
             setFragmentResultListener(RequestCode.ClearStreamCache.name) { _, bundle ->
                 if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == RESULT_OK) {
-                    ClearStreamCacheService.startService(context)
+                    context?.let { ClearStreamCacheWorker.enqueue(it) }
                 }
             }
             setFragmentResultListener(RequestCode.ClearGlideCache.name) { _, bundle ->
                 if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == RESULT_OK) {
-                    ClearGlideCacheService.startService(context)
+                    context?.let { ClearGlideCacheWorker.enqueue(it) }
                 }
             }
         }
@@ -303,12 +303,12 @@ class SettingsActivity : BaseActivity(),
             super.onResume()
             activity?.registerReceiver(
                 clearStreamCacheReceiver,
-                ClearStreamCacheService.intentFilter,
+                ClearStreamCacheWorker.intentFilter,
                 RECEIVER_NOT_EXPORTED
             )
             activity?.registerReceiver(
                 clearGlideCacheReceiver,
-                ClearGlideCacheService.intentFilter,
+                ClearGlideCacheWorker.intentFilter,
                 RECEIVER_NOT_EXPORTED
             )
         }

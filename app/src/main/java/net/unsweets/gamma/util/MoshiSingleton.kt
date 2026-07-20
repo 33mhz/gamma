@@ -1,9 +1,13 @@
 package net.unsweets.gamma.util
 
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import android.net.Uri
 import net.unsweets.gamma.domain.entity.Interaction
 import net.unsweets.gamma.domain.entity.raw.*
 import net.unsweets.gamma.domain.entity.raw.replacement.PostOEmbed
@@ -12,7 +16,22 @@ import net.unsweets.gamma.presentation.util.PageableItemWrapperConverter
 import java.util.*
 
 object MoshiSingleton {
+    private class UriAdapter : JsonAdapter<Uri>() {
+        override fun fromJson(reader: JsonReader): Uri? {
+            return if (reader.peek() != JsonReader.Token.NULL) {
+                Uri.parse(reader.nextString())
+            } else {
+                reader.nextNull()
+            }
+        }
+
+        override fun toJson(writer: JsonWriter, value: Uri?) {
+            writer.value(value?.toString())
+        }
+    }
+
     val moshi: Moshi = Moshi.Builder()
+        .add(Uri::class.java, UriAdapter())
         .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
         .add(
             PolymorphicJsonAdapterFactory.of(Interaction::class.java, "action")

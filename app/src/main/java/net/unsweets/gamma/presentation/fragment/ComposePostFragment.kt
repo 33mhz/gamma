@@ -49,7 +49,7 @@ import net.unsweets.gamma.presentation.util.BackPressedHookable
 import net.unsweets.gamma.presentation.util.BindingUtil
 import net.unsweets.gamma.presentation.util.DateUtil
 import net.unsweets.gamma.presentation.util.Util
-import net.unsweets.gamma.service.PostService
+import net.unsweets.gamma.service.PostWorker
 import net.unsweets.gamma.util.Constants
 import net.unsweets.gamma.util.SingleLiveEvent
 import net.unsweets.gamma.util.observeOnce
@@ -288,7 +288,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
             adapter.getItems(),
             pollPostBody
         )
-        PostService.newPostIntent(context, postBodyOuter)
+        context?.let { PostWorker.enqueueSendPost(it, postBodyOuter) }
         listener?.onFinish()
     }
 
