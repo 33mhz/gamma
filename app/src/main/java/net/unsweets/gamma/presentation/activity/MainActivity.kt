@@ -178,12 +178,12 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         }
         when (showAccountMenu) {
             true -> {
-                binding.navigationView.getHeaderView(ACCOUNTHEADERPOSITION).visibility =
+                binding.navigationView.getHeaderView(ACCOUNT_HEADER_POSITION).visibility =
                     View.VISIBLE
                 setMenuItemVisibilities(false)
             }
             false -> {
-                binding.navigationView.getHeaderView(ACCOUNTHEADERPOSITION).visibility = View.GONE
+                binding.navigationView.getHeaderView(ACCOUNT_HEADER_POSITION).visibility = View.GONE
                 setMenuItemVisibilities(true)
             }
         }
@@ -460,7 +460,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     }
 
     private val fragmentMap = mapOf<Int, () -> BaseListFragment<*, *>>(
-        R.id.conversations to { ChannelListFragment.privateChannels() },
+        R.id.conversations to { ExploreFragment.ConversationsFragment.newInstance() },
         R.id.missedConversations to { ExploreFragment.MissedConversationsFragment.newInstance() },
         R.id.newcomers to { ExploreFragment.NewcomersFragment.newInstance() },
         R.id.photos to { ExploreFragment.PhotosFragment.newInstance() },
@@ -469,6 +469,6 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     )
 
     companion object {
-        private const val ACCOUNTHEADERPOSITION = 1
+        private const val ACCOUNT_HEADER_POSITION = 1
     }
 }
