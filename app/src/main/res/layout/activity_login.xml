@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".presentation.activity.LoginActivity">
 
-    <net.unsweets.gamma.presentation.view.ClippedImageView
+    <io.pnut.gamma.presentation.view.ClippedImageView
         android:background="@drawable/bg_circle_clipped"
         android:id="@+id/appIconImageView"
         android:layout_width="wrap_content"

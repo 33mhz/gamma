@@ -11,7 +11,7 @@
             android:key="@string/pref_dark_theme_key"
             android:title="@string/use_dark_theme"
             app:useSimpleSummaryProvider="true" />
-        <net.unsweets.gamma.presentation.view.ThemeColorPreference
+        <io.pnut.gamma.presentation.view.ThemeColorPreference
             android:key="@string/pref_change_primary_color_key"
             android:title="@string/change_theme_color"
             app:widgetLayout="@layout/primary_color_preview" />

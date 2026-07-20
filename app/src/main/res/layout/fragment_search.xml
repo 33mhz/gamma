@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="net.unsweets.gamma.presentation.fragment.SearchFragment.SearchViewModel" />
+            type="io.pnut.gamma.presentation.fragment.SearchFragment.SearchViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -61,8 +61,8 @@
                         android:foreground="?attr/selectableItemBackgroundBorderless"
                         android:onClick="@{() -> viewModel.clear()}"
                         android:src="@drawable/ic_close_black_24dp"
-                        android:tint="@color/toolbarIcon"
-                        android:visibility="@{viewModel.clearButtonVisibility}" />
+                        android:visibility="@{viewModel.clearButtonVisibility}"
+                        app:tint="@color/toolbarIcon" />
                 </FrameLayout>
             </androidx.appcompat.widget.Toolbar>
 

@@ -1,4 +1,4 @@
-package net.unsweets.gamma.util
+package io.pnut.gamma.util
 
 import java.util.*
 

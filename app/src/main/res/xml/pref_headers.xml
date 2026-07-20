@@ -4,7 +4,7 @@
     android:title="@string/settings">
     <PreferenceCategory android:key="@string/pref_account_header_title_key">
         <Preference
-            android:fragment="net.unsweets.gamma.presentation.activity.SettingsActivity$AccountPreferenceFragment"
+            android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$AccountPreferenceFragment"
             android:icon="@drawable/ic_person_black_24dp"
             app:key="@string/pref_account_key"
             android:title="@string/pref_header_account" />
@@ -13,12 +13,12 @@
         android:key="@string/pref_general_header_title_key"
         android:title="@string/pref_header_general">
         <Preference
-            android:fragment="net.unsweets.gamma.presentation.activity.SettingsActivity$BehaviorAppearancePreferenceFragment"
+            android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$BehaviorAppearancePreferenceFragment"
             android:icon="@drawable/ic_palette_black_24dp"
             android:key="@string/pref_behavior_appearance_key"
             android:title="@string/behavior_and_appearances" />
         <Preference
-            android:fragment="net.unsweets.gamma.presentation.activity.SettingsActivity$StreamPreferenceFragment"
+            android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$StreamPreferenceFragment"
             android:icon="@drawable/ic_list_black_24dp"
             android:key="@string/pref_stream_key"
             android:title="@string/pref_stream_title" />

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<net.unsweets.gamma.presentation.view.ClippedImageView xmlns:android="http://schemas.android.com/apk/res/android"
+<io.pnut.gamma.presentation.view.ClippedImageView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/colorPreviewImageView"
     android:layout_width="@dimen/size_color_preview"

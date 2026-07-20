@@ -1,9 +1,9 @@
-package net.unsweets.gamma.sample
+package io.pnut.gamma.sample
 
-import net.unsweets.gamma.domain.entity.User
-import net.unsweets.gamma.domain.entity.image.Avatar
-import net.unsweets.gamma.domain.entity.image.Cover
-import net.unsweets.gamma.util.RandomID
+import io.pnut.gamma.domain.entity.User
+import io.pnut.gamma.domain.entity.image.Avatar
+import io.pnut.gamma.domain.entity.image.Cover
+import io.pnut.gamma.util.RandomID
 import java.util.*
 
 object Users {

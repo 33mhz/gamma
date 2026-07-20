@@ -1,6 +1,6 @@
-package net.unsweets.gamma.sample
+package io.pnut.gamma.sample
 
-import net.unsweets.gamma.domain.entity.Token
+import io.pnut.gamma.domain.entity.Token
 
 object Tokens {
   val token

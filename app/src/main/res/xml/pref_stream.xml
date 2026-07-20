@@ -17,7 +17,7 @@
             app:summary="@string/pref_include_directed_posts_summary" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_loading">
-        <net.unsweets.gamma.presentation.view.SeekBarPreferenceMod
+        <io.pnut.gamma.presentation.view.SeekBarPreferenceMod
             app:title="@string/pref_loading_size"
             app:key="@string/pref_loading_size_key"
             app:defaultValue="@integer/pref_loading_size_default_value"
@@ -27,7 +27,7 @@
             app:showSeekBarValue="true"
             app:summary="@string/pref_loading_size_desc"
             app:seekBarIncrement="@integer/pref_loading_size_step" />
-        <net.unsweets.gamma.presentation.view.SeekBarPreferenceMod
+        <io.pnut.gamma.presentation.view.SeekBarPreferenceMod
             app:title="@string/pref_auto_pager"
             app:key="@string/pref_auto_pager_key"
             app:defaultValue="@integer/auto_pager_default_value"
@@ -44,7 +44,7 @@
             app:defaultValue="@bool/pref_cache_default_value"
             app:summary="@string/pref_cache_summary"
             app:key="@string/pref_cache_key" />
-        <net.unsweets.gamma.presentation.view.SeekBarPreferenceMod
+        <io.pnut.gamma.presentation.view.SeekBarPreferenceMod
             app:title="@string/pref_cache_size_title"
             app:key="@string/pref_cache_size_key"
             android:dependency="@string/pref_cache_key"

@@ -1,0 +1,13 @@
+package io.pnut.gamma.domain.usecases
+
+import io.pnut.gamma.domain.model.io.GetAccountListOutputData
+import io.pnut.gamma.domain.repository.IAccountRepository
+
+open class GetAccountListUseCase(private val accountRepository: IAccountRepository) :
+    UseCase<GetAccountListOutputData, Unit>() {
+    override fun run(params: Unit): GetAccountListOutputData {
+        val accounts = accountRepository.getStoredIds().mapNotNull { accountRepository.getAccount(it) }
+        return GetAccountListOutputData(accounts)
+    }
+
+}

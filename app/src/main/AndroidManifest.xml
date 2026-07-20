@@ -49,7 +49,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.android.fileprovider"
+            android:authorities="io.pnut.android.file provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -104,14 +104,14 @@
             android:parentActivityName=".presentation.activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="net.unsweets.gamma.presentation.activity.MainActivity" />
+                android:value="io.pnut.gamma.presentation.activity.MainActivity" />
         </activity>
         <activity
             android:name=".presentation.activity.FilesActivity"
             android:parentActivityName=".presentation.activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="net.unsweets.gamma.presentation.activity.MainActivity" />
+                android:value="io.pnut.gamma.presentation.activity.MainActivity" />
         </activity>
         <activity
             android:name=".presentation.activity.PhotoViewActivity"

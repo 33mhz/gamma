@@ -1,0 +1,8 @@
+package io.pnut.gamma.domain.entity.image
+
+internal interface IImage {
+    val isDefault: Boolean
+    val width: Int
+    val height: Int
+    val url: String
+}

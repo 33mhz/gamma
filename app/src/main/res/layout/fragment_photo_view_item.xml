@@ -4,7 +4,7 @@
     android:id="@+id/photoViewWrapper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="net.unsweets.gamma.presentation.fragment.PhotoViewItemFragment">
+    tools:context="io.pnut.gamma.presentation.fragment.PhotoViewItemFragment">
 
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/photoView"

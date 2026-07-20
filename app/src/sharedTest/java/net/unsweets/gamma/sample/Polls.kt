@@ -1,8 +1,8 @@
-package net.unsweets.gamma.sample
+package io.pnut.gamma.sample
 
-import net.unsweets.gamma.BuildConfig
-import net.unsweets.gamma.domain.entity.Poll
-import net.unsweets.gamma.util.RandomID
+import io.pnut.gamma.BuildConfig
+import io.pnut.gamma.domain.entity.Poll
+import io.pnut.gamma.util.RandomID
 import java.util.*
 
 object Polls {

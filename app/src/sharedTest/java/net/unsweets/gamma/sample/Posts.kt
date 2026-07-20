@@ -1,8 +1,8 @@
-package net.unsweets.gamma.sample
+package io.pnut.gamma.sample
 
-import net.unsweets.gamma.domain.entity.Post
-import net.unsweets.gamma.domain.entity.entities.Entities
-import net.unsweets.gamma.util.RandomID
+import io.pnut.gamma.domain.entity.Post
+import io.pnut.gamma.domain.entity.entities.Entities
+import io.pnut.gamma.util.RandomID
 import java.util.*
 
 object Posts {

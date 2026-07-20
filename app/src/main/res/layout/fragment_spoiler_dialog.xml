@@ -6,7 +6,7 @@
 
         <variable
             name="viewModel"
-            type="net.unsweets.gamma.presentation.fragment.SpoilerDialogFragment.SpoilerDialogViewModel" />
+            type="io.pnut.gamma.presentation.fragment.SpoilerDialogFragment.SpoilerDialogViewModel" />
     </data>
 
     <FrameLayout

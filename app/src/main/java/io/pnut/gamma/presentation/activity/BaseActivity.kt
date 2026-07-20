@@ -1,0 +1,82 @@
+package io.pnut.gamma.presentation.activity
+
+import android.R
+import android.content.SharedPreferences
+import android.os.Bundle
+import android.view.MenuItem
+import io.pnut.gamma.GammaApplication
+import io.pnut.gamma.domain.repository.IPreferenceRepository
+import io.pnut.gamma.presentation.util.ThemeColorUtil
+import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+
+@AndroidEntryPoint
+abstract class BaseActivity : AppCompatActivity() {
+    private lateinit var darkThemeMode: String
+    private var themeColorWhenCreated: ThemeColorUtil.ThemeColor? = null
+
+    private enum class StateKey { ConfigurationChanges }
+
+    @Inject
+    lateinit var preferenceRepository: IPreferenceRepository
+
+    private var preferencesAreChanged = false
+    private val changePreferenceListener =
+        SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+            preferencesAreChanged = true
+        }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        GammaApplication.getInstance(this).updateBaseTheme()
+        darkThemeMode = ThemeColorUtil.currentDarkThemeMode(this)
+        themeColorWhenCreated = ThemeColorUtil.applyTheme(this)
+        super.onCreate(savedInstanceState)
+        preferenceRepository.onRegisterChangePreference(changePreferenceListener)
+    }
+
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val updateThemeColor = themeColorWhenCreated != ThemeColorUtil.getThemeColor(this)
+        val currentDarkThemeMode = ThemeColorUtil.currentDarkThemeMode(this)
+        if (updateThemeColor || darkThemeMode != currentDarkThemeMode || preferencesAreChanged) {
+            recreate()
+        }
+    }
+
+    override fun onNightModeChanged(mode: Int) {
+        super.onNightModeChanged(mode)
+        themeColorWhenCreated = ThemeColorUtil.applyTheme(this)
+    }
+
+    override fun recreate() {
+        super.recreate()
+        (application as? GammaApplication)?.updateTheme()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.home -> {
+                finishAfterTransition()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(StateKey.ConfigurationChanges.name, isFinishing)
+    }
+
+    interface HaveDrawer {
+        fun openDrawer()
+        fun closeDrawer()
+    }
+}

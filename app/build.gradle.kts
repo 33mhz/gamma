@@ -6,7 +6,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   id("com.android.application")
-//  id("org.jetbrains.kotlin.android")
   id("com.google.devtools.ksp")
   id("kotlin-parcelize")
   id("com.google.android.gms.oss-licenses-plugin")
@@ -43,11 +42,11 @@ tasks.register<JacocoReport>("jacocoTestReport") {
 }
 
 android {
-  namespace = "net.unsweets.gamma"
+  namespace = "io.pnut.gamma"
   ndkVersion = "26.1.10909125"
   compileSdk = 37
   defaultConfig {
-    applicationId = "net.unsweets.gamma"
+    applicationId = "io.pnut.gamma"
     minSdk = 33
     targetSdk = 37
     versionCode = 6

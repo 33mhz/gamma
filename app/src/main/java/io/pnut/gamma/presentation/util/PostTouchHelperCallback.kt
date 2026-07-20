@@ -1,0 +1,197 @@
+package io.pnut.gamma.presentation.util
+
+import android.content.Context
+import android.graphics.Canvas
+import android.util.DisplayMetrics
+import android.view.HapticFeedbackConstants
+import android.view.View
+import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.AnimationSet
+import android.view.animation.AnimationUtils
+import android.widget.FrameLayout
+import androidx.annotation.IdRes
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import io.pnut.gamma.presentation.fragment.PostItemFragment
+import io.pnut.gamma.R
+import io.pnut.gamma.databinding.FragmentPostItemBinding
+import kotlin.collections.get
+
+
+class PostTouchHelperCallback(
+    val context: Context,
+    val adapter: RecyclerView.Adapter<*>
+) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+    }
+
+    private var prevIsCurrentlyActive: Boolean = false
+    private var prevDX: Float = 0f
+    private val deviceWidth: Int
+    private var prevActionViewId: Int? = null
+
+    init {
+        val dm = DisplayMetrics()
+        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        wm.defaultDisplay.getMetrics(dm)
+        deviceWidth = dm.widthPixels
+    }
+
+    override fun isItemViewSwipeEnabled(): Boolean {
+        return false
+    }
+
+    override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+        return 1f
+    }
+
+    override fun getSwipeEscapeVelocity(defaultValue: Float): Float {
+        return 100000f
+    }
+
+    override fun getSwipeVelocityThreshold(defaultValue: Float): Float {
+        return 100000f
+    }
+
+    override fun onMove(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
+    ): Boolean {
+        return false
+    }
+
+    override fun onChildDraw(
+        c: Canvas,
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        dX: Float,
+        dY: Float,
+        actionState: Int,
+        isCurrentlyActive: Boolean
+    ) {
+        val vh = (viewHolder as? PostItemFragment.PostViewHolder) ?: return
+        val binding = FragmentPostItemBinding.bind(vh.itemView)
+        val foregroundView = binding.postItemForegroundView
+        val backgroundView = binding.swipeActionsLayout
+        val per = dX / deviceWidth
+        val direction = if (prevDX < dX) Direction.Right else Direction.Left
+        if (isCurrentlyActive) {
+            animActionViews(per, backgroundView, direction, vh)
+        }
+        prevDX = dX
+        getDefaultUIUtil()
+            .onDraw(c, recyclerView, foregroundView, dX, dY, actionState, isCurrentlyActive)
+        val immediatelyAfterRelease = prevIsCurrentlyActive && !isCurrentlyActive
+        if (immediatelyAfterRelease) {
+            performClick(per, backgroundView, viewHolder)
+        }
+        prevIsCurrentlyActive = isCurrentlyActive
+    }
+
+    private fun performClick(per: Float, backgroundView: FrameLayout, viewHolder: PostItemFragment.PostViewHolder) {
+        val viewId = getShownViewId(per, backgroundView, viewHolder) ?: return
+        backgroundView.findViewById<View>(viewId)?.performClick()
+    }
+
+
+    private fun getShownViewId(per: Float, backgroundView: View, viewHolder: PostItemFragment.PostViewHolder): Int? {
+        val binding = FragmentPostItemBinding.bind(backgroundView)
+        return when {
+            per < 0.1 -> null
+            0.1 <= per && per < 0.25 -> binding.actionReplyImageView.id
+            0.25 <= per && per < 0.4 -> binding.actionStarImageView.id
+            0.4 <= per && per < 0.55 -> binding.actionRepostImageView.id
+            else -> when (viewHolder.isMainItem) {
+                true -> binding.actionMoreImageView.id
+                else -> when {
+                    0.55 <= per && per < 0.7 -> binding.actionThreadImageView.id
+                    else -> binding.actionMoreImageView.id
+                }
+            }
+        }
+    }
+
+    private fun animActionViews(
+        per: Float,
+        backgroundView: View,
+        direction: Direction,
+        viewHolder: PostItemFragment.PostViewHolder
+    ) {
+        val shownViewId = getShownViewId(per, backgroundView, viewHolder)
+        if (prevActionViewId == shownViewId) return
+        hideActionViewAnimation(prevActionViewId, backgroundView, direction)
+        showActionViewAnimation(backgroundView, shownViewId, direction)
+        backgroundView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+        prevActionViewId = shownViewId
+    }
+
+    private fun hideActionViewAnimation(
+        prevActionViewId: Int?,
+        backgroundView: View,
+        direction: Direction
+    ) {
+        if (prevActionViewId == null) return
+        val view = backgroundView.findViewById<View>(prevActionViewId)
+        val scaleDownAnim =
+            AnimationUtils.loadAnimation(context, R.anim.swipe_action_fade_out) as AnimationSet
+        val translateAnim = getTranslateAnim(InOut.Out, direction)
+        scaleDownAnim.addAnimation(translateAnim)
+        view.startAnimation(scaleDownAnim)
+        scaleDownAnim.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationRepeat(animation: Animation?) {
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                view.animation = null
+                view.visibility = View.GONE
+            }
+
+            override fun onAnimationStart(animation: Animation?) {
+            }
+
+        })
+    }
+
+    private fun showActionViewAnimation(
+        backgroundView: View, @IdRes shownViewId: Int?,
+        direction: Direction
+    ) {
+        if (shownViewId == null) return
+        backgroundView.findViewById<View>(shownViewId)?.let {
+            val scaleUpAnim = AnimationUtils.loadAnimation(context, R.anim.swipe_action_fade_in) as AnimationSet
+            val translateAnim = getTranslateAnim(InOut.In, direction)
+            scaleUpAnim.addAnimation(translateAnim)
+            it.startAnimation(scaleUpAnim)
+            it.visibility = View.VISIBLE
+        }
+    }
+
+    override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+        val binding = FragmentPostItemBinding.bind(viewHolder.itemView)
+        val foregroundView = binding.swipeActionsLayout
+        getDefaultUIUtil().clearView(foregroundView)
+//        super.clearView(recyclerView, viewHolder)
+    }
+
+    sealed class Direction(val index: Int) {
+        object Left : Direction(1)
+        object Right : Direction(0)
+    }
+
+    sealed class InOut(val index: Int) {
+        object In : InOut(0)
+        object Out : InOut(1)
+    }
+
+    private val translateAnimations = listOf(
+        listOf(R.anim.swipe_action_left_to_right_in, R.anim.swipe_action_right_to_left_in),
+        listOf(R.anim.swipe_action_left_to_right_out, R.anim.swipe_action_right_to_left_out)
+    )
+
+    private fun getTranslateAnim(inOut: InOut, direction: Direction): Animation {
+        val animRes = translateAnimations[inOut.index][direction.index]
+        return AnimationUtils.loadAnimation(context, animRes)
+    }
+}

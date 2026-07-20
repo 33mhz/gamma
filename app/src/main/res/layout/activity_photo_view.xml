@@ -22,7 +22,7 @@
                 android:layout_gravity="top"
                 android:layout_height="?attr/actionBarSize" />
 
-            <net.unsweets.gamma.presentation.view.AvoidExceptionViewPager
+            <io.pnut.gamma.presentation.view.AvoidExceptionViewPager
                 android:id="@+id/mediaViewPager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

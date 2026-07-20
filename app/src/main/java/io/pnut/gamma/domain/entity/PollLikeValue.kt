@@ -1,0 +1,27 @@
+package io.pnut.gamma.domain.entity
+
+import android.content.Context
+import io.pnut.gamma.R
+import io.pnut.gamma.util.toFormatString
+import java.util.Date
+import java.util.Calendar
+import java.util.TimeZone
+
+interface PollLikeValue {
+    val prompt: String
+    val options: List<Poll.PollOption>
+    val pollToken: String
+    val closedAt: Date
+    val id: String
+    val alreadyClosed
+        get() = closedAt.time < Calendar.getInstance(TimeZone.getTimeZone("UTC")).time.time
+
+    fun getDateText(context: Context): String {
+        val dateStr = closedAt.toFormatString(context)
+        val templateRes = when {
+            alreadyClosed -> R.string.poll_closed_date_template
+            else -> R.string.poll_held_date_template
+        }
+        return context.getString(templateRes, dateStr)
+    }
+}

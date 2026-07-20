@@ -34,7 +34,7 @@
 
     <fragment
         android:id="@+id/fileListFragment"
-        android:name="net.unsweets.gamma.presentation.fragment.FileListFragment"
+        android:name="io.pnut.gamma.presentation.fragment.FileListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

@@ -1,7 +1,7 @@
-package net.unsweets.gamma.sample
+package io.pnut.gamma.sample
 
-import net.unsweets.gamma.domain.model.Account
-import net.unsweets.gamma.util.RandomID
+import io.pnut.gamma.domain.model.Account
+import io.pnut.gamma.util.RandomID
 
 object Accounts {
   val account

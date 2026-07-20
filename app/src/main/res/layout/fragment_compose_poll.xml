@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="net.unsweets.gamma.presentation.fragment.ComposePollFragment.ComposePollViewModel" />
+            type="io.pnut.gamma.presentation.fragment.ComposePollFragment.ComposePollViewModel" />
     </data>
 
     <androidx.cardview.widget.CardView

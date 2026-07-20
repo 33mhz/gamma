@@ -1,0 +1,55 @@
+package io.pnut.gamma.presentation.fragment
+
+
+import android.os.Bundle
+import androidx.core.os.BundleCompat
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import io.pnut.gamma.R
+import io.pnut.gamma.databinding.ListWithToolbarBinding
+import io.pnut.gamma.domain.entity.Post
+import io.pnut.gamma.domain.model.StreamType
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class ThreadFragment : PostItemFragment() {
+    private enum class BundleKey { Post }
+
+    private val post by lazy {
+        arguments?.let { BundleCompat.getParcelable(it, BundleKey.Post.name, Post::class.java) } ?: throw NullPointerException("You must set Post")
+    }
+    override val streamType: StreamType by lazy {
+        StreamType.Thread(post.id)
+    }
+
+    override val reverse = true
+
+    override fun getFragmentLayout(): Int = R.layout.list_with_toolbar
+    override fun getRecyclerView(view: View): RecyclerView = ListWithToolbarBinding.bind(view).itemList
+    override fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout = ListWithToolbarBinding.bind(view).swipeRefreshLayout
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val binding = ListWithToolbarBinding.bind(view)
+        binding.toolbar.setNavigationOnClickListener {
+            backToPrevFragment()
+        }
+        binding.toolbar.setTitle(R.string.thread)
+//        getRecyclerView(view).let {
+//            it.layoutManager = LinearLayoutManager(view.context, RecyclerView.VERTICAL, true).apply {
+//                stackFromEnd = true
+//            }
+//        }
+    }
+
+    companion object {
+        fun newInstance(post: Post, mainPostId: String = "") = ThreadFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable(BundleKey.Post.name, post)
+                putString(PostItemFragment.BundleKey.MainPostId.name, mainPostId)
+            }
+        }
+    }
+}

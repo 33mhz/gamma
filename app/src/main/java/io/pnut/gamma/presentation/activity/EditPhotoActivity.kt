@@ -1,0 +1,104 @@
+package io.pnut.gamma.presentation.activity
+
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import com.canhub.cropper.CropImageView
+import io.pnut.gamma.R
+import io.pnut.gamma.databinding.ActivityEditPhotoBinding
+import java.io.File
+import androidx.core.content.IntentCompat
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class EditPhotoActivity : BaseActivity() {
+
+    private val uri: Uri by lazy {
+        IntentCompat.getParcelableExtra(intent, IntentKey.Uri.name, Uri::class.java)
+            ?: throw IllegalArgumentException("Must set Uri")
+    }
+    private val index by lazy {
+        intent.getIntExtra(IntentKey.Index.name, -1)
+    }
+
+    private lateinit var binding: ActivityEditPhotoBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityEditPhotoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+        if (mode == Mode.Square) {
+            binding.cropImageView.setAspectRatio(1, 1)
+            binding.cropImageView.setFixedAspectRatio(true)
+        }
+        binding.cropImageView.setImageUriAsync(uri)
+        binding.cropImageView.setOnCropImageCompleteListener { _, result -> cropped(result) }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.edit_photo, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menuCrop -> {
+                requestToCrop()
+                true
+            }
+            R.id.menuRotateRight -> {
+                rotate()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun rotate() {
+        binding.cropImageView.rotatedDegrees += 90
+    }
+
+    private fun requestToCrop() {
+        val ext = File(uri.path ?: "").extension
+        val outputUri = Uri.fromFile(File(externalCacheDir, "${System.currentTimeMillis()}.$ext"))
+        binding.cropImageView.croppedImageAsync(customOutputUri = outputUri)
+    }
+
+    private fun cropped(result: CropImageView.CropResult) {
+        val data = Intent().apply {
+            putExtra(IntentKey.Index.name, index)
+            putExtra(IntentKey.Uri.name, result.uriContent)
+        }
+        setResult(RESULT_OK, data)
+        finish()
+    }
+
+    private val mode by lazy {
+        IntentCompat.getSerializableExtra(intent, IntentKey.Mode.name, Mode::class.java) ?: Mode.Free
+    }
+
+    private enum class IntentKey { Uri, Index, Mode }
+    enum class Mode { Free, Square }
+    data class EditPhotoResult(val uri: Uri, val index: Int)
+    companion object {
+        fun newIntentSquareMode(context: Context?, uri: Uri) = newIntent(context, uri).apply {
+            putExtra(IntentKey.Mode.name, Mode.Square)
+        }
+
+        fun newIntent(context: Context?, uri: Uri, index: Int = -1) =
+            Intent(context, EditPhotoActivity::class.java).apply {
+            putExtra(IntentKey.Uri.name, uri)
+            putExtra(IntentKey.Index.name, index)
+        }
+        fun parseIntent(intent: Intent): EditPhotoResult? {
+            val uri = IntentCompat.getParcelableExtra(intent, IntentKey.Uri.name, Uri::class.java)
+                ?: return null
+            val index = intent.getIntExtra(IntentKey.Index.name, -1)
+            return EditPhotoResult(uri, index)
+        }
+    }
+}

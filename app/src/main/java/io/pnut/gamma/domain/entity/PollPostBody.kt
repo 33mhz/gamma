@@ -1,0 +1,59 @@
+package io.pnut.gamma.domain.entity
+
+import android.os.Parcelable
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
+import io.pnut.gamma.BuildConfig
+import io.pnut.gamma.domain.model.PollDeadline
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+@JsonClass(generateAdapter = true)
+data class PollPostBody(
+    val prompt: String,
+    val options: List<PollOption>,
+    val duration: Int,
+    @Json(name = "is_anonymous") val isAnonymous: Boolean,
+    @Json(name = "max_options") val maxOptions: Int,
+    val type: String = BuildConfig.APPLICATION_ID,
+    @Json(name = "is_public") val isPublic: Boolean = true
+) : Parcelable {
+    @IgnoredOnParcel
+    val pollDeadline = PollDeadline.fromInt(duration)
+
+    @Parcelize
+    @JsonClass(generateAdapter = true)
+    data class PollOption(
+        val text: String = ""
+    ) : Parcelable {
+        companion object {
+            val template
+                get() = mutableListOf(PollOption(), PollOption())
+        }
+    }
+
+    val edited: Boolean
+        get() {
+            val p = prompt.isNotEmpty()
+            val d = duration != PollDeadline.defaultValue.toInt()
+            val o = options.indexOfFirst { it.text.isNotEmpty() } >= 0
+            val a = !isAnonymous
+            val m = maxOptions != 1
+            return p || d || o || a || m
+        }
+
+
+    companion object {
+        const val MAX_OPTION_SIZE = 10
+        val defaultValue
+            get() = PollPostBody(
+                "",
+                PollOption.template,
+                PollDeadline.defaultValue.toInt(),
+                true,
+                1
+            )
+    }
+}
+
