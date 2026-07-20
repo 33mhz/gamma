@@ -36,9 +36,7 @@ class SpoilerDialogFragment : DialogFragment(), DialogInterface.OnClickListener 
         val spoiler = when {
             topic.isNotEmpty() -> {
                 Spoiler(
-                    Spoiler.SpoilerValue(
-                        topic, null
-                    )
+                    topic, null
                 )
             }
             else -> null
@@ -137,7 +135,7 @@ class SpoilerDialogFragment : DialogFragment(), DialogInterface.OnClickListener 
 
     class SpoilerDialogViewModel(private val spoiler: Spoiler?) : ViewModel() {
         val topic = MutableLiveData<String>().also { liveData ->
-            spoiler?.let { liveData.value = it.value.topic }
+            spoiler?.let { liveData.value = it.topic }
         }
 
         class Factory(private val spoiler: Spoiler?) :

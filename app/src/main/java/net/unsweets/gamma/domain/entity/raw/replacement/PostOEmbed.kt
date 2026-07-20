@@ -2,30 +2,18 @@ package net.unsweets.gamma.domain.entity.raw.replacement
 
 import android.os.Parcelable
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import net.unsweets.gamma.domain.entity.raw.OEmbed
-import net.unsweets.gamma.domain.entity.raw.PostRaw
-import net.unsweets.gamma.domain.entity.raw.Raw
+import net.unsweets.gamma.domain.entity.raw.RawValue
 
-@Suppress("UNCHECKED_CAST")
 @Parcelize
-open class PostOEmbed(override val value: OEmbedRawValue) : PostRaw<Raw.RawValue>, Parcelable {
-    @IgnoredOnParcel
-    override val type: String = OEmbed.type
+data class PostOEmbed(
+    @Json(name = "+io.pnut.core.file") val replacementFileValue: FileValue
+) : RawValue, Parcelable {
 
     @Parcelize
-    @JsonClass(generateAdapter = true)
-    data class OEmbedRawValue(
-        @Json(name = "+io.pnut.core.file") val replacementFileValue: FileValue
-    ) : Raw.RawValue, Parcelable {
-        @Parcelize
-        @JsonClass(generateAdapter = true)
-        data class FileValue(
-            @Json(name = "file_id") val fileId: String,
-            @Json(name = "file_token") val fileToken: String,
-            val format: String = "oembed"
-        ) : Parcelable
-    }
+    data class FileValue(
+        @Json(name = "file_id") val fileId: String,
+        @Json(name = "file_token") val fileToken: String,
+        val format: String = "oembed"
+    ) : Parcelable
 }

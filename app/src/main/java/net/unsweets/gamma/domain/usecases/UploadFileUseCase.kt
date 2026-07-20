@@ -26,11 +26,9 @@ class UploadFileUseCase(private val pnutRepository: IPnutRepository) :
             )
         )
         val oEmbedRaw = PostOEmbed(
-            PostOEmbed.OEmbedRawValue(
-                PostOEmbed.OEmbedRawValue.FileValue(
-                    res.data.id,
-                    res.data.fileToken ?: ""
-                )
+            PostOEmbed.FileValue(
+                res.data.id,
+                res.data.fileToken ?: ""
             )
         )
         return UploadFileOutputData(oEmbedRaw)

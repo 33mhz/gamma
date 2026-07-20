@@ -426,7 +426,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 
         val isSpoiler = item.mainPost.spoilerMask
         viewHolder.spoilerMaskLayout.visibility = getVisibility(isSpoiler)
-        val spoilerTopic = item.mainPost.spoiler?.value?.topic ?: ""
+        val spoilerTopic = item.mainPost.spoiler?.topic ?: ""
         viewHolder.showSpoilerButton.text = context.getString(R.string.show_spoiler, spoilerTopic)
         viewHolder.showSpoilerButton.setOnClickListener {
             item.mainPost.spoilerMask = false
@@ -446,7 +446,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             viewHolder.thumbnailTabLayout.visibility =
                 if (photos.size == 1) View.GONE else View.VISIBLE
             if (isWifiEnabled) photos.forEach {
-                glideRequest.load(it.value.url).preload()
+                glideRequest.load(it.url).preload()
             }
         } else {
             viewHolder.thumbnailViewPagerFrameLayout.visibility = View.GONE
@@ -521,7 +521,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         }
         val poll = item.poll
         val pollLikeValue: PollLikeValue? =
-            pollNotice?.value as? PollLikeValue ?: item.poll as? PollLikeValue
+            pollNotice ?: item.poll as? PollLikeValue
         if (pollLikeValue != null) {
             // TODO: get detail of poll in viewModel
             viewHolder.pollPromptTextView.text = pollLikeValue.prompt
@@ -861,8 +861,8 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
                 runCatching {
                     getPollUseCase.run(
                         GetPollInputData(
-                            pollNotice.value.pollId,
-                            pollNotice.value.pollToken
+                            pollNotice.id,
+                            pollNotice.pollToken
                         )
                     )
                 }.onSuccess {

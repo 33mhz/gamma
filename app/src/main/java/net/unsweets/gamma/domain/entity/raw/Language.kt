@@ -1,17 +1,17 @@
 package net.unsweets.gamma.domain.entity.raw
 
 import android.os.Parcelable
-import com.squareup.moshi.JsonClass
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@JsonClass(generateAdapter = true)
-data class Language(override val value: LanguageValue) : Raw<Language.LanguageValue>, PostRaw<Language.LanguageValue>,
-    Parcelable {
-    @Parcelize
-    data class LanguageValue(val language: String) : Raw.RawValue, Parcelable
+data class Language(
+    val language: String
+) : RawValue, Parcelable {
 
-    @IgnoredOnParcel
-    override val type = "io.pnut.core.language"
+    companion object {
+        const val TYPE = "io.pnut.core.language"
+        fun getLanguage(raw: Map<String, List<RawValue>>?): Language? {
+            return raw?.get(TYPE)?.firstOrNull() as? Language
+        }
+    }
 }

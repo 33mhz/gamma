@@ -3,7 +3,7 @@ package net.unsweets.gamma.domain.entity
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
-import net.unsweets.gamma.domain.entity.raw.PostRaw
+import net.unsweets.gamma.domain.entity.raw.RawValue
 
 @Parcelize
 data class PostBody(
@@ -12,5 +12,5 @@ data class PostBody(
     @Json(name = "is_nsfw") val isNsfw: Boolean? = null,
     @Json(name = "entities.parse_links") val parseLinks: Boolean? = null,
     @Json(name = "entities.parse_markdown_links") val parseMarkdownLinks: Boolean? = null,
-    val raw: List<PostRaw<*>> = emptyList()
+    val raw: Map<String, List<RawValue>>? = null
 ) : Parcelable

@@ -1,11 +1,10 @@
 package net.unsweets.gamma.presentation.fragment
 
-
 import android.os.Bundle
-import androidx.core.os.BundleCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.BundleCompat
 import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.FragmentLongPostDialogBinding
 import net.unsweets.gamma.domain.entity.raw.LongPost
@@ -24,11 +23,11 @@ class LongPostDialogFragment : BaseBottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLongPostDialogBinding.inflate(inflater, container, false)
-        val title = longPost.value.title
+        val title = longPost.title
         binding.longPostViewToolbar.setNavigationOnClickListener { dismiss() }
         binding.longPostViewToolbar.title =
             if (title?.isNotEmpty() == true) title else getString(R.string.long_post_no_title)
-        binding.longPostBodyTextView.text = longPost.value.body
+        binding.longPostBodyTextView.text = longPost.body
         return binding.root
     }
 
@@ -40,9 +39,9 @@ class LongPostDialogFragment : BaseBottomSheetDialogFragment() {
     private enum class BundleKey { LongPost }
 
     companion object {
-        fun newInstance(longPost: LongPost) = LongPostDialogFragment().also {
-            it.arguments = Bundle().also { bundle ->
-                bundle.putParcelable(BundleKey.LongPost.name, longPost)
+        fun newInstance(longPost: LongPost) = LongPostDialogFragment().apply {
+            arguments = Bundle().also {
+                it.putParcelable(BundleKey.LongPost.name, longPost)
             }
         }
     }

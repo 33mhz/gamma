@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 import net.unsweets.gamma.domain.entity.entities.Entities
 import net.unsweets.gamma.domain.entity.entities.HaveEntities
 import net.unsweets.gamma.domain.entity.raw.PollNotice
-import net.unsweets.gamma.domain.entity.raw.Raw
+import net.unsweets.gamma.domain.entity.raw.RawValue
 import net.unsweets.gamma.domain.entity.raw.Spoiler
 import net.unsweets.gamma.presentation.adapter.PollOptionsAdapter
 import net.unsweets.gamma.util.LogUtil
@@ -33,7 +33,7 @@ data class Post(
     @Json(name = "you_bookmarked") var youBookmarked: Boolean? = null,
     @Json(name = "you_reposted") var youReposted: Boolean? = null,
     @Json(name = "pagination_id") override var paginationId: String? = null,
-    @Json(name = "raw") var raw: List<Raw<*>>? = null,
+    @Json(name = "raw") var raw: Map<String, List<RawValue>>? = null,
     @Json(name = "bookmarked_by") val bookmarkedBy: List<User>? = null,
     @Json(name = "reposted_by") val repostedBy: List<User>? = null
 ) : UniquePageable, Parcelable {
@@ -65,11 +65,11 @@ data class Post(
     val showContents: Boolean
         get() = !nsfwMask && !spoilerMask
     @IgnoredOnParcel
-    val spoiler = raw?.let { Spoiler.getSpoilerRaw(it) }
+    val spoiler = Spoiler.getSpoiler(raw)
 
     init {
         spoilerMask = spoiler?.let {
-            val spoilerDate = it.value.expiredAt ?: return@let true
+            val spoilerDate = it.expiredAt ?: return@let true
             spoilerDate.time > Calendar.getInstance().time.time
         } ?: false
     }
@@ -93,7 +93,7 @@ data class Post(
     @Transient
     var pollLastUpdate: Calendar? = null
     @IgnoredOnParcel
-    var isPollNeedUpdate: Boolean = true
+    val isPollNeedUpdate: Boolean
         get() {
             if (pollNotice == null) return false
             LogUtil.e("in post model: isPollNeedUpdate $pollLastUpdate")
@@ -107,6 +107,6 @@ data class Post(
     var poll: Poll? = null
     @IgnoredOnParcel
     val pollOptionsAdapter by lazy {
-        pollNotice?.let { PollOptionsAdapter(it.value, poll) }
+        pollNotice?.let { PollOptionsAdapter(it, poll) }
     }
 }

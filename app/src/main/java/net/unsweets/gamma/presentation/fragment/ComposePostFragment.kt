@@ -36,7 +36,7 @@ import net.unsweets.gamma.domain.entity.PostBody
 import net.unsweets.gamma.domain.entity.PostBodyOuter
 import net.unsweets.gamma.domain.entity.User
 import net.unsweets.gamma.domain.entity.raw.LongPost
-import net.unsweets.gamma.domain.entity.raw.PostRaw
+import net.unsweets.gamma.domain.entity.raw.RawValue
 import net.unsweets.gamma.domain.entity.raw.Spoiler
 import net.unsweets.gamma.domain.model.Account
 import net.unsweets.gamma.domain.model.UriInfo
@@ -276,14 +276,18 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         val text = viewModel.text.value ?: return
         val isNsfw = viewModel.nsfw.value ?: false
         val currentUserId = viewModel.currentUserIdLiveData.value ?: return
-        val raw = mutableListOf<PostRaw<*>>()
-        viewModel.longPost?.let { raw.add(it.copy(value = it.value.copy(tstamp = Date().time))) }
-        viewModel.spoiler?.let { raw.add(it) }
+        val raw = mutableMapOf<String, MutableList<RawValue>>()
+        viewModel.longPost?.let {
+            raw.getOrPut(LongPost.TYPE) { mutableListOf() }.add(it.copy(tstamp = Date().time))
+        }
+        viewModel.spoiler?.let {
+            raw.getOrPut(Spoiler.TYPE) { mutableListOf() }.add(it)
+        }
 
 
         val postBodyOuter = PostBodyOuter(
             currentUserId,
-            PostBody(text, replyTarget?.id, isNsfw = isNsfw, raw = raw.toList()),
+            PostBody(text, replyTarget?.id, isNsfw = isNsfw, raw = raw.toMap()),
             adapter.getItems(),
             pollPostBody
         )

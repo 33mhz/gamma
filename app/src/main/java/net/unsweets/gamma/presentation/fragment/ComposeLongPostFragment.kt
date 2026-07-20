@@ -35,9 +35,7 @@ class ComposeLongPostFragment : Fragment(), BackPressedHookable {
     private fun updateLongPost(it: Event.Back) {
         val longPost = if (!it.body.isNullOrEmpty()) {
             LongPost(
-                LongPost.LongPostValue(
-                    it.body, it.title, 0L
-                )
+                it.body, it.title, 0L
             )
         } else {
             null
@@ -70,8 +68,8 @@ class ComposeLongPostFragment : Fragment(), BackPressedHookable {
         super.onCreate(savedInstanceState)
         viewModel.event.observe(this, eventObserver)
         longPost?.let {
-            viewModel.body.value = it.value.body
-            viewModel.title.value = it.value.title
+            viewModel.body.value = it.body
+            viewModel.title.value = it.title
         }
     }
 

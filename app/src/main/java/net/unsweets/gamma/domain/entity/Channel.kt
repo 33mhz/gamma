@@ -12,7 +12,7 @@ data class Channel(
     val id: String,
     @Json(name = "is_active") val isActive: Boolean,
     val type: String,
-    val owner: User,
+    val user: User,
     @Json(name = "recent_message_id") val recentMessageId: String,
     @Json(name = "recent_message") val recentMessage: Message,
     val acl: Acl,

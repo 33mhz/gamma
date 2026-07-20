@@ -10,7 +10,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import net.unsweets.gamma.domain.entity.Post
 import net.unsweets.gamma.domain.entity.PostBodyOuter
-import net.unsweets.gamma.domain.entity.raw.PostRaw
+import net.unsweets.gamma.domain.entity.raw.OEmbed
+import net.unsweets.gamma.domain.entity.raw.PollNotice
+import net.unsweets.gamma.domain.entity.raw.RawValue
 import net.unsweets.gamma.domain.entity.raw.replacement.PostPoll
 import net.unsweets.gamma.domain.model.io.*
 import net.unsweets.gamma.domain.usecases.*
@@ -58,7 +60,12 @@ class PostWorker @AssistedInject constructor(
                 val postBodyOuterJson = inputData.getString(IntentKey.PostBody.name) ?: return Result.failure()
                 val postBodyOuter = MoshiSingleton.moshi.adapter(PostBodyOuter::class.java).fromJson(postBodyOuterJson) ?: return Result.failure()
                 
-                val raw = mutableListOf<PostRaw<*>>().apply { addAll(postBodyOuter.postBody.raw) }
+                val raw = mutableMapOf<String, MutableList<RawValue>>()
+                postBodyOuter.postBody.raw?.let {
+                    it.forEach { (type, list) ->
+                        raw.getOrPut(type) { mutableListOf() }.addAll(list)
+                    }
+                }
                 val replacementFileRawList = postBodyOuter.files
                     .map {
                         val inputStream = applicationContext.contentResolver.openInputStream(it.uri)
@@ -74,11 +81,13 @@ class PostWorker @AssistedInject constructor(
                         return sendErrorBroadcast(it)
                     }.onSuccess {
                         val pollNotice = PostPoll.createFromPoll(it.poll)
-                        raw.add(pollNotice)
+                        raw.getOrPut(PollNotice.TYPE) { mutableListOf() }.add(pollNotice)
                     }
                 }
 
-                raw.addAll(replacementFileRawList)
+                replacementFileRawList.forEach {
+                    raw.getOrPut(OEmbed.TYPE) { mutableListOf() }.add(it)
+                }
                 val modifiedPostBody = postBodyOuter.postBody.copy(raw = raw)
                 runCatching {
                     val postOutputData =

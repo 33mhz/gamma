@@ -72,7 +72,7 @@ class UploadFileUseCaseTest {
     })
     val inputStream = ByteArrayInputStream("test utf8 data".toByteArray())
     val res = useCase.run(UploadFileInputData(UriInfo(dummyUri), inputStream))
-    Assert.assertThat(res.postOEmbedRaw.type, `is`(OEmbed.type))
+    Assert.assertThat(res.postOEmbedRaw.type, `is`(OEmbed.TYPE))
     Assert.assertThat(res.postOEmbedRaw.value.replacementFileValue.fileId, `is`(file.id))
     Assert.assertThat(res.postOEmbedRaw.value.replacementFileValue.fileToken, `is`(file.fileToken))
   }

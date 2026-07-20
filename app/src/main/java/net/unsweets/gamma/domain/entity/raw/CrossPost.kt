@@ -2,17 +2,17 @@ package net.unsweets.gamma.domain.entity.raw
 
 import android.os.Parcelable
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@JsonClass(generateAdapter = true)
-data class CrossPost(override val value: CrossPostValue) : Raw<CrossPost.CrossPostValue>,
-    PostRaw<CrossPost.CrossPostValue>, Parcelable {
-    @IgnoredOnParcel
-    override val type: String = "io.pnut.core.crosspost"
+data class CrossPost(
+    @Json(name = "canonical_url") val canonicalUrl: String
+) : RawValue, Parcelable {
 
-    @Parcelize
-    data class CrossPostValue(@Json(name = "canonical_url") val canonicalUrl: String) : Raw.RawValue, Parcelable
+    companion object {
+        const val TYPE = "io.pnut.core.crosspost"
+        fun getCrossPost(raw: Map<String, List<RawValue>>?): CrossPost? {
+            return raw?.get(TYPE)?.firstOrNull() as? CrossPost
+        }
+    }
 }
