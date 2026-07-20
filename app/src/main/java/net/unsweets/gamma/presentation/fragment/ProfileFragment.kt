@@ -110,7 +110,7 @@ class ProfileFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentProfileBinding.inflate(inflater, container, false)
         arguments?.let { bundle ->
             val iconUrl = bundle.getString(BundleKey.IconUrl.name, "")
@@ -356,7 +356,7 @@ class ProfileFragment : BaseFragment() {
         }
     }
 
-    private enum class RequestCode { UpdateProfile }
+//    private enum class RequestCode { UpdateProfile }
 
     private fun showEditProfileDialog() {
         val intent = EditProfileActivity.newIntent(requireContext(), userId)
@@ -426,7 +426,7 @@ class ProfileFragment : BaseFragment() {
                 else -> Util.getWindowBackgroundColor(app)
             }
         }
-        val actionButtonRippleColor = Util.getPrimaryColorDark(app)
+//        val actionButtonRippleColor = Util.getPrimaryColorDark(app)
         val verifiedDomainVisibility: LiveData<Int> = user.map {
             if (it?.verified != null) View.VISIBLE else View.GONE
         }

@@ -32,8 +32,8 @@
                 android:padding="@dimen/margin_regular"
                 android:scaleType="center"
                 android:src="@drawable/ic_reply_black_24dp"
-                android:tint="@android:color/white"
                 android:visibility="gone"
+                app:tint="@android:color/white"
                 tools:ignore="ContentDescription"
                 tools:visibility="visible" />
 
@@ -46,8 +46,8 @@
                 android:padding="@dimen/margin_regular"
                 android:scaleType="center"
                 android:src="@drawable/ic_star_black_24dp"
-                android:tint="@android:color/white"
                 android:visibility="gone"
+                app:tint="@android:color/white"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -59,8 +59,8 @@
                 android:padding="@dimen/margin_regular"
                 android:scaleType="center"
                 android:src="@drawable/ic_repeat_black_24dp"
-                android:tint="@android:color/white"
                 android:visibility="gone"
+                app:tint="@android:color/white"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -72,8 +72,8 @@
                 android:padding="@dimen/margin_regular"
                 android:scaleType="center"
                 android:src="@drawable/ic_forum_black_24dp"
-                android:tint="@android:color/white"
                 android:visibility="gone"
+                app:tint="@android:color/white"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -85,8 +85,8 @@
                 android:padding="@dimen/margin_regular"
                 android:scaleType="center"
                 android:src="@drawable/ic_more_horiz_black_24dp"
-                android:tint="@android:color/white"
                 android:visibility="gone"
+                app:tint="@android:color/white"
                 tools:ignore="ContentDescription" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -152,10 +152,10 @@
                     android:layout_marginEnd="@dimen/margin_half"
                     android:contentDescription="@string/revised"
                     android:scaleType="centerInside"
-                    android:tint="@color/colorGrayLight"
                     app:layout_constraintBottom_toBottomOf="@id/relativeTimeTextView"
                     app:layout_constraintEnd_toStartOf="@id/chatIconImageView"
                     app:layout_constraintTop_toTopOf="@id/relativeTimeTextView"
+                    app:tint="@color/colorGrayLight"
                     tools:src="@drawable/ic_outline_create_24dp" />
 
                 <ImageView
@@ -165,10 +165,10 @@
                     android:layout_marginEnd="@dimen/margin_half"
                     android:contentDescription="@string/conversation_mark"
                     android:scaleType="centerInside"
-                    android:tint="@color/colorGrayLight"
                     app:layout_constraintBottom_toBottomOf="@id/relativeTimeTextView"
                     app:layout_constraintEnd_toStartOf="@id/relativeTimeTextView"
                     app:layout_constraintTop_toTopOf="@id/relativeTimeTextView"
+                    app:tint="@color/colorGrayLight"
                     tools:src="@drawable/ic_chat_bubble_black_24dp" />
 
                 <LinearLayout
@@ -267,8 +267,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/margin_half"
                                 android:layout_marginBottom="@dimen/margin_half"
-                                android:drawableStart="@drawable/ic_access_time_black_12dp"
-                                android:drawablePadding="@dimen/margin_half" />
+                                android:drawablePadding="@dimen/margin_half"
+                                app:drawableStartCompat="@drawable/ic_access_time_black_12dp" />
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
@@ -298,10 +298,10 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_half"
                             android:clickable="true"
-                            android:drawableStart="@drawable/ic_via_12dp"
                             android:drawablePadding="@dimen/margin_quoter"
                             android:focusable="true"
                             android:gravity="start|center_vertical"
+                            app:drawableStartCompat="@drawable/ic_via_12dp"
                             app:layout_constraintStart_toEndOf="@id/absoluteDateTextView"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="via Gamma" />
@@ -311,10 +311,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:clickable="true"
-                            android:drawableStart="@drawable/ic_access_time_black_12dp"
                             android:drawablePadding="@dimen/margin_quoter"
                             android:focusable="true"
                             android:gravity="start|center_vertical"
+                            app:drawableStartCompat="@drawable/ic_access_time_black_12dp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="18 Aug 19" />
@@ -456,7 +456,7 @@
                 android:foreground="?attr/selectableItemBackground"
                 android:scaleType="center"
                 android:src="@drawable/ic_reply_black_24dp"
-                android:tint="@android:color/white"
+                app:tint="@android:color/white"
                 tools:visibility="visible" />
 
             <ImageButton
@@ -469,7 +469,7 @@
                 android:foreground="?attr/selectableItemBackground"
                 android:scaleType="center"
                 android:src="@drawable/ic_star_black_24dp"
-                android:tint="@android:color/white" />
+                app:tint="@android:color/white" />
 
             <ImageButton
                 android:id="@+id/repostButton"
@@ -481,7 +481,7 @@
                 android:foreground="?attr/selectableItemBackground"
                 android:scaleType="center"
                 android:src="@drawable/ic_repeat_black_24dp"
-                android:tint="@android:color/white" />
+                app:tint="@android:color/white" />
 
             <ImageButton
                 android:id="@+id/threadButton"
@@ -493,7 +493,7 @@
                 android:foreground="?attr/selectableItemBackground"
                 android:scaleType="center"
                 android:src="@drawable/ic_forum_black_24dp"
-                android:tint="@android:color/white" />
+                app:tint="@android:color/white" />
 
             <ImageButton
                 android:id="@+id/moreButton"
@@ -505,7 +505,7 @@
                 android:foreground="?attr/selectableItemBackground"
                 android:scaleType="center"
                 android:src="@drawable/ic_more_horiz_black_24dp"
-                android:tint="@android:color/white" />
+                app:tint="@android:color/white" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

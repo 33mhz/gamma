@@ -514,7 +514,6 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 
         val pollNotice = item.pollNotice
         val isPollNeedUpdate = item.isPollNeedUpdate
-        LogUtil.e("isPollNeedUpdate $isPollNeedUpdate")
         if (pollNotice != null && isPollNeedUpdate) {
             viewModel.loadPoll(item.id, pollNotice)
         }
