@@ -143,8 +143,8 @@ dependencies {
   implementation("com.google.android.material:material:1.14.0")
   implementation("androidx.appcompat:appcompat:1.7.1")
   implementation("androidx.recyclerview:recyclerview:1.4.0")
-  implementation("com.squareup.retrofit2:retrofit:2.11.0")
-  implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
+  implementation("com.squareup.retrofit2:retrofit:3.0.0")
+  implementation("com.squareup.retrofit2:converter-moshi:3.0.0")
   implementation("androidx.preference:preference-ktx:1.2.1")
   implementation("com.github.natario1:NestedScrollCoordinatorLayout:1.0.3")
   implementation("com.github.chrisbanes:PhotoView:2.3.0")
@@ -157,8 +157,7 @@ dependencies {
   implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
   ksp("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
-  val glideVersion = "4.16.0"
-  implementation("com.github.bumptech.glide:glide:$glideVersion")
+  implementation("com.github.bumptech.glide:glide:5.0.9")
 
   val coroutinesVersion = "1.11.0"
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
@@ -169,7 +168,7 @@ dependencies {
   implementation("androidx.emoji:emoji:1.2.0")
   implementation("androidx.emoji:emoji-bundled:1.2.0")
 
-  implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+  implementation("com.squareup.okhttp3:logging-interceptor:5.4.0")
 
   val daggerVersion = "2.60.1"
   implementation("com.google.dagger:dagger:$daggerVersion")
