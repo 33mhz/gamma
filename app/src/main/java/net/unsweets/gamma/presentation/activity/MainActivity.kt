@@ -336,8 +336,8 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
                     headerBinding.navigationDrawerHandleNameTextView.text = it.name
                     headerBinding.navigationDrawerScreenNameTextView.text = getString(R.string.user_name_format, it.username)
 
-                    BindingUtil.glideSrc(headerBinding.navigationDrawerHeaderImageView, it.content.coverImage.link)
-                    BindingUtil.glideAvatarSrc(headerBinding.navigationDrawerAvatarImageView, it.content.avatarImage.link)
+                    BindingUtil.glideSrc(headerBinding.navigationDrawerHeaderImageView, it.content.coverImage.url)
+                    BindingUtil.glideAvatarSrc(headerBinding.navigationDrawerAvatarImageView, it.content.avatarImage.url)
                 }
             }
             
@@ -388,7 +388,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         closeDrawer()
 
         Handler(Looper.getMainLooper()).postDelayed({
-            val fragment = ProfileFragment.newInstance(user.id, user.content.avatarImage.link, user)
+            val fragment = ProfileFragment.newInstance(user.id, user.content.avatarImage.url, user)
             addFragment(supportFragmentManager, fragment, user.id)
             uncheckMenuItem(binding.navigationView.menu)
         }, 200)

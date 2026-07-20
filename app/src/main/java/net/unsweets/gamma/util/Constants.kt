@@ -5,6 +5,6 @@ object Constants {
     const val MAX_POST_TEXT_LENGTH = 256
     const val UNKNOWN_ERROR = "Unknown error"
     val unknownErrorException = Exception(UNKNOWN_ERROR)
-    const val API_BASE_URL = "https://api.pnut.io/v0/"
+    const val API_BASE_URL = "https://api.pnut.io/v1/"
     const val PLAY_STORE_URL: String = "market://details?id=net.unsweets.gamma"
 }

@@ -14,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -315,7 +314,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentComposePostBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -365,7 +364,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         
         viewModel.replyTarget.observe(viewLifecycleOwner) { post ->
             post?.let {
-                BindingUtil.glideAvatarSrc(binding.replyAvatarImageView, it.user?.content?.avatarImage?.link)
+                BindingUtil.glideAvatarSrc(binding.replyAvatarImageView, it.user?.content?.avatarImage?.url)
                 binding.replyScreenNameTextView.text = it.user?.username
                 binding.replyNameTextView.text = it.user?.name
                 binding.replyDateTextView.text = DateUtil.getShortDateStr(requireContext(), it.createdAt)
@@ -430,7 +429,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
             )
         if (permission != PackageManager.PERMISSION_GRANTED) {
             requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        } else if (permission == PackageManager.PERMISSION_GRANTED) {
+        } else {
             showGalleryDialog()
         }
     }

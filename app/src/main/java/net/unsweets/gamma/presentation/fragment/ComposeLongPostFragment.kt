@@ -75,7 +75,7 @@ class ComposeLongPostFragment : Fragment(), BackPressedHookable {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentComposeLongPostBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -107,10 +107,6 @@ class ComposeLongPostFragment : Fragment(), BackPressedHookable {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onDetach() {
-        super.onDetach()
     }
 
     sealed class Event {

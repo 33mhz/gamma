@@ -1,4 +1,5 @@
 package net.unsweets.gamma.domain.model
+import net.unsweets.gamma.util.Constants.API_BASE_URL
 
 data class Account(
     val id: String,
@@ -6,6 +7,6 @@ data class Account(
     val screenName: String,
     val name: String
 ) {
-    fun getAvatarUrl(size: Int = 96) = "https://api.pnut.io/v0/users/$id/avatar?h=$size&w=$size"
+    fun getAvatarUrl(size: Int = 96) = API_BASE_URL + "users/$id/avatar?h=$size&w=$size"
     val usernameWithAt = "@$screenName"
 }

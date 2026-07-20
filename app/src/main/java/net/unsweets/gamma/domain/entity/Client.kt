@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @JsonClass(generateAdapter = true)
 data class Client(
+  val id: String,
   val name: String,
-  val link: String,
-  val id: String
+  val url: String,
 ) : Parcelable

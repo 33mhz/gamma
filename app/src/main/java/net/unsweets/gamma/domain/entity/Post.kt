@@ -45,7 +45,6 @@ data class Post(
         override var text: String? = null,
         override var html: String? = null,
         override var entities: Entities? = null,
-        @Json(name = "link_not_parsed") var linksNotParsed: Boolean? = null
     ) : HaveEntities, Parcelable
 
     @Parcelize

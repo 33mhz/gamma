@@ -11,5 +11,5 @@ data class Cover(
     @Json(name = "is_default") override val isDefault: Boolean,
     override val width: Int,
     override val height: Int,
-    override val link: String
+    override val url: String
 ): IImage, Parcelable

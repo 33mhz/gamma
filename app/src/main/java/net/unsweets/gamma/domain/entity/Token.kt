@@ -22,10 +22,10 @@ data class Token (
         @Json(name = "presence") PRESENCE,
         @Json(name = "messages:io.pnut.core.chat") MESSAGES_CHAT,
         @Json(name = "messages:io.pnut.core.pm") MESSAGES_PM,
-        @Json(name = "public_messages") PUBLIC_MESSAGES,
+//        @Json(name = "public_messages") PUBLIC_MESSAGES,
         @Json(name = "files:io.pnut.delta") FILES_DELTA,
-        @Json(name = "polls") POLLS,
-        @Json(name = "email") EMAIL
+//        @Json(name = "polls") POLLS,
+//        @Json(name = "email") EMAIL
     }
 
     @Parcelize

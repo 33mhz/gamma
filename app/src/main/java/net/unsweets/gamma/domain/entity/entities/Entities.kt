@@ -19,9 +19,8 @@ data class Entities(
             override val text: String,
             override val len: Int,
             override val pos: Int,
-            val link: String,
-            val title: String?,
-            val description: String?
+            val url: String,
+            val title: String?
         ) : SealedEntity()
 
         @Parcelize

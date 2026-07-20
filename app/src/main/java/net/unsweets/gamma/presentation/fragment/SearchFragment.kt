@@ -23,6 +23,7 @@ import net.unsweets.gamma.presentation.util.ShareUtil
 import net.unsweets.gamma.presentation.util.Util
 import net.unsweets.gamma.util.SingleLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import net.unsweets.gamma.util.Constants.API_BASE_URL
 import java.net.URLEncoder
 import java.nio.charset.Charset
 
@@ -59,7 +60,7 @@ class SearchFragment : BaseFragment() {
     }
 
     private val postSearchRssUrl
-        get() = "https://api.pnut.io/v0/feed/rss/posts/search?q=${URLEncoder.encode(
+        get() = API_BASE_URL + "feed/rss/posts/search?q=${URLEncoder.encode(
             viewModel.lastKeyword,
             Charset.defaultCharset().name()
         )}"

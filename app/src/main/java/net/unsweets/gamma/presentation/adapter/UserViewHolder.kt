@@ -34,7 +34,7 @@ class UserViewHolder(mView: View) :
 
     fun bind(user: User, listener: Callback) {
         Glide.with(itemView.context)
-            .load(user.content.avatarImage.link)
+            .load(user.content.avatarImage.url)
             .apply(RequestOptions.circleCropTransform())
             .into(avatarView)
         screenNameTextView.text = user.username

@@ -51,6 +51,7 @@ import net.unsweets.gamma.util.SingleLiveEvent
 import java.util.*
 import javax.inject.Inject
 import dagger.hilt.android.AndroidEntryPoint
+import net.unsweets.gamma.util.Constants.API_BASE_URL
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -60,7 +61,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     private val userPostsRssUrl: String by lazy {
-        "https://api.pnut.io/v0/feed/rss/users/$userId/posts"
+        API_BASE_URL + "feed/rss/users/$userId/posts"
     }
     private val fetchingUserObserve = Observer<Boolean> {
         binding.swipeRefreshLayout.isRefreshing = it
@@ -435,7 +436,7 @@ class ProfileFragment : BaseFragment() {
         }
 
         fun openVerifiedDomain() =
-            user.value?.verified?.let { event.emit(Event.OpenVerifiedDomain(it.link)) }
+            user.value?.verified?.let { event.emit(Event.OpenVerifiedDomain(it.url)) }
 
         fun fetchUser() {
             val id = userId ?: user.value?.id ?: return
@@ -471,7 +472,7 @@ class ProfileFragment : BaseFragment() {
         }
 
         fun showAvatar() = event.emit(Event.ShowAvatar(user.value?.getAvatarUrl(null)))
-        fun showCover() = event.emit(Event.ShowCover(user.value?.content?.coverImage?.link))
+        fun showCover() = event.emit(Event.ShowCover(user.value?.content?.coverImage?.url))
         private fun follow() = updateRelationship(true)
         private fun unfollow() = updateRelationship(false)
         private fun updateRelationship(follow: Boolean) {

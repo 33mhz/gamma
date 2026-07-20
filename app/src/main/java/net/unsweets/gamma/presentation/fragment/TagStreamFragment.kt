@@ -9,6 +9,7 @@ import net.unsweets.gamma.R
 import net.unsweets.gamma.databinding.ListWithToolbarBinding
 import net.unsweets.gamma.domain.model.StreamType
 import net.unsweets.gamma.presentation.util.ShareUtil
+import net.unsweets.gamma.util.Constants.API_BASE_URL
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,7 +24,7 @@ class TagStreamFragment : PostItemFragment() {
     override fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout = ListWithToolbarBinding.bind(view).swipeRefreshLayout
 
     private val taggedPostsRssUrl by lazy {
-        "https://api.pnut.io/v0/feed/rss/posts/tags/$hashTag"
+        API_BASE_URL + "feed/rss/posts/tags/$hashTag"
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

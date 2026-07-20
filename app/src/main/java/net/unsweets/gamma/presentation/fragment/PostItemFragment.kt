@@ -481,7 +481,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         }
         viewHolder.clientNameTextView.text = item.mainPost.source?.name
         viewHolder.clientNameTextView.setOnClickListener {
-            item.mainPost.source?.link?.let { link -> Util.openCustomTabUrl(context, link) }
+            item.mainPost.source?.url.let { link -> Util.openCustomTabUrl(context, url) }
         }
         viewHolder.foregroundActionsLayout.visibility =
             getVisibility(mainPostId == item.id || (previousViewHolderItem?.post == item))

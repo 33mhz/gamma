@@ -82,7 +82,7 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
         item: User,
         itemWrapper: PageableItemWrapper<User>
     ) {
-        val fragment = ProfileFragment.newInstance(item.id, item.content.avatarImage.link, item)
+        val fragment = ProfileFragment.newInstance(item.id, item.content.avatarImage.url, item)
         addFragment(fragment, item.id)
     }
 

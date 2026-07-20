@@ -22,6 +22,7 @@ data class Poll(
     val source: Client,
     val type: String,
     val user: User? = null,
+    @Json(name = "user_id") val userId: String? = null,
     @Json(name = "pagination_id") override var paginationId: String? = null
 ) : Parcelable, PollLikeValue, UniquePageable {
     @IgnoredOnParcel

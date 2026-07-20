@@ -10,6 +10,7 @@ import net.unsweets.gamma.domain.entity.entities.Entities
 import net.unsweets.gamma.domain.entity.entities.HaveEntities
 import net.unsweets.gamma.domain.entity.image.Avatar
 import net.unsweets.gamma.domain.entity.image.Cover
+import net.unsweets.gamma.util.Constants.API_BASE_URL
 import java.util.*
 
 @Parcelize
@@ -54,8 +55,7 @@ data class User(
         val clients: Int,
         val followers: Int,
         val following: Int,
-        val posts: Int,
-        val users: Int
+        val posts: Int
     ) : Parcelable
 
     @Parcelize
@@ -69,7 +69,7 @@ data class User(
     @JsonClass(generateAdapter = true)
     data class VerifiedDomain(
         val domain: String,
-        val link: String
+        val url: String
     ) : Parcelable
 
     enum class AccountType {
@@ -102,15 +102,15 @@ data class User(
 
     companion object {
         fun getAvatarUrl(user: User, avatarSize: AvatarSize? = AvatarSize.Normal) = when {
-            avatarSize != null -> "${user.content.avatarImage.link}?h=${avatarSize.size}"
-            else -> user.content.avatarImage.link
+            avatarSize != null -> "${user.content.avatarImage.url}?h=${avatarSize.size}"
+            else -> user.content.avatarImage.url
         }
         fun getAvatarUrl(id: String, avatarSize: AvatarSize? = AvatarSize.Normal) = when {
-            avatarSize != null -> "https://api.pnut.io/v0/users/$id/avatar?h=${avatarSize.size}"
-            else -> "https://api.pnut.io/v0/users/$id/avatar"
+            avatarSize != null -> API_BASE_URL + "users/$id/avatar?h=${avatarSize.size}"
+            else -> API_BASE_URL + "users/$id/avatar"
         }
 
-        fun getCoverUrl(id: String) = "https://api.pnut.io/v0/users/$id/cover"
+        fun getCoverUrl(id: String) = API_BASE_URL + "users/$id/cover"
 
         fun getCanonicalUrl(username: String) = "https://pnut.io/@$username"
     }

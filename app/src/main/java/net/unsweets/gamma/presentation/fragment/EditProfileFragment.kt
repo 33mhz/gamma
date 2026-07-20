@@ -399,8 +399,8 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
     ) : ViewModel() {
         val event = SingleLiveEvent<Event>()
         val loading = MutableLiveData<Boolean>().apply { value = true }
-        val name = MutableLiveData<String>()
-        val description = MutableLiveData<String>()
+        val name = MutableLiveData<String?>()
+        val description = MutableLiveData<String?>()
         val timezone = MutableLiveData<String>()
         val locale = MutableLiveData<String>()
         val user = MutableLiveData<User>()
@@ -412,7 +412,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
             ComputedLiveData.of(user, newCoverUri) { user, newCoverUri ->
                 when (newCoverUri) {
                     is ImageState.NewImage -> newCoverUri.uri.path
-                    is ImageState.Keep -> user?.content?.coverImage?.link
+                    is ImageState.Keep -> user?.content?.coverImage?.url
                     else -> null
                 }
             }
@@ -420,7 +420,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
             ComputedLiveData.of(user, newAvatarUri) { user, newAvatarUri ->
                 when (newAvatarUri) {
                     is ImageState.NewImage -> newAvatarUri.uri.path
-                    is ImageState.Keep -> user?.content?.avatarImage?.link
+                    is ImageState.Keep -> user?.content?.avatarImage?.url
                     else -> null
                 }
             }

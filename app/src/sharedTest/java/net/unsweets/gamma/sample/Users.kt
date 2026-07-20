@@ -19,7 +19,7 @@ object Users {
             html = null
         ),
         badge = null,
-        counts = User.UserCount(0, 0, 0, 0, 0, 0),
+        counts = User.UserCount(0, 0, 0, 0, 0),
         createdAt = Date(),
         followsYou = true,
         youBlocked = false,
@@ -45,7 +45,7 @@ object Users {
             html = null
         ),
         badge = null,
-        counts = User.UserCount(0, 0, 0, 0, 0, 0),
+        counts = User.UserCount(0, 0, 0, 0, 0),
         createdAt = Date(),
         followsYou = true,
         youBlocked = false,
@@ -70,7 +70,7 @@ object Users {
             html = null
         ),
         badge = null,
-        counts = User.UserCount(0, 0, 0, 0, 0, 0),
+        counts = User.UserCount(0, 0, 0, 0, 0),
         createdAt = Date(),
         followsYou = true,
         youBlocked = false,
@@ -95,7 +95,7 @@ object Users {
             html = null
         ),
         badge = null,
-        counts = User.UserCount(0, 0, 0, 0, 0, 0),
+        counts = User.UserCount(0, 0, 0, 0, 0),
         createdAt = Date(),
         followsYou = true,
         youBlocked = true,
@@ -120,7 +120,7 @@ object Users {
             html = null
         ),
         badge = null,
-        counts = User.UserCount(0, 0, 0, 0, 0, 0),
+        counts = User.UserCount(0, 0, 0, 0, 0),
         createdAt = Date(),
         followsYou = true,
         youBlocked = false,

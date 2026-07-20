@@ -4,5 +4,5 @@ internal interface IImage {
     val isDefault: Boolean
     val width: Int
     val height: Int
-    val link: String
+    val url: String
 }

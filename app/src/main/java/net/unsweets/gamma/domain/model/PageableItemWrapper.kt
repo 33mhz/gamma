@@ -58,7 +58,7 @@ sealed class PageableItemWrapper<DD : UniquePageable> {
                 requestPager: PageableItemWrapper<CC>?
             ) =
                 Pager<CC>(
-                    meta.min_id,
+                    meta.minId,
                     requestPager?.getSinceId(),
                     meta.more ?: true,
                     State.None

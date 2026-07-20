@@ -59,7 +59,7 @@ interface HaveEntities {
         }
 
         private fun openLink(context: Context, entity: Entities.SealedEntity.LinkEntities) {
-            val link = entity.link
+            val link = entity.url
 //            val menuLabel = context.getString(R.string.post)
 
 //            val pendingIntent = ComposePostActivity.shareUrlIntent(context, null, link).run {
