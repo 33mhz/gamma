@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.unsweets.gamma.R
@@ -25,7 +26,7 @@ class DeletePostDialogFragment : DialogFragment(), DialogInterface.OnClickListen
     }
 
     private val post by lazy {
-        arguments?.getParcelable<Post>(BundleKey.Post.name) ?: throw NullPointerException("Must set Post")
+        arguments?.let { BundleCompat.getParcelable(it, BundleKey.Post.name, Post::class.java) } ?: throw NullPointerException("Must set Post")
     }
 
     enum class BundleKey { Position, Post }

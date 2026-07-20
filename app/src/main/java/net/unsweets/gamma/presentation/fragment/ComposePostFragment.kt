@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.core.os.BundleCompat
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -217,7 +218,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
     }
 
     private val replyTarget: Post? by lazy {
-        arguments?.getParcelable(BundleKey.ReplyTarget.name)
+        arguments?.let { BundleCompat.getParcelable(it, BundleKey.ReplyTarget.name, Post::class.java) }
     }
 
     private var _binding: FragmentComposePostBinding? = null
@@ -262,7 +263,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         arguments?.getString(BundleKey.InitialText.name)
     }
     private val uriInfo by lazy {
-        arguments?.getParcelableArrayList<UriInfo>(BundleKey.InitialPhoto.name)
+        arguments?.let { BundleCompat.getParcelableArrayList(it, BundleKey.InitialPhoto.name, UriInfo::class.java) }
     }
 
     val pollPostBody
@@ -302,6 +303,11 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
             if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
                 cancelToCompose(true)
             }
+        }
+
+        setFragmentResultListener(ComposeLongPostFragment.RequestKey.UpdateLongPost.name) { _, bundle ->
+            val longPost = BundleCompat.getParcelable(bundle, ComposeLongPostFragment.ResponseKey.LongPost.name, LongPost::class.java)
+            onUpdateLongPost(longPost)
         }
     }
 
@@ -350,8 +356,8 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
             binding.viewRightActionMenuView.menu
         )
 
-        binding.viewLeftActionMenuView.setOnMenuItemClickListener(::onOptionsItemSelected)
-        binding.viewRightActionMenuView.setOnMenuItemClickListener(::onOptionsItemSelected)
+        binding.viewLeftActionMenuView.setOnMenuItemClickListener(::onMenuItemClick)
+        binding.viewRightActionMenuView.setOnMenuItemClickListener(::onMenuItemClick)
 
         viewModel.replyTargetVisibility.observe(viewLifecycleOwner) {
             binding.replyTargetCardView.visibility = it
@@ -404,9 +410,15 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
                 getString(R.string.compose_reply_title_template, replyTarget?.user?.username)
             else
                 getString(R.string.compose_post)
-        binding.toolbar.setOnMenuItemClickListener(::onOptionsItemSelected)
+        binding.toolbar.setOnMenuItemClickListener(::onMenuItemClick)
         binding.toolbar.setNavigationOnClickListener {
             cancelToCompose()
+        }
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            showGalleryDialog()
         }
     }
 
@@ -417,30 +429,12 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                PermissionRequestCode.Storage.ordinal
-            )
+            requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         } else if (permission == PackageManager.PERMISSION_GRANTED) {
             showGalleryDialog()
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        when (requestCode) {
-            PermissionRequestCode.Storage.ordinal -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    showGalleryDialog()
-                }
-            }
-            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        }
-    }
 
     private fun showGalleryDialog() {
         val fragment = GalleryItemListDialogFragment.chooseMultiple()
@@ -466,8 +460,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         Util.showKeyboard(binding.composeTextEditText)
     }
 
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> cancelToCompose()
             R.id.menuInsertPhoto -> requestGalleryDialog()
@@ -561,8 +554,8 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
                 .sizeMultiplier(.7f)
                 .into(holder.binding.thumbnail)
 
-            holder.binding.removeButton.setOnClickListener { remove(holder.adapterPosition) }
-            holder.binding.thumbnail.setOnClickListener { listener.onClick(uriInfo.uri, holder.adapterPosition) }
+            holder.binding.removeButton.setOnClickListener { remove(holder.bindingAdapterPosition) }
+            holder.binding.thumbnail.setOnClickListener { listener.onClick(uriInfo.uri, holder.bindingAdapterPosition) }
         }
 
         private fun remove(index: Int) {

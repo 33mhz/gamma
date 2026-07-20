@@ -36,7 +36,7 @@ class ComposePollViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
 
     private fun setupTextInputLayout() {
         pollBodyItemTextInputLayout.hint =
-            itemView.context.getString(R.string.choice_template, adapterPosition + 1)
+            itemView.context.getString(R.string.choice_template, bindingAdapterPosition + 1)
     }
 
     private fun setupCloseButton(listener: Callback, itemCount: Int) {
@@ -46,7 +46,7 @@ class ComposePollViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         }
         closeImageButton.visibility = visibility
         closeImageButton.setOnClickListener {
-            listener.removeOption(adapterPosition)
+            listener.removeOption(bindingAdapterPosition)
         }
     }
 
@@ -54,7 +54,7 @@ class ComposePollViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         textInputEditText.setText(option.text)
         textInputEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                listener.updateItem(option.copy(text = s?.toString().orEmpty()), adapterPosition)
+                listener.updateItem(option.copy(text = s?.toString().orEmpty()), bindingAdapterPosition)
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {

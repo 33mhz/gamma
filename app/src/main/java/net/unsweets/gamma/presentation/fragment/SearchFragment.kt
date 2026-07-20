@@ -3,6 +3,7 @@ package net.unsweets.gamma.presentation.fragment
 
 import android.content.Context
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
@@ -101,7 +102,7 @@ class SearchFragment : BaseFragment() {
         viewModel.event.observe(this, eventObserver)
         viewModel.firstSearch.observe(this, firstSearchObserver)
         if (savedInstanceState != null) {
-            savedInstanceState.getParcelable<PagerInfo>(StateKey.PagerInfo.name)?.let { pagerInfo = it }
+            BundleCompat.getParcelable(savedInstanceState, StateKey.PagerInfo.name, PagerInfo::class.java)?.let { pagerInfo = it }
         }
     }
 

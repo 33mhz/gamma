@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.net.wifi.WifiManager
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import android.transition.Transition
 import android.transition.TransitionInflater
 import android.transition.TransitionSet
@@ -275,7 +276,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         super.onCreate(savedInstanceState)
         if (savedInstanceState != null) {
             currentPosition = savedInstanceState.getInt(StateKey.CurrentPosition.name, -1)
-            selectedPost = savedInstanceState.getParcelable(StateKey.SelectedPost.name)
+            selectedPost = BundleCompat.getParcelable(savedInstanceState, StateKey.SelectedPost.name, Post::class.java)
         }
         viewModel.updatePoll.observe(this, updatePollObserver)
 
@@ -295,7 +296,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         item: Post,
         itemWrapper: PageableItemWrapper<Post>
     ) {
-        val clickedItemPosition = calcPosition(viewHolder.adapterPosition)
+        val clickedItemPosition = calcPosition(viewHolder.bindingAdapterPosition)
         LogUtil.e(
             "clickedItemPosition: $clickedItemPosition, expandedViewHolderPos: ${
                 previousViewHolderItem?.viewHolder?.oldPosition
@@ -313,12 +314,12 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
                     position.takeIf { it >= 0 }?.let {
                         adapter.notifyItemChanged(calcPosition(it))
                     }
-                    ViewHolderItem(viewHolder, item, viewHolder.adapterPosition, itemWrapper)
+                    ViewHolderItem(viewHolder, item, viewHolder.bindingAdapterPosition, itemWrapper)
                 }
                 else -> // click same item
                     null
             }
-            else -> ViewHolderItem(viewHolder, item, viewHolder.adapterPosition, itemWrapper)
+            else -> ViewHolderItem(viewHolder, item, viewHolder.bindingAdapterPosition, itemWrapper)
         }
     }
 
@@ -389,10 +390,10 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         viewHolder.avatarView.clipToOutline = true
         val iconTransition = getString(R.string.icon_transition)
         val iconTransitionName =
-            "$iconTransition + ${viewHolder.adapterPosition} ${streamType::class.java.simpleName}"
+            "$iconTransition + ${viewHolder.bindingAdapterPosition} ${streamType::class.java.simpleName}"
         viewHolder.avatarView.transitionName = iconTransitionName
         viewHolder.avatarView.setOnClickListener {
-            currentPosition = viewHolder.adapterPosition
+            currentPosition = viewHolder.bindingAdapterPosition
             val transitionMap = HashMap(
                 hashMapOf<View, String>(
                     Pair(it, it.transitionName)
@@ -420,7 +421,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         viewHolder.nsfwMaskLayout.visibility = getVisibility(isNsfw)
         viewHolder.showNsfwButton.setOnClickListener {
             item.mainPost.nsfwMask = false
-            adapter.notifyItemChanged(viewHolder.adapterPosition)
+            adapter.notifyItemChanged(viewHolder.bindingAdapterPosition)
         }
 
         val isSpoiler = item.mainPost.spoilerMask
@@ -429,7 +430,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         viewHolder.showSpoilerButton.text = context.getString(R.string.show_spoiler, spoilerTopic)
         viewHolder.showSpoilerButton.setOnClickListener {
             item.mainPost.spoilerMask = false
-            adapter.notifyItemChanged(viewHolder.adapterPosition)
+            adapter.notifyItemChanged(viewHolder.bindingAdapterPosition)
         }
 
         val raw = item.mainPost.raw
@@ -570,14 +571,14 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             it.setImageResource(repostType.iconRes)
             it.drawable?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
             it.setOnClickListener {
-                toggleRepost(repostType, item.mainPost, viewHolder.adapterPosition)
+                toggleRepost(repostType, item.mainPost, viewHolder.bindingAdapterPosition)
             }
         }
         viewHolder.repostButton.isEnabled = !item.isDeletedNonNull
         viewHolder.repostButton.let {
             it.setImageResource(repostType.iconRes)
             it.setOnClickListener {
-                toggleRepost(repostType, item.mainPost, viewHolder.adapterPosition)
+                toggleRepost(repostType, item.mainPost, viewHolder.bindingAdapterPosition)
             }
         }
         setupRepostView(item, viewHolder.repostedByTextView)
@@ -595,7 +596,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             if (item.mainPost.youBookmarked == true) R.drawable.ic_star_black_24dp else R.drawable.ic_star_border_black_24dp
         viewHolder.actionStarImageView.let {
             it.setOnClickListener {
-                toggleStar(item, viewHolder.adapterPosition)
+                toggleStar(item, viewHolder.bindingAdapterPosition)
 
             }
 //                val starTextRes = if (item.mainPost.youBookmarked == true) R.string.unstar else R.string.star
@@ -606,7 +607,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         viewHolder.starButton.isEnabled = !item.isDeletedNonNull
         viewHolder.starButton.let {
             it.setOnClickListener {
-                toggleStar(item, viewHolder.adapterPosition)
+                toggleStar(item, viewHolder.bindingAdapterPosition)
             }
             it.setImageResource(starDrawableRes)
         }

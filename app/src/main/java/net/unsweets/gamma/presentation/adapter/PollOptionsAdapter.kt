@@ -83,13 +83,13 @@ class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var p
             val alreadyClosed = poll?.alreadyClosed ?: false
             pollOptionCheckBox.isEnabled = !alreadyClosed
             pollOptionCheckBox.isChecked =
-                if (poll?.alreadyClosed == false) chosenPositions.contains(adapterPosition) else option.isYourResponse == true
+                if (poll?.alreadyClosed == false) chosenPositions.contains(bindingAdapterPosition) else option.isYourResponse == true
             pollOptionLayout.setOnClickListener { if (!alreadyClosed) pollOptionCheckBox.performClick() }
             pollOptionCheckBox.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
-                    chosenPositions.add(adapterPosition)
+                    chosenPositions.add(bindingAdapterPosition)
                 } else {
-                    chosenPositions.remove(adapterPosition)
+                    chosenPositions.remove(bindingAdapterPosition)
                 }
                 callback()
             }

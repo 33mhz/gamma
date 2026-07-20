@@ -2,6 +2,7 @@ package net.unsweets.gamma.presentation.fragment
 
 
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -16,7 +17,7 @@ class ThreadFragment : PostItemFragment() {
     private enum class BundleKey { Post }
 
     private val post by lazy {
-        arguments?.getParcelable<Post>(BundleKey.Post.name) ?: throw NullPointerException("You must set Post")
+        arguments?.let { BundleCompat.getParcelable(it, BundleKey.Post.name, Post::class.java) } ?: throw NullPointerException("You must set Post")
     }
     override val streamType: StreamType by lazy {
         StreamType.Thread(post.id)

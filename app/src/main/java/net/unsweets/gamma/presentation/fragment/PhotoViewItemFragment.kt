@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +28,7 @@ import androidx.core.graphics.createBitmap
 class PhotoViewItemFragment : Fragment() {
 
     private val path by lazy {
-        arguments?.getParcelable<ThumbAndFull>(BundleKey.Path.name)
+        arguments?.let { BundleCompat.getParcelable(it, BundleKey.Path.name, ThumbAndFull::class.java) }
             ?: throw NullPointerException("Must set path")
     }
     private val isSharedElementTarget by lazy {

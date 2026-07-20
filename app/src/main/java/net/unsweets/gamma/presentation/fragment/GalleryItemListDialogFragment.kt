@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -42,12 +43,12 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
 
     private val galleryItemList: ArrayList<GalleryItem> = ArrayList()
     private val mode by lazy {
-        @Suppress("DEPRECATION")
-        arguments?.getSerializable(BundleKey.Mode.name) as? Mode ?: Mode.Single
+        arguments?.let { BundleCompat.getSerializable(it, BundleKey.Mode.name, Mode::class.java) } ?: Mode.Single
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val adapter = GalleryItemAdapter(galleryItemList)
         val pictureList = view.findViewById<RecyclerView>(R.id.pictureList)
         val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
@@ -56,15 +57,20 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
             pictureList.post { adapter.notifyDataSetChanged() }
         }.start()
         toolbar.setNavigationOnClickListener { dismiss() }
-        toolbar.setOnMenuItemClickListener(::onOptionsItemSelected)
+        toolbar.setOnMenuItemClickListener(::onMenuItemClick)
         pictureList.adapter = adapter
+
+        dialog?.window
+            ?.decorView
+            ?.findViewById<View>(com.google.android.material.R.id.touch_outside)
+            ?.setOnClickListener { dismiss() }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menuCamera -> openCamera()
             R.id.menuLibrary -> openLibrary()
-            else -> return super.onOptionsItemSelected(item)
+            else -> return false
 
         }
         return true
@@ -158,14 +164,6 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
         return dialog
     }
 
-    @Suppress("DEPRECATION")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        dialog?.window
-            ?.decorView
-            ?.findViewById<View>(com.google.android.material.R.id.touch_outside)
-            ?.setOnClickListener { dismiss() }
-    }
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)

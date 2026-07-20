@@ -1,6 +1,7 @@
 package net.unsweets.gamma.presentation.fragment
 
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -23,7 +24,7 @@ import javax.inject.Inject
 class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.ChannelViewHolder>(),
     BaseListRecyclerViewAdapter.IBaseList<Channel, ChannelListFragment.ChannelViewHolder> {
     private val channelType: ChannelType by lazy {
-        arguments?.getSerializable(BundleKey.ChannelType.name) as? ChannelType
+        arguments?.let { BundleCompat.getSerializable(it, BundleKey.ChannelType.name, ChannelType::class.java) }
             ?: ChannelType.Public
     }
 

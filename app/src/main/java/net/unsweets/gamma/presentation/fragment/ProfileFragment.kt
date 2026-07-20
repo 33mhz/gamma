@@ -10,6 +10,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -115,7 +116,7 @@ class ProfileFragment : BaseFragment() {
             if (iconUrl != null && iconUrl.isNotBlank()) {
                 fixTransition(iconUrl)
             }
-            val user = bundle.getParcelable<User?>(BundleKey.User.name)
+            val user = BundleCompat.getParcelable(bundle, BundleKey.User.name, User::class.java)
 //            val iconTransitionName = bundle.getString(BundleKey.IconTransitionName.name)
 //            binding.circleImageView.transitionName = iconTransitionName
             viewModel.user.value = user
@@ -169,7 +170,7 @@ class ProfileFragment : BaseFragment() {
 
         binding.toolbar.let { toolbar ->
             toolbar.setNavigationOnClickListener { backToPrevFragment() }
-            toolbar.setOnMenuItemClickListener { onOptionsItemSelected(it) }
+            toolbar.setOnMenuItemClickListener { onMenuItemClick(it) }
         }
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.fetchUser()
@@ -208,14 +209,14 @@ class ProfileFragment : BaseFragment() {
         return binding.root
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menuMessage -> openMessageFragment()
             R.id.menuBlock -> toggleBlock()
             R.id.menuMute -> toggleMute()
             R.id.menuShare -> share()
             R.id.menuShareUserPostsRss -> shareUserPostsRss()
-            else -> return super.onOptionsItemSelected(item)
+            else -> return false
         }
         return true
     }

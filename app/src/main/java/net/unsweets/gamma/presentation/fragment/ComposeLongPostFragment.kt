@@ -2,6 +2,7 @@ package net.unsweets.gamma.presentation.fragment
 
 
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,7 +54,7 @@ class ComposeLongPostFragment : Fragment(), BackPressedHookable {
         ViewModelProvider(this)[ComposeLongPostViewModel::class.java]
     }
     private val longPost by lazy {
-        arguments?.getParcelable<LongPost>(BundleKey.LongPost.name)
+        arguments?.let { BundleCompat.getParcelable(it, BundleKey.LongPost.name, LongPost::class.java) }
     }
 
     private enum class BundleKey { LongPost }

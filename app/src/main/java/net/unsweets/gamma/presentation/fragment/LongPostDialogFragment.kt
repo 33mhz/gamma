@@ -2,6 +2,7 @@ package net.unsweets.gamma.presentation.fragment
 
 
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,7 @@ import net.unsweets.gamma.domain.entity.raw.LongPost
 
 class LongPostDialogFragment : BaseBottomSheetDialogFragment() {
     private val longPost: LongPost by lazy {
-        arguments?.getParcelable(BundleKey.LongPost.name)
+        arguments?.let { BundleCompat.getParcelable(it, BundleKey.LongPost.name, LongPost::class.java) }
             ?: throw NullPointerException("You must set LongPost")
     }
 

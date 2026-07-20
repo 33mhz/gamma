@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import android.view.LayoutInflater
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
@@ -72,7 +73,7 @@ class SpoilerDialogFragment : DialogFragment(), DialogInterface.OnClickListener 
 
     private var listener: Callback? = null
     private val spoiler by lazy {
-        arguments?.getParcelable<Spoiler>(BundleKey.Spoiler.name)
+        arguments?.let { BundleCompat.getParcelable(it, BundleKey.Spoiler.name, Spoiler::class.java) }
     }
 
     private lateinit var binding: FragmentSpoilerDialogBinding

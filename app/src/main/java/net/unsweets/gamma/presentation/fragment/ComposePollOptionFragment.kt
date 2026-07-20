@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import android.view.LayoutInflater
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
@@ -54,7 +55,7 @@ class ComposePollOptionFragment : DialogFragment(), DialogInterface.OnClickListe
 
     private lateinit var binding: FragmentComposePollOptionBinding
     private val pollPostBody by lazy {
-        arguments?.getParcelable(BundleKey.PollOption.name)
+        arguments?.let { BundleCompat.getParcelable(it, BundleKey.PollOption.name, PollPostBody::class.java) }
             ?: PollPostBody.defaultValue
     }
 

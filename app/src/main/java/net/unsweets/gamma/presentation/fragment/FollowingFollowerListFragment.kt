@@ -1,6 +1,7 @@
 package net.unsweets.gamma.presentation.fragment
 
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import net.unsweets.gamma.R
@@ -16,7 +17,7 @@ abstract class FollowingFollowerListFragment : UserListFragment() {
     private enum class BundleKey { User }
 
     protected val user by lazy {
-        arguments?.getParcelable<User>(BundleKey.User.name) ?: throw IllegalArgumentException("Must set user")
+        arguments?.let { BundleCompat.getParcelable(it, BundleKey.User.name, User::class.java) } ?: throw IllegalArgumentException("Must set user")
     }
 
 
