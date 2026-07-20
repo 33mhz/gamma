@@ -29,7 +29,7 @@ fun Snackbar.showAsError() {
     show()
 }
 
-fun Snackbar.oneline(): Snackbar {
+fun Snackbar.oneLine(): Snackbar {
     val view = this.view
     val textView = view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
     textView.maxLines = 1

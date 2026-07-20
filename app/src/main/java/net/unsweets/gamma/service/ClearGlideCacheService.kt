@@ -9,6 +9,7 @@ import com.bumptech.glide.Glide
 
 class ClearGlideCacheService : IntentService("ClearGlideCacheService") {
 
+    @Deprecated("Deprecated in Java")
     override fun onHandleIntent(intent: Intent?) {
         if (intent == null) return
         Glide.getPhotoCacheDir(baseContext)?.deleteRecursively()

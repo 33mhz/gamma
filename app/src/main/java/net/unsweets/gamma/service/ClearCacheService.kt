@@ -6,10 +6,11 @@ import android.content.Intent
 
 class ClearCacheService : IntentService("ClearCacheService") {
 
+    @Deprecated("Deprecated in Java")
     override fun onHandleIntent(intent: Intent?) {
         if (intent == null) return
         val cacheDir = baseContext.externalCacheDir ?: return
-        cacheDir.listFiles().forEach { it.delete() }
+        cacheDir.listFiles()?.forEach { it.delete() }
     }
 
     companion object {

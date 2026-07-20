@@ -538,8 +538,6 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
                             }
                         }
                     }
-                } else if (item.pollOptionsAdapter != null) {
-
                 }
                 item.pollOptionsAdapter?.setPollDetail(poll)
                 viewHolder.pollVoteButton.isEnabled = item.pollOptionsAdapter?.votable ?: false
@@ -829,7 +827,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         private val getPollUseCase: GetPollUseCase,
         private val voteUseCase: VoteUseCase
     ) :
-        BaseListFragment.BaseListViewModel<Post>() {
+        BaseListViewModel<Post>() {
         var isAutoScrollTemporarily = false
         val updatePoll = SingleLiveEvent<GetPoll>()
 
@@ -953,14 +951,14 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
     companion object {
         fun getHomeStreamInstance() = HomeStream()
         fun getMentionStreamInstance() = MentionsStream()
-        fun getConversationInstance() = ExploreFragment.ConversationsFragment.newInstance()
-        fun getMissedConversationInstance() =
-            ExploreFragment.MissedConversationsFragment.newInstance()
-
-        fun getNewcomersInstance() = ExploreFragment.NewcomersFragment.newInstance()
-        fun getPhotoInstance() = ExploreFragment.PhotosFragment.newInstance()
-        fun getTrendingInstance() = ExploreFragment.TrendingFragment.newInstance()
-        fun getGlobalInstance() = ExploreFragment.GlobalFragment.newInstance()
+//        fun getConversationInstance() = ExploreFragment.ConversationsFragment.newInstance()
+//        fun getMissedConversationInstance() =
+//            ExploreFragment.MissedConversationsFragment.newInstance()
+//
+//        fun getNewcomersInstance() = ExploreFragment.NewcomersFragment.newInstance()
+//        fun getPhotoInstance() = ExploreFragment.PhotosFragment.newInstance()
+//        fun getTrendingInstance() = ExploreFragment.TrendingFragment.newInstance()
+//        fun getGlobalInstance() = ExploreFragment.GlobalFragment.newInstance()
         fun getTaggedStreamInstance(tag: String) = TagStreamFragment.newInstance(tag)
 
         fun getUserPostInstance(userId: String) =

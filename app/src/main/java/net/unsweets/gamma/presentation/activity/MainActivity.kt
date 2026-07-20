@@ -52,7 +52,7 @@ import net.unsweets.gamma.presentation.viewmodel.MainActivityViewModel
 import net.unsweets.gamma.service.PostService
 import net.unsweets.gamma.util.ErrorIntent
 import net.unsweets.gamma.util.LogUtil
-import net.unsweets.gamma.util.oneline
+import net.unsweets.gamma.util.oneLine
 import net.unsweets.gamma.util.showAsError
 import javax.inject.Inject
 import androidx.core.view.size
@@ -147,7 +147,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
     private fun showSnackBar(text: String, snackbarCallback: SnackbarCallback? = null) {
         val view = findViewById<View>(android.R.id.content) ?: return
-        Snackbar.make(view, text, Snackbar.LENGTH_SHORT).oneline().apply {
+        Snackbar.make(view, text, Snackbar.LENGTH_SHORT).oneLine().apply {
             setAnchorView(R.id.fab)
             if (snackbarCallback != null) setAction(
                 snackbarCallback.actionResId,

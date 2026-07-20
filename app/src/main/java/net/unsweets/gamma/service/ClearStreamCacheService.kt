@@ -9,6 +9,7 @@ import net.unsweets.gamma.domain.repository.PnutCacheRepository
 
 class ClearStreamCacheService : IntentService("ClearStreamCacheService") {
 
+    @Deprecated("Deprecated in Java")
     override fun onHandleIntent(intent: Intent?) {
         if (intent == null) return
         val cacheDir = PnutCacheRepository.getUserCacheDir(baseContext) ?: return

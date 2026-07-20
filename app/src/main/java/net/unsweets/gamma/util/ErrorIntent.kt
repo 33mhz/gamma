@@ -7,7 +7,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import net.unsweets.gamma.BuildConfig
 
 object ErrorIntent {
-    const val action = "${BuildConfig.APPLICATION_ID}.Error"
+    const val ACTION = "${BuildConfig.APPLICATION_ID}.Error"
     fun createErrorIntent(t: Throwable?): Intent {
         LogUtil.e(t.toString())
         val message: String = when (t) {
@@ -15,13 +15,13 @@ object ErrorIntent {
             else -> t?.message ?: Constants.UNKNOWN_ERROR
         }
         return Intent().also {
-            it.action = action
+            it.action = ACTION
             it.putExtra(Intent.EXTRA_TEXT, message)
         }
     }
 
     fun getIntentFilter() = IntentFilter().also {
-        it.addAction(action)
+        it.addAction(ACTION)
     }
 
     fun broadcast(context: Context, t: Throwable) {

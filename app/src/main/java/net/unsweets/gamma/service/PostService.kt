@@ -54,10 +54,12 @@ class PostService : IntentService("PostService") {
     @Inject
     lateinit var createPollUseCase: CreatePollUseCase
 
+    @Deprecated("Deprecated in Java")
     override fun onCreate() {
         super.onCreate()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onHandleIntent(intent: Intent?) {
         intent?.let { handleIntent(it) } ?: return
     }
