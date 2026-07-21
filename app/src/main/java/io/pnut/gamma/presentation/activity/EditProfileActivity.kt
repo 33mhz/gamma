@@ -27,9 +27,9 @@ class EditProfileActivity : BaseActivity(), EditProfileFragment.Callback {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setupAnimation()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
+        setupAnimation()
         replaceFragment(savedInstanceState == null)
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -58,7 +58,7 @@ class EditProfileActivity : BaseActivity(), EditProfileFragment.Callback {
             }
         })
         window.sharedElementsUseOverlay = false
-        findViewById<View>(R.id.content).transitionName =
+        findViewById<View>(android.R.id.content).transitionName =
             getString(R.string.shared_element_edit_profile)
         val duration = resources.getInteger(R.integer.default_anim_duration).toLong()
         window.sharedElementEnterTransition = MaterialContainerTransform().also {
@@ -70,7 +70,7 @@ class EditProfileActivity : BaseActivity(), EditProfileFragment.Callback {
                 ShapeAppearanceModel.builder().setAllCornerSizes(ShapeAppearanceModel.PILL).build()
             it.endShapeAppearanceModel =
                 ShapeAppearanceModel.builder().setAllCornerSizes(0f).build()
-            it.addTarget(R.id.content)
+            it.addTarget(android.R.id.content)
             it.duration = duration
         }
         window.sharedElementReturnTransition = MaterialContainerTransform().also {
@@ -82,7 +82,7 @@ class EditProfileActivity : BaseActivity(), EditProfileFragment.Callback {
                 ShapeAppearanceModel.builder().setAllCornerSizes(0f).build()
             it.endShapeAppearanceModel =
                 ShapeAppearanceModel.builder().setAllCornerSizes(ShapeAppearanceModel.PILL).build()
-            it.addTarget(R.id.content)
+            it.addTarget(android.R.id.content)
             it.duration = duration
         }
     }

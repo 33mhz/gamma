@@ -282,18 +282,13 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
         insertIndex: Int
     ) {
         val items = response.data
-        val isFirstTime = options.itemList.isEmpty()
         val pageableItemWrapperItems = items.map { PageableItemWrapper.Item(it) }
         LogUtil.e("requestPager $requestPager ")
         LogUtil.e("itemsS size ${pageableItemWrapperItems.size}")
         LogUtil.e("Insert range $insertIndex ${insertIndex + items.size}")
 
         options.itemList.addAll(insertIndex, pageableItemWrapperItems)
-        // scroll to top when insert in first time
-        if (isFirstTime)
-            notifyItemRangeChanged(insertIndex, items.size)
-        else
-            notifyItemRangeInserted(insertIndex, items.size)
+        notifyItemRangeInserted(insertIndex, items.size)
 
         addSegmentIfNeed(insertIndex + items.size, requestPager, response)
     }

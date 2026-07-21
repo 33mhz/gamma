@@ -34,9 +34,9 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setupAnimation()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compose_post)
+        setupAnimation()
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.compose_post_placeholder, composePostFragment).commit()
@@ -55,7 +55,7 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
     private fun setupAnimation() {
         setEnterSharedElementCallback(MaterialContainerTransformSharedElementCallback())
         window.sharedElementsUseOverlay = false
-        findViewById<View>(R.id.content).transitionName =
+        findViewById<View>(android.R.id.content).transitionName =
             getString(R.string.shared_element_compose)
         val primaryColor = ContextCompat.getColor(this, R.color.colorPrimary)
         val backgroundColor = ContextCompat.getColor(this, R.color.colorWindowBackground)
@@ -66,7 +66,7 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
             it.interpolator = FastOutSlowInInterpolator()
             it.containerColor = primaryColor
             it.endContainerColor = backgroundColor
-            it.addTarget(R.id.content)
+            it.addTarget(android.R.id.content)
             it.duration = duration
             it.doOnEnd {
                 composePostFragment.focusToEditText()
@@ -78,7 +78,7 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
             it.interpolator = FastOutSlowInInterpolator()
             it.containerColor = backgroundColor
             it.endContainerColor = primaryColor
-            it.addTarget(R.id.content)
+            it.addTarget(android.R.id.content)
             it.duration = duration
         }
     }
