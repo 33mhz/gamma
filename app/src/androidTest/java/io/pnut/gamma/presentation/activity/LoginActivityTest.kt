@@ -36,12 +36,12 @@ class LoginActivityTest {
     Espresso.onView(ViewMatchers.withId(R.id.loginButton)).perform(ViewActions.click())
     val intent = Iterables.getOnlyElement(Intents.getIntents())
     val scopes = arrayOf(
-      "BASIC",
-      "STREAM",
-      "WRITE_POST",
-      "FOLLOW",
-      "UPDATE_PROFILE",
-      "PRESENCE",
+      "basic",
+      "stream",
+      "write_post",
+      "follow",
+      "update_profile",
+      "presence",
       "messages:io.pnut.core.chat",
       "messages:io.pnut.core.pm",
       "files:io.pnut.delta"

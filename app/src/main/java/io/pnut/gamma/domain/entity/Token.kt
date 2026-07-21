@@ -13,19 +13,22 @@ data class Token (
     val user: User,
     val storage: Storage
 ) : Parcelable {
-    enum class Scope {
-        @Json(name = "basic") BASIC,
-        @Json(name = "stream") STREAM,
-        @Json(name = "write_post") WRITE_POST,
-        @Json(name = "follow") FOLLOW,
-        @Json(name = "update_profile") UPDATE_PROFILE,
-        @Json(name = "presence") PRESENCE,
-        @Json(name = "messages:io.pnut.core.chat") MESSAGES_CHAT,
-        @Json(name = "messages:io.pnut.core.pm") MESSAGES_PM,
-//        @Json(name = "public_messages") PUBLIC_MESSAGES,
-        @Json(name = "files:io.pnut.delta") FILES_DELTA,
-//        @Json(name = "polls") POLLS,
-//        @Json(name = "email") EMAIL
+    enum class Scope(val value: String) {
+        @Json(name = "basic") BASIC("basic"),
+        @Json(name = "stream") STREAM("stream"),
+        @Json(name = "write_post") WRITE_POST("write_post"),
+        @Json(name = "follow") FOLLOW("follow"),
+        @Json(name = "update_profile") UPDATE_PROFILE("update_profile"),
+        @Json(name = "presence") PRESENCE("presence"),
+        @Json(name = "messages:io.pnut.core.chat") MESSAGES_CHAT("messages:io.pnut.core.chat"),
+        @Json(name = "messages:io.pnut.core.pm") MESSAGES_PM("messages:io.pnut.core.pm"),
+//        @Json(name = "public_messages") PUBLIC_MESSAGES("public_messages"),
+        @Json(name = "files:io.pnut.delta") FILES_DELTA("files:io.pnut.delta"),
+//        @Json(name = "polls") POLLS("polls"),
+//        @Json(name = "email") EMAIL("email")
+        ;
+
+        override fun toString(): String = value
     }
 
     @Parcelize
