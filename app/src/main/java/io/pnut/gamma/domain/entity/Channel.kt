@@ -17,12 +17,12 @@ data class Channel(
     @Json(name = "has_unread") val hasUnread: Boolean,
     val id: String,
     @Json(name = "is_active") val isActive: Boolean? = true,
-    @Json(name = "recent_message") val recentMessage: Message,
-    @Json(name = "recent_message_id") val recentMessageId: String,
+    @Json(name = "recent_message") val recentMessage: Message? = null,
+    @Json(name = "recent_message_id") val recentMessageId: String? = null,
     val type: String,
     @Json(name = "you_muted") val youMuted: Boolean,
     @Json(name = "you_subscribed") val youSubscribed: Boolean,
-    val user: User,
+    val user: User? = null,
     @Json(name = "user_id") val userId: String? = null,
     @Json(name = "pagination_id") override var paginationId: String? = null
 ) : Parcelable, UniquePageable {

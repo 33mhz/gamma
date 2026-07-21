@@ -14,6 +14,7 @@ import io.pnut.gamma.domain.model.ChannelType
 import io.pnut.gamma.domain.model.PageableItemWrapper
 import io.pnut.gamma.domain.model.io.GetChannelsInputData
 import io.pnut.gamma.domain.model.params.composed.GetChannelsParam
+import io.pnut.gamma.domain.model.params.single.GeneralChannelParam
 import io.pnut.gamma.domain.model.params.single.PaginationParam
 import io.pnut.gamma.domain.usecases.GetChannelsUseCase
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
@@ -85,6 +86,7 @@ class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.Channe
     ) : BaseListViewModel<Channel>() {
         override suspend fun getItems(requestPager: PageableItemWrapper.Pager<Channel>?): PnutResponse<List<Channel>> {
             val params = GetChannelsParam().also { getChannelParams ->
+                getChannelParams.add(GeneralChannelParam(includeRecentMessage = true))
                 requestPager?.let { getChannelParams.add(PaginationParam.createFromPager(it)) }
             }
             val getChannelsOutputData =
