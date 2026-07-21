@@ -24,7 +24,8 @@ data class Channel(
     @Json(name = "you_subscribed") val youSubscribed: Boolean,
     val user: User? = null,
     @Json(name = "user_id") val userId: String? = null,
-    @Json(name = "pagination_id") override var paginationId: String? = null
+    @Json(name = "pagination_id") override var paginationId: String? = null,
+    @Json(name = "raw") val raw: Map<String, List<io.pnut.gamma.domain.entity.raw.RawValue>>? = null
 ) : Parcelable, UniquePageable {
     @IgnoredOnParcel
     override val uniqueKey: String by lazy { id }

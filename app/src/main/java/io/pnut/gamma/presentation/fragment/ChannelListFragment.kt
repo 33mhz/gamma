@@ -8,8 +8,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import io.pnut.gamma.R
+import io.pnut.gamma.databinding.ChannelItemBinding
 import io.pnut.gamma.domain.entity.Channel
 import io.pnut.gamma.domain.entity.PnutResponse
+import io.pnut.gamma.domain.entity.raw.ChatSettings
 import io.pnut.gamma.domain.model.ChannelType
 import io.pnut.gamma.domain.model.PageableItemWrapper
 import io.pnut.gamma.domain.model.io.GetChannelsInputData
@@ -18,6 +20,8 @@ import io.pnut.gamma.domain.model.params.single.GeneralChannelParam
 import io.pnut.gamma.domain.model.params.single.PaginationParam
 import io.pnut.gamma.domain.usecases.GetChannelsUseCase
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
+import io.pnut.gamma.presentation.util.BindingUtil
+import io.pnut.gamma.domain.entity.User
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -61,7 +65,13 @@ class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.Channe
         position: Int,
         isMainItem: Boolean
     ) {
-        // TODO
+        val chatSettings = ChatSettings.getChatSettings(item.raw)
+        viewHolder.binding.channelName.text = chatSettings?.name ?: (item.user?.username ?: "Channel ${item.id}")
+        viewHolder.binding.recentMessage.text = item.recentMessage?.content?.text ?: ""
+
+        val user = item.recentMessage?.user ?: item.user
+        val avatarUrl = user?.let { User.getAvatarUrl(it, User.AvatarSize.Small) }
+        BindingUtil.glideAvatarSrc(viewHolder.binding.channelAvatar, avatarUrl)
     }
 
     override fun getItemLayout(): Int = R.layout.channel_item
@@ -72,11 +82,12 @@ class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.Channe
         viewHolder: BaseListRecyclerViewAdapter.SegmentViewHolder,
         itemWrapper: PageableItemWrapper.Pager<Channel>
     ) {
-        // TODO:
         viewModel.loadMoreItems()
     }
 
-    class ChannelViewHolder(mView: View) : RecyclerView.ViewHolder(mView)
+    class ChannelViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
+        val binding = ChannelItemBinding.bind(mView)
+    }
 
     private enum class BundleKey { ChannelType }
 
