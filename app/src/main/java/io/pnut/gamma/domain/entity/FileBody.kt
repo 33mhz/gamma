@@ -7,5 +7,5 @@ data class FileBody(
   val name: String,
   val isPublic: Boolean = true
 ) : Serializable {
-    val type = "io.pnut.gamma"
+    val type = "io.pnut.delta"
 }

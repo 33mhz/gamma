@@ -12,7 +12,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.ext.truth.content.IntentSubject.assertThat
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.android.material.R
+import com.google.android.material.R as Rm
 import com.google.common.collect.Iterables
 import io.pnut.gamma.presentation.activity.LoginActivity
 import io.pnut.gamma.R
@@ -67,7 +67,7 @@ class LoginActivityTest {
       "error message"
     )
     ActivityScenario.launch<LoginActivity>(intent)
-    Espresso.onView(ViewMatchers.withId(R.id.snackbar_text))
+    Espresso.onView(ViewMatchers.withId(Rm.id.snackbar_text))
       .check(ViewAssertions.matches(ViewMatchers.withText("error message")))
   }
 

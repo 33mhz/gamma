@@ -43,8 +43,8 @@ object MoshiSingleton {
         .add(MicroTimestampAdapter())
         .add(
             PolymorphicJsonAdapterFactory.of(OEmbed::class.java, "type")
-                .withSubtype(OEmbed.Photo::class.java, OEmbed.Photo.type)
-                .withSubtype(OEmbed.Video::class.java, OEmbed.Video.type)
+                .withSubtype(OEmbed.Photo::class.java, OEmbed.Photo.TYPE)
+                .withSubtype(OEmbed.Video::class.java, OEmbed.Video.TYPE)
                 .withDefaultValue(OEmbed("", ""))
         )
         .add(PageableItemWrapperConverter.storableUserAdapterFactory)

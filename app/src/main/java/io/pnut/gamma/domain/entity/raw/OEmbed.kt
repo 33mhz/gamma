@@ -33,9 +33,9 @@ open class OEmbed(
         @Json(name = "thumbnail_url") val thumbnailUrl: String?,
         @Json(name = "thumbnail_height") val thumbnailHeight: String?,
         @Json(name = "thumbnail_width") val thumbnailWidth: String?
-    ) : OEmbed(type, version), Parcelable {
+    ) : OEmbed(TYPE, version), Parcelable {
         companion object {
-            const val type = "photo"
+            const val TYPE = "photo"
             fun getPhotos(raw: Map<String, List<RawValue>>?): List<Photo> {
                 return getOEmbeds(raw).filterIsInstance<Photo>()
             }
@@ -45,9 +45,9 @@ open class OEmbed(
     @Parcelize
     data class Video(
         override val version: String
-    ) : OEmbed(type, version), Parcelable {
+    ) : OEmbed(TYPE, version), Parcelable {
         companion object {
-            const val type = "video"
+            const val TYPE = "video"
             fun getVideos(raw: Map<String, List<RawValue>>?): List<Video> {
                 return getOEmbeds(raw).filterIsInstance<Video>()
             }
