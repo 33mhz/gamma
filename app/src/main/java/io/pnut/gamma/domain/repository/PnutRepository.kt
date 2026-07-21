@@ -1,7 +1,9 @@
 package io.pnut.gamma.domain.repository
 
+import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
+import android.provider.OpenableColumns
 import io.pnut.gamma.data.PnutService
 import io.pnut.gamma.domain.entity.Channel
 import io.pnut.gamma.domain.entity.FileBody
@@ -29,7 +31,6 @@ import io.pnut.gamma.util.bodyOrThrow
 import io.pnut.gamma.BuildConfig
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -65,14 +66,33 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
     private enum class UserImageKey { Avatar, Cover }
 
     private fun createUserImageRequestBody(uri: Uri, key: UserImageKey): MultipartBody.Part {
-        val file = File(uri.path)
-        val mimeType = URLConnection.guessContentTypeFromName(file.path)
-        val content = file.asRequestBody(mimeType?.toMediaTypeOrNull())
+        val contentResolver = context.contentResolver
+        val mimeType = contentResolver.getType(uri) ?: URLConnection.guessContentTypeFromName(uri.toString())
+        val fileName = getFileName(uri) ?: "image"
+
+        val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
+            ?: throw IllegalArgumentException("Could not open input stream for URI: $uri")
+
+        val content = bytes.toRequestBody(mimeType?.toMediaTypeOrNull())
         return MultipartBody.Part.createFormData(
-            key.name.lowercase(Locale.ENGLISH),
-            file.name,
+            key.name.lowercase(Locale.ROOT),
+            fileName,
             content
         )
+    }
+
+    private fun getFileName(uri: Uri): String? {
+        if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
+            context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (index != -1) {
+                        return cursor.getString(index)
+                    }
+                }
+            }
+        }
+        return uri.lastPathSegment
     }
 
     override fun createFile(content: RequestBody, fileBody: FileBody): PnutResponse<io.pnut.gamma.domain.entity.File> {
@@ -249,7 +269,7 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
     }
 
     override suspend fun getChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
-        return defaultPnutService.getChannelsCreatedByMe(getChannelsParam.toMap()).await()
+        return defaultPnutService.getSubscribedChannels(getChannelsParam.toMap()).await()
     }
 
     override suspend fun getMessages(

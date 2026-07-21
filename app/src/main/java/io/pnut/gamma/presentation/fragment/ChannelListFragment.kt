@@ -26,7 +26,7 @@ class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.Channe
     BaseListRecyclerViewAdapter.IBaseList<Channel, ChannelListFragment.ChannelViewHolder> {
     private val channelType: ChannelType by lazy {
         arguments?.let { BundleCompat.getSerializable(it, BundleKey.ChannelType.name, ChannelType::class.java) }
-            ?: ChannelType.Public
+            ?: ChannelType.Chat
     }
 
     @Inject
@@ -86,7 +86,7 @@ class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.Channe
     ) : BaseListViewModel<Channel>() {
         override suspend fun getItems(requestPager: PageableItemWrapper.Pager<Channel>?): PnutResponse<List<Channel>> {
             val params = GetChannelsParam().also { getChannelParams ->
-                getChannelParams.add(GeneralChannelParam(includeRecentMessage = true))
+                getChannelParams.add(GeneralChannelParam(includeRecentMessage = true, channelTypes = channelType.value))
                 requestPager?.let { getChannelParams.add(PaginationParam.createFromPager(it)) }
             }
             val getChannelsOutputData =
@@ -106,8 +106,8 @@ class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.Channe
     }
 
     companion object {
-        fun privateChannels() = newInstance(ChannelType.Private)
-        fun publicChannels() = newInstance(ChannelType.Public)
+        fun pmChannels() = newInstance(ChannelType.PM)
+        fun chatChannels() = newInstance(ChannelType.Chat)
         private fun newInstance(channelType: ChannelType) = ChannelListFragment().apply {
             arguments = Bundle().apply {
                 putSerializable(BundleKey.ChannelType.name, channelType)
