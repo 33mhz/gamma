@@ -78,10 +78,6 @@ import io.pnut.gamma.service.PostWorker
 import io.pnut.gamma.util.LogUtil
 import io.pnut.gamma.util.SingleLiveEvent
 import kotlinx.coroutines.launch
-import io.pnut.gamma.domain.entity.*
-import io.pnut.gamma.domain.model.io.*
-import io.pnut.gamma.domain.usecases.*
-import io.pnut.gamma.presentation.util.*
 import javax.inject.Inject
 import kotlin.collections.set
 import kotlin.math.abs
@@ -389,7 +385,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         updateRepostView(viewHolder, item)
 
         val hasConversation =
-            item.mainPost.replyTo != null || (item.mainPost.counts?.replies ?: 0) > 0
+            item.mainPost.replyTo != null || item.mainPost.counts.replies > 0
         viewHolder.chatIconImageView.visibility =
             if (hasConversation) View.VISIBLE else View.GONE
         if (hasConversation) {
@@ -473,7 +469,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             viewHolder.thumbnailViewPager.adapter = null
         }
         viewHolder.detailInfoLayout.visibility = getVisibility(isMainItem)
-        val replyCount = item.mainPost.counts?.replies ?: 0
+        val replyCount = item.mainPost.counts.replies
         val replyText =
             resources.getQuantityString(R.plurals.reply_count_template, replyCount, replyCount)
 
@@ -499,9 +495,9 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 //                preferenceRepository.shapeOfAvatar
             ) else null
         }
-        viewHolder.clientNameTextView.text = item.mainPost.source?.name
+        viewHolder.clientNameTextView.text = item.mainPost.source.name
         viewHolder.clientNameTextView.setOnClickListener {
-            item.mainPost.source?.url.let { link -> Util.openCustomTabUrl(context, url) }
+            item.mainPost.source.url.let { link -> Util.openCustomTabUrl(context, url) }
         }
         viewHolder.foregroundActionsLayout.visibility =
             getVisibility(mainPostId == item.id || (previousViewHolderItem?.post == item))
@@ -602,7 +598,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 
         viewHolder.repostStateView.visibility =
             if (item.mainPost.youReposted == true) View.VISIBLE else View.GONE
-        val repostCount = item.mainPost.counts?.reposts ?: 0
+        val repostCount = item.mainPost.counts.reposts
         val repostText =
             resources.getQuantityString(R.plurals.repost_count_template, repostCount, repostCount)
         viewHolder.repostCountTextView.text = repostText
@@ -630,7 +626,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         }
         viewHolder.starStateView.visibility =
             if (item.mainPost.youBookmarked == true) View.VISIBLE else View.GONE
-        val starCount = item.mainPost.counts?.bookmarks ?: 0
+        val starCount = item.mainPost.counts.bookmarks
         val starText =
             resources.getQuantityString(R.plurals.star_count_template, starCount, starCount)
         viewHolder.starCountTextView.text = starText

@@ -204,14 +204,14 @@
     <string name="pref_loading_size_desc">The count of items to be loaded.</string>
     <string name="pref_auto_pager">Threshold of auto pager</string>
     <string name="pref_auto_pager_key">auto_pager</string>
-    <string name="pref_auto_pager_desc">It will auto load when the count from last item to of
+    <string name="pref_auto_pager_desc">It will autoload when the count from last
         viewing item below the configured number. Disable when set to 0.</string>
     <string name="each_stream">Each stream and other lists</string>
     <string name="pref_use_unified_stream_key">use_unified_stream</string>
     <string name="pref_use_unified_stream_summary_on">Include mentions in personal stream.</string>
-    <string name="pref_use_unified_stream_summary_off">Not include mentions in personal stream.</string>
+    <string name="pref_use_unified_stream_summary_off">Do not include mentions in personal stream.</string>
     <string name="pref_use_unified_stream_title">Use unified stream</string>
-    <string name="pref_shape_of_avatar_title">Shape of avatar</string>
+    <string name="pref_shape_of_avatar_title">Avatar shape</string>
     <string name="pref_shape_of_avatar_key">shape_of_avatar</string>
     <string name="pref_shape_of_avatar_key_default_value">0</string>
     <string name="cache">Cache</string>
