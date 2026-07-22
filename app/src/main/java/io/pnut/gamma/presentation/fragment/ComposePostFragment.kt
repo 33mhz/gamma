@@ -303,15 +303,15 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         viewModel.enablePoll.observe(this, enablePollObserver)
         uriInfo?.let { viewModel.media = it }
 
-        setFragmentResultListener(RequestCode.Discard.name) { _, bundle ->
-            if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
-                cancelToCompose(true)
-            }
-        }
-
         setFragmentResultListener(ComposeLongPostFragment.RequestKey.UpdateLongPost.name) { _, bundle ->
             val longPost = BundleCompat.getParcelable(bundle, ComposeLongPostFragment.ResponseKey.LongPost.name, LongPost::class.java)
             onUpdateLongPost(longPost)
+        }
+
+        childFragmentManager.setFragmentResultListener(RequestCode.Discard.name, this) { _, bundle ->
+            if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
+                cancelToCompose(true)
+            }
         }
     }
 

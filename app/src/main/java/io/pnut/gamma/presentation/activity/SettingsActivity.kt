@@ -4,11 +4,11 @@ import io.pnut.gamma.R
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.app.Activity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.core.view.MenuProvider
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.preference.ListPreference
 import android.preference.PreferenceManager
@@ -290,13 +290,13 @@ class SettingsActivity : BaseActivity(),
             clearStreamCacheButton?.isEnabled =
                 context?.let { PnutCacheRepository.getUserCacheDir(it)?.exists() } ?: true
 
-            setFragmentResultListener(RequestCode.ClearStreamCache.name) { _, bundle ->
-                if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == RESULT_OK) {
+            childFragmentManager.setFragmentResultListener(RequestCode.ClearStreamCache.name, this) { _, bundle ->
+                if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
                     context?.let { ClearStreamCacheWorker.enqueue(it) }
                 }
             }
-            setFragmentResultListener(RequestCode.ClearGlideCache.name) { _, bundle ->
-                if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == RESULT_OK) {
+            childFragmentManager.setFragmentResultListener(RequestCode.ClearGlideCache.name, this) { _, bundle ->
+                if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
                     context?.let { ClearGlideCacheWorker.enqueue(it) }
                 }
             }

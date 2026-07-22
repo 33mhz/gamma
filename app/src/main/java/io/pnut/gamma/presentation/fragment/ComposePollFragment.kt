@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.*
 import io.pnut.gamma.domain.entity.PollPostBody
 import io.pnut.gamma.domain.model.PollDeadline
@@ -77,7 +76,7 @@ class ComposePollFragment : BaseFragment(), ComposePollOptionFragment.Callback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.event.observe(this, eventObserver)
-        setFragmentResultListener(RequestCode.Discard.name) { _, bundle ->
+        childFragmentManager.setFragmentResultListener(RequestCode.Discard.name, this) { _, bundle ->
             if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
                 discard()
             }

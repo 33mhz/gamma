@@ -12,7 +12,6 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.IntentCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
@@ -217,7 +216,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
         viewModel.event.observe(this, eventObserver)
         viewModel.loading.observe(this, loadingObserver)
 
-        setFragmentResultListener(RequestCode.Discard.name) { _, bundle ->
+        childFragmentManager.setFragmentResultListener(RequestCode.Discard.name, this) { _, bundle ->
             if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
                 finish()
             }

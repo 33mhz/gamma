@@ -44,6 +44,7 @@ class ComposeLongPostFragment : Fragment(), BackPressedHookable {
             RequestKey.UpdateLongPost.name,
             bundleOf(ResponseKey.LongPost.name to longPost)
         )
+        parentFragmentManager.popBackStack()
     }
 
     private var _binding: FragmentComposeLongPostBinding? = null

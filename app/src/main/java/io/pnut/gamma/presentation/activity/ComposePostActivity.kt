@@ -15,6 +15,7 @@ import com.google.android.material.transition.platform.MaterialContainerTransfor
 import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import io.pnut.gamma.presentation.fragment.ComposePostFragment
 import io.pnut.gamma.presentation.util.Util
+import io.pnut.gamma.presentation.util.BackPressedHookable
 import androidx.core.content.IntentCompat
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -44,6 +45,16 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                if (supportFragmentManager.backStackEntryCount > 0) {
+                    val fragment = supportFragmentManager.findFragmentById(R.id.compose_post_placeholder)
+                    if (fragment is BackPressedHookable) {
+                        fragment.onBackPressed()
+                    } else {
+                        supportFragmentManager.popBackStack()
+                    }
+                    return
+                }
+
                 if (composePostFragment.cancelToCompose()) {
                     isEnabled = false
                     onBackPressedDispatcher.onBackPressed()
