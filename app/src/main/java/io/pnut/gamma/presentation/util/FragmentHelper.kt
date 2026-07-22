@@ -1,6 +1,7 @@
 package io.pnut.gamma.presentation.util
 
 import android.content.Context
+import android.content.ContextWrapper
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -47,10 +48,12 @@ object FragmentHelper {
     }
 
     private fun getFragmentManagerFromContext(context: Context): FragmentManager? {
-        return when (context) {
-            is AppCompatActivity -> context.supportFragmentManager
-            else -> null
+        var c = context
+        while (c is ContextWrapper) {
+            if (c is AppCompatActivity) return c.supportFragmentManager
+            c = c.baseContext
         }
+        return null
     }
 
     fun addFragment(
@@ -60,7 +63,7 @@ object FragmentHelper {
         transitionMap: Map<View, String>?
     ): Fragment? {
         val foundFragment = fm.findFragmentById(R.id.fragmentPlaceholder)
-        if (foundFragment == null || foundFragment == fragment || foundFragment.tag == tag) return foundFragment
+        if (foundFragment != null && (foundFragment == fragment || foundFragment.tag == tag)) return foundFragment
         val ft = fm
             .beginTransaction()
             .setCustomAnimations(

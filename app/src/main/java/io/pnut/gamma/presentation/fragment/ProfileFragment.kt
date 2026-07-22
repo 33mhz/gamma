@@ -94,7 +94,7 @@ class ProfileFragment : BaseFragment() {
     private val entityOnTouchListener: View.OnTouchListener = EntityOnTouchListener()
 
     private val eventObserver = Observer<Event>(::eventHandling)
-    private val userObserver = Observer<User> {
+    private val userObserver = Observer<User?> {
         if (it == null || it.content.coverImage.isDefault) return@Observer
         binding.swipeRefreshLayout.isRefreshing = false
     }
@@ -375,7 +375,7 @@ class ProfileFragment : BaseFragment() {
         private val userId: String?
     ) : AndroidViewModel(app) {
         val event = SingleLiveEvent<Event>()
-        val user = MutableLiveData<User>()
+        val user = MutableLiveData<User?>()
         val iconUrl: LiveData<String> = user.map {
             when {
                 it != null -> it.getAvatarUrl(null)

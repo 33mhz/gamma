@@ -673,8 +673,9 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
     }
 
     private fun showThread(item: Post): Boolean {
-        val fragment = getThreadInstance(item, item.id)
-        return addFragment(fragment, item.id) == null
+        val mainPost = item.mainPost
+        val fragment = getThreadInstance(mainPost, mainPost.id)
+        return addFragment(fragment, mainPost.id) == null
     }
 
     private val reactionUsersAdapterListener by lazy {
