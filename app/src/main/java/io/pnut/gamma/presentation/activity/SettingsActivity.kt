@@ -4,7 +4,6 @@ import io.pnut.gamma.R
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
-import android.app.Activity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -291,12 +290,12 @@ class SettingsActivity : BaseActivity(),
                 context?.let { PnutCacheRepository.getUserCacheDir(it)?.exists() } ?: true
 
             childFragmentManager.setFragmentResultListener(RequestCode.ClearStreamCache.name, this) { _, bundle ->
-                if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
+                if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == RESULT_OK) {
                     context?.let { ClearStreamCacheWorker.enqueue(it) }
                 }
             }
             childFragmentManager.setFragmentResultListener(RequestCode.ClearGlideCache.name, this) { _, bundle ->
-                if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
+                if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == RESULT_OK) {
                     context?.let { ClearGlideCacheWorker.enqueue(it) }
                 }
             }

@@ -16,7 +16,7 @@ class ClearStreamCacheWorker(context: Context, params: WorkerParameters) :
     override suspend fun doWork(): Result {
         val cacheDir = PnutCacheRepository.getUserCacheDir(applicationContext) ?: return Result.failure()
         cacheDir.deleteRecursively()
-        val broadcast = Intent(action)
+        val broadcast = Intent(ACTION)
         applicationContext.sendBroadcast(broadcast)
         return Result.success()
     }
@@ -37,7 +37,7 @@ class ClearStreamCacheWorker(context: Context, params: WorkerParameters) :
             WorkManager.getInstance(context).enqueue(request)
         }
 
-        private const val action = "io.pnut.gamma.service.ClearStreamCacheService"
-        val intentFilter = IntentFilter(action)
+        private const val ACTION = "io.pnut.gamma.service.ClearStreamCacheService"
+        val intentFilter = IntentFilter(ACTION)
     }
 }

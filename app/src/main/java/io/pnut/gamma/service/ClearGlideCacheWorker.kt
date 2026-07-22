@@ -15,7 +15,7 @@ class ClearGlideCacheWorker(context: Context, params: WorkerParameters) :
 
     override suspend fun doWork(): Result {
         Glide.getPhotoCacheDir(applicationContext)?.deleteRecursively()
-        val broadcast = Intent(action)
+        val broadcast = Intent(ACTION)
         applicationContext.sendBroadcast(broadcast)
         return Result.success()
     }
@@ -36,7 +36,7 @@ class ClearGlideCacheWorker(context: Context, params: WorkerParameters) :
             WorkManager.getInstance(context).enqueue(request)
         }
 
-        private const val action = "io.pnut.gamma.service.ClearGlideCacheService"
-        val intentFilter = IntentFilter(action)
+        private const val ACTION = "io.pnut.gamma.service.ClearGlideCacheService"
+        val intentFilter = IntentFilter(ACTION)
     }
 }
