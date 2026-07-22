@@ -45,7 +45,7 @@ class SearchFragment : BaseFragment() {
 
     private val firstSearchObserver = Observer<Boolean> {
         if (!it) return@Observer
-        updateMenu(0)
+        // initial menu update handled by Event.Search observer
     }
     private val pageChangeListener = object : ViewPager.OnPageChangeListener {
         override fun onPageScrollStateChanged(state: Int) {
@@ -85,12 +85,15 @@ class SearchFragment : BaseFragment() {
         when (it) {
             is Event.Search -> {
                 hideKeyboard()
-                adapter.pagerInfo = updatePagerInfo(it.keyword)
+                val newPagerInfo = updatePagerInfo(it.keyword)
+                adapter.pagerInfo = newPagerInfo
                 val position = binding.searchViewPager.currentItem
                 binding.searchViewPager.adapter = null
                 adapter.notifyDataSetChanged()
                 binding.searchViewPager.adapter = adapter
                 binding.searchViewPager.currentItem = position
+                binding.searchTabLayout.setupWithViewPager(binding.searchViewPager)
+                updateMenu(position)
             }
         }
     }
@@ -115,24 +118,21 @@ class SearchFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-        binding.searchTabLayout.setupWithViewPager(binding.searchViewPager)
         binding.searchViewPager.addOnPageChangeListener(pageChangeListener)
         binding.toolbar.setNavigationOnClickListener { backToPrevFragment() }
         binding.toolbar.setOnMenuItemClickListener(menuItemClickListener)
         binding.keywordEditText.setOnEditorActionListener { _, actionId, event ->
-            when (event) {
-                null -> when (actionId) {
-                    EditorInfo.IME_ACTION_SEARCH -> {
-                        viewModel.search()
-                        true
-                    }
-                    else -> false
-                }
-                else -> false
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                (event != null && event.action == android.view.KeyEvent.ACTION_DOWN &&
+                        event.keyCode == android.view.KeyEvent.KEYCODE_ENTER)) {
+                viewModel.search()
+                true
+            } else {
+                false
             }
         }
         return binding.root
@@ -141,6 +141,7 @@ class SearchFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.searchViewPager.adapter = adapter
+        binding.searchTabLayout.setupWithViewPager(binding.searchViewPager)
         showKeyboard()
     }
 
@@ -188,10 +189,13 @@ class SearchFragment : BaseFragment() {
     ) :
         FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         val fragments
-            get() = listOf(
-                FragmentInfo(PostItemFragment.SearchPostsFragment.newInstance(pagerInfo.keyword), SearchType.Post),
-                FragmentInfo(UserListFragment.SearchUserListFragment.newInstance(pagerInfo.keyword), SearchType.User)
-            )
+            get() = SearchType.entries.map {
+                val fragment = when (it) {
+                    SearchType.Post -> PostItemFragment.SearchPostsFragment.newInstance(pagerInfo.keyword)
+                    SearchType.User -> UserListFragment.SearchUserListFragment.newInstance(pagerInfo.keyword)
+                }
+                FragmentInfo(fragment, it)
+            }
 
         override fun getItem(position: Int): Fragment = fragments[position].fragment
 
@@ -201,6 +205,10 @@ class SearchFragment : BaseFragment() {
         override fun getCount(): Int = if (pagerInfo.keyword.isNotEmpty()) fragments.size else 0
         override fun getItemId(position: Int): Long {
             return pagerInfo.time + position
+        }
+
+        override fun getItemPosition(`object`: Any): Int {
+            return POSITION_NONE
         }
     }
 
