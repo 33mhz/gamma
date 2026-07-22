@@ -3,7 +3,6 @@ package io.pnut.gamma.presentation.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-//import dagger.android.support.DaggerAppCompatActivity
 import io.pnut.gamma.R
 import io.pnut.gamma.domain.model.UriInfo
 import io.pnut.gamma.presentation.fragment.ComposePostFragment

@@ -15,17 +15,17 @@
             android:layout_width="match_parent"
             android:layout_height="0dp">
 
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/mediaViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:background="@android:color/transparent"
                 android:layout_width="match_parent"
                 android:layout_gravity="top"
                 android:layout_height="?attr/actionBarSize" />
-
-            <io.pnut.gamma.presentation.view.AvoidExceptionViewPager
-                android:id="@+id/mediaViewPager"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/mediaviewPagerIndicator"

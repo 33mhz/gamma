@@ -12,10 +12,10 @@ import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayoutMediator
 import androidx.lifecycle.*
-import androidx.viewpager.widget.ViewPager
 import kotlinx.parcelize.Parcelize
 import io.pnut.gamma.R
 import io.pnut.gamma.databinding.FragmentSearchBinding
@@ -47,13 +47,7 @@ class SearchFragment : BaseFragment() {
         if (!it) return@Observer
         // initial menu update handled by Event.Search observer
     }
-    private val pageChangeListener = object : ViewPager.OnPageChangeListener {
-        override fun onPageScrollStateChanged(state: Int) {
-        }
-
-        override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-        }
-
+    private val pageChangeListener = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             updateMenu(position)
         }
@@ -66,7 +60,8 @@ class SearchFragment : BaseFragment() {
         )}"
 
     private fun updateMenu(position: Int) {
-        val searchType = adapter.fragments[position].searchType
+        val currentAdapter = adapter ?: return
+        val searchType = currentAdapter.fragments[position].searchType
         updateMenuItemVisibility(R.id.menuSharePostSearch, searchType == SearchType.Post)
     }
 
@@ -76,9 +71,7 @@ class SearchFragment : BaseFragment() {
         menuItem.isVisible = visibility
     }
 
-    private val adapter by lazy {
-        SearchPagerAdapter(requireContext(), childFragmentManager, pagerInfo)
-    }
+    private var adapter: SearchPagerAdapter? = null
     private lateinit var binding: FragmentSearchBinding
     private var showKeyboardFlag: Boolean = false
     private val eventObserver = Observer<Event> {
@@ -86,13 +79,13 @@ class SearchFragment : BaseFragment() {
             is Event.Search -> {
                 hideKeyboard()
                 val newPagerInfo = updatePagerInfo(it.keyword)
-                adapter.pagerInfo = newPagerInfo
+                val newAdapter = SearchPagerAdapter(requireContext(), this, newPagerInfo)
+                adapter = newAdapter
                 val position = binding.searchViewPager.currentItem
-                binding.searchViewPager.adapter = null
-                adapter.notifyDataSetChanged()
-                binding.searchViewPager.adapter = adapter
-                binding.searchViewPager.currentItem = position
-                binding.searchTabLayout.setupWithViewPager(binding.searchViewPager)
+                binding.searchViewPager.adapter = newAdapter
+                TabLayoutMediator(binding.searchTabLayout, binding.searchViewPager) { tab, pos ->
+                    tab.text = newAdapter.getPageTitle(pos)
+                }.attach()
                 updateMenu(position)
             }
         }
@@ -122,7 +115,7 @@ class SearchFragment : BaseFragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-        binding.searchViewPager.addOnPageChangeListener(pageChangeListener)
+        binding.searchViewPager.registerOnPageChangeCallback(pageChangeListener)
         binding.toolbar.setNavigationOnClickListener { backToPrevFragment() }
         binding.toolbar.setOnMenuItemClickListener(menuItemClickListener)
         binding.keywordEditText.setOnEditorActionListener { _, actionId, event ->
@@ -140,8 +133,12 @@ class SearchFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.searchViewPager.adapter = adapter
-        binding.searchTabLayout.setupWithViewPager(binding.searchViewPager)
+        val newAdapter = SearchPagerAdapter(requireContext(), this, pagerInfo)
+        adapter = newAdapter
+        binding.searchViewPager.adapter = newAdapter
+        TabLayoutMediator(binding.searchTabLayout, binding.searchViewPager) { tab, position ->
+            tab.text = newAdapter.getPageTitle(position)
+        }.attach()
         showKeyboard()
     }
 
@@ -162,7 +159,8 @@ class SearchFragment : BaseFragment() {
 
     override fun onDestroyView() {
         hideKeyboard()
-        binding.searchViewPager.removeOnPageChangeListener(pageChangeListener)
+        binding.searchViewPager.unregisterOnPageChangeCallback(pageChangeListener)
+        adapter = null
         super.onDestroyView()
     }
 
@@ -184,32 +182,34 @@ class SearchFragment : BaseFragment() {
 
     class SearchPagerAdapter(
         private val context: Context,
-        fm: FragmentManager,
+        fragment: Fragment,
         var pagerInfo: PagerInfo
-    ) :
-        FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    ) : FragmentStateAdapter(fragment) {
         val fragments
             get() = SearchType.entries.map {
-                val fragment = when (it) {
-                    SearchType.Post -> PostItemFragment.SearchPostsFragment.newInstance(pagerInfo.keyword)
-                    SearchType.User -> UserListFragment.SearchUserListFragment.newInstance(pagerInfo.keyword)
+                val fragment = {
+                    when (it) {
+                        SearchType.Post -> PostItemFragment.SearchPostsFragment.newInstance(pagerInfo.keyword)
+                        SearchType.User -> UserListFragment.SearchUserListFragment.newInstance(pagerInfo.keyword)
+                    }
                 }
-                FragmentInfo(fragment, it)
+                FragmentInfo(fragment(), it)
             }
 
-        override fun getItem(position: Int): Fragment = fragments[position].fragment
+        override fun getItemCount(): Int = if (pagerInfo.keyword.isNotEmpty()) fragments.size else 0
 
-        override fun getPageTitle(position: Int): CharSequence =
-            context.getString(fragments[position].searchType.titleRes)
+        override fun createFragment(position: Int): Fragment = fragments[position].fragment
 
-        override fun getCount(): Int = if (pagerInfo.keyword.isNotEmpty()) fragments.size else 0
         override fun getItemId(position: Int): Long {
             return pagerInfo.time + position
         }
 
-        override fun getItemPosition(`object`: Any): Int {
-            return POSITION_NONE
+        override fun containsItem(itemId: Long): Boolean {
+            return itemId >= pagerInfo.time && itemId < pagerInfo.time + fragments.size
         }
+
+        fun getPageTitle(position: Int): CharSequence =
+            context.getString(fragments[position].searchType.titleRes)
     }
 
     sealed class Event {

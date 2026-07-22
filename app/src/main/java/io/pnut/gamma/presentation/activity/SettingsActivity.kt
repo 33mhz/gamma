@@ -91,7 +91,7 @@ class SettingsActivity : BaseActivity(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.home -> {
+            android.R.id.home -> {
                 onBackPressedDispatcher.onBackPressed()
                 true
             }
@@ -142,7 +142,7 @@ class SettingsActivity : BaseActivity(),
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {}
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                    if (menuItem.itemId == R.id.home) {
+                    if (menuItem.itemId == android.R.id.home) {
                         startActivity(Intent(activity, SettingsActivity::class.java))
                         return true
                     }

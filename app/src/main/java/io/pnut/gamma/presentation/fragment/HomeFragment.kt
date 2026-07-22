@@ -8,8 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.presentation.util.Util
@@ -33,17 +33,12 @@ class HomeFragment : Fragment(), Util.DrawerContentFragment {
 
         override fun onTabReselected(tab: TabLayout.Tab?) {
             if (tab == null) return
-            val fragmentTag = "android:switcher:${binding.viewPager.id}:${adapter.getItemId(tab.position)}"
+            val fragmentTag = "f${tab.position}"
             val fragment =
                 childFragmentManager.findFragmentByTag(fragmentTag) as? Scrollable ?: return
             fragment.scrollToTop()
         }
     }
-
-    val adapter by lazy {
-        StreamViewPagerAdapter(childFragmentManager, context)
-    }
-
 
     override val menuItemId = R.id.home
 
@@ -65,31 +60,35 @@ class HomeFragment : Fragment(), Util.DrawerContentFragment {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val adapter = StreamViewPagerAdapter(this, context)
         binding.viewPager.adapter = adapter
-        binding.tabLayout.setupWithViewPager(binding.viewPager)
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = adapter.getPageTitle(position)
+        }.attach()
         binding.tabLayout.addOnTabSelectedListener(tabListener)
     }
 
 
-    data class Item(val fragment: BaseListFragment<*, *>, @StringRes val title: Int)
+    data class Item(val fragment: () -> BaseListFragment<*, *>, @StringRes val title: Int)
 
-    class StreamViewPagerAdapter(fm: FragmentManager, val context: Context?) :
-        FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    class StreamViewPagerAdapter(fragment: Fragment, val context: Context?) :
+        FragmentStateAdapter(fragment) {
         private val items: List<Item> = listOf(
-            Item(PostItemFragment.getHomeStreamInstance(), R.string.home),
-            Item(PostItemFragment.getMentionStreamInstance(), R.string.mentions),
-            Item(InteractionFragment.newInstance(), R.string.interactions),
-            Item(PostItemFragment.getStarInstance(), R.string.stars)
+            Item({ PostItemFragment.getHomeStreamInstance() }, R.string.home),
+            Item({ PostItemFragment.getMentionStreamInstance() }, R.string.mentions),
+            Item({ InteractionFragment.newInstance() }, R.string.interactions),
+            Item({ PostItemFragment.getStarInstance() }, R.string.stars)
         )
-        override fun getItem(position: Int): Fragment {
-            return items[position].fragment
-        }
 
-        override fun getCount(): Int {
+        override fun getItemCount(): Int {
             return items.size
         }
 
-        override fun getPageTitle(position: Int): CharSequence? {
+        override fun createFragment(position: Int): Fragment {
+            return items[position].fragment()
+        }
+
+        fun getPageTitle(position: Int): CharSequence? {
             return context?.getString(items[position].title)
         }
     }

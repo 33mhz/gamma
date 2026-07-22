@@ -28,6 +28,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.coroutines.launch
@@ -177,9 +178,11 @@ class ProfileFragment : BaseFragment() {
             viewModel.fetchUser()
         }
         binding.profileDescriptionTextView.setOnTouchListener(entityOnTouchListener)
-        val pagerAdapter = ProfilePagerAdapter(requireContext(), childFragmentManager, userId)
+        val pagerAdapter = ProfilePagerAdapter(requireContext(), this, userId)
         binding.profileViewPager.adapter = pagerAdapter
-        binding.profileViewPagerTab.setupWithViewPager(binding.profileViewPager)
+        TabLayoutMediator(binding.profileViewPagerTab, binding.profileViewPager) { tab, position ->
+            tab.text = pagerAdapter.getPageTitle(position)
+        }.attach()
 
         binding.coverImageView.setOnClickListener { viewModel.showCover() }
         binding.userMainActionButton.setOnClickListener { viewModel.mainAction() }

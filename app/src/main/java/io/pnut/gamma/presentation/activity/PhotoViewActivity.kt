@@ -16,8 +16,8 @@ import androidx.core.view.marginBottom
 import androidx.core.view.marginLeft
 import androidx.core.view.marginRight
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.android.material.tabs.TabLayoutMediator
 import io.pnut.gamma.domain.model.ThumbAndFull
 import io.pnut.gamma.presentation.fragment.PhotoViewItemFragment
 import io.pnut.gamma.R
@@ -96,7 +96,7 @@ class PhotoViewActivity : BaseActivity() {
         intent.getIntExtra(IntentKey.Index.name, 0)
     }
     private val adapter by lazy {
-        MediaViewPager(supportFragmentManager, photos.orEmpty(), index)
+        MediaViewPager(this, photos.orEmpty(), index)
     }
 
     private lateinit var binding: ActivityPhotoViewBinding
@@ -127,8 +127,8 @@ class PhotoViewActivity : BaseActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.mediaViewPager.adapter = adapter
-        binding.mediaViewPager.currentItem = index
-        binding.mediaviewPagerIndicator.setupWithViewPager(binding.mediaViewPager)
+        binding.mediaViewPager.setCurrentItem(index, false)
+        TabLayoutMediator(binding.mediaviewPagerIndicator, binding.mediaViewPager) { _, _ -> }.attach()
 
         binding.haulerView.setOnDragDismissedListener {
             finishAfterTransition()
@@ -150,12 +150,14 @@ class PhotoViewActivity : BaseActivity() {
         })
     }
 
-    class MediaViewPager(fm: FragmentManager, items: List<ThumbAndFull>, index: Int = 0) :
-        FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    class MediaViewPager(activity: PhotoViewActivity, items: List<ThumbAndFull>, index: Int = 0) :
+        FragmentStateAdapter(activity) {
         private val fragments =
             items.mapIndexed { i, it -> PhotoViewItemFragment.newInstance(it, i == index) }
 
-        override fun getItem(position: Int): Fragment = fragments[position]
-        override fun getCount(): Int = fragments.size
+        override fun createFragment(position: Int): Fragment = fragments[position]
+        override fun getItemCount(): Int = fragments.size
+
+        fun getItem(position: Int): Fragment = fragments[position]
     }
 }
