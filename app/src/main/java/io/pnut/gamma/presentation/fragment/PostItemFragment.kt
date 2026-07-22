@@ -5,8 +5,8 @@ import io.pnut.gamma.R
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import androidx.core.os.BundleCompat
@@ -582,7 +582,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         viewHolder.actionRepostImageView.let {
             //                it.setText(repostType.textRes)
             it.setImageResource(repostType.iconRes)
-            it.drawable?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
+            it.imageTintList = ColorStateList.valueOf(Color.WHITE)
             it.setOnClickListener {
                 toggleRepost(repostType, item.mainPost, viewHolder.bindingAdapterPosition)
             }
@@ -615,7 +615,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 //                val starTextRes = if (item.mainPost.youBookmarked == true) R.string.unstar else R.string.star
 //                it.text = context.getString(starTextRes)
             it.setImageResource(starDrawableRes)
-            it.drawable?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
+            it.imageTintList = ColorStateList.valueOf(Color.WHITE)
         }
         viewHolder.starButton.isEnabled = !item.isDeletedNonNull
         viewHolder.starButton.let {

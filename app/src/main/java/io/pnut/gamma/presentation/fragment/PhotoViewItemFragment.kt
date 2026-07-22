@@ -3,7 +3,6 @@ package io.pnut.gamma.presentation.fragment
 
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.core.os.BundleCompat
@@ -55,7 +54,7 @@ class PhotoViewItemFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val progress = CircularProgressDrawable(view.context).apply {
             val gray = view.context.getColor(R.color.colorGrayLighter)
-            setColorFilter(gray, PorterDuff.Mode.SRC_IN)
+            setTint(gray)
             start()
             centerRadius = 30f
         }

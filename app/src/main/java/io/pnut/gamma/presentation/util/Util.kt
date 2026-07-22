@@ -3,8 +3,6 @@ package io.pnut.gamma.presentation.util
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.PorterDuff
-import android.net.Uri
 import android.os.Handler
 import android.util.TypedValue
 import android.view.Menu
@@ -19,17 +17,20 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.MenuItemCompat
 import io.pnut.gamma.R
+import androidx.core.net.toUri
+import androidx.core.view.size
+import androidx.core.view.get
 
 object Util {
     fun showKeyboard(view: View) {
         val imm = getImm(view.context)
-        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+        imm.showSoftInput(view, 0)
 
     }
 
     fun hideKeyboard(view: View, callback: (() -> Unit)? = null, delayMs: Long = 10) {
         val imm = getImm(view.context)
-        imm.hideSoftInputFromWindow(view.windowToken, InputMethodManager.HIDE_IMPLICIT_ONLY)
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
         if(callback != null) {
             Handler().postDelayed({
                 // dirty hack
@@ -57,8 +58,8 @@ object Util {
     fun setTintForToolbarIcons(context: Context, menu: Menu) {
         val colorStateList =
             AppCompatResources.getColorStateList(context, R.color.toolbar_icon_tint)
-        for (i in 0 until menu.size()) {
-            setTintForToolbarIcon(colorStateList, menu.getItem(i))
+        for (i in 0 until menu.size) {
+            setTintForToolbarIcon(colorStateList, menu[i])
         }
     }
 
@@ -71,7 +72,7 @@ object Util {
         when (menuItem.isChecked) {
             true -> {
                 val color = getPrimaryColor(context)
-                menuItem.icon?.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+                menuItem.icon?.setTint(color)
             }
             false -> {
                 menuItem.icon?.clearColorFilter()
@@ -94,7 +95,7 @@ object Util {
                 .setStartAnimations(context, R.anim.slide_in_left, R.anim.slide_out_left)
                 .setExitAnimations(context, R.anim.slide_in_right, R.anim.slide_out_right)
                 .build()
-                .launchUrl(context, Uri.parse(link))
+                .launchUrl(context, link.toUri())
         } catch (e: Exception) {
             // TODO: to improve error handling
             Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()

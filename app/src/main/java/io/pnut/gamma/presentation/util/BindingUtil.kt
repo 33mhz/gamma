@@ -1,6 +1,5 @@
 package io.pnut.gamma.presentation.util
 
-import android.graphics.PorterDuff
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -85,7 +84,7 @@ object BindingUtil {
         view.icon = if (loading) {
             val progress = CircularProgressDrawable(view.context).apply {
                 val gray = view.context.getColor(R.color.colorGrayLighter)
-                setColorFilter(gray, PorterDuff.Mode.SRC_IN)
+                setTint(gray)
                 start()
             }
             progress
