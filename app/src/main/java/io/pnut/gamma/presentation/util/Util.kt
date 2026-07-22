@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -13,6 +14,7 @@ import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.appcompat.R as Rc
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.MenuItemCompat
@@ -32,7 +34,7 @@ object Util {
         val imm = getImm(view.context)
         imm.hideSoftInputFromWindow(view.windowToken, 0)
         if(callback != null) {
-            Handler().postDelayed({
+            Handler(Looper.getMainLooper()).postDelayed({
                 // dirty hack
                 // workaround for strange animation
                 callback()
@@ -85,13 +87,16 @@ object Util {
 
     fun openCustomTabUrl(context: Context, link: String) {
         try {
-            CustomTabsIntent
-                .Builder()
+            val color = context.getColor(R.color.colorWindowBackground)
+            val colorSchemeParams = CustomTabColorSchemeParams.Builder()
+                .setToolbarColor(color)
+                .build()
+
+            CustomTabsIntent.Builder()
                 .setShowTitle(true)
-//                .setActionButton(icon, menuLabel, pendingIntent, false)
-                .addDefaultShareMenuItem()
-                .enableUrlBarHiding()
-                .setToolbarColor(context.getColor(R.color.colorWindowBackground))
+                .setShareState(CustomTabsIntent.SHARE_STATE_ON)
+                .setUrlBarHidingEnabled(true)
+                .setDefaultColorSchemeParams(colorSchemeParams)
                 .setStartAnimations(context, R.anim.slide_in_left, R.anim.slide_out_left)
                 .setExitAnimations(context, R.anim.slide_in_right, R.anim.slide_out_right)
                 .build()

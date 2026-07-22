@@ -1,6 +1,5 @@
 package io.pnut.gamma.presentation.activity
 
-import android.R
 import android.app.Activity
 import android.content.Intent
 import android.view.View
@@ -27,7 +26,7 @@ class EntryActivity : BaseActivity(), CoroutineScope by MainScope() {
 
   private fun proceed() {
     if (!BuildConfig.DEBUG) ClearCacheWorker.enqueue(this)
-    findViewById<View>(R.id.content).systemUiVisibility =
+    findViewById<View>(android.R.id.content).systemUiVisibility =
       View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 
     val existDefaultAccount: Boolean = runBlocking {
