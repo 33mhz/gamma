@@ -72,7 +72,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     override fun onAccountClick(account: Account) {
         if (currentAccount == account) return closeDrawer()
         updateDefaultAccountUseCase.run(UpdateDefaultAccountInputData(account.id))
-        val restartIntent = intent
+        val restartIntent = Intent(this, MainActivity::class.java)
         finish()
         overridePendingTransition(R.anim.scale_up, R.anim.scale_down)
         startActivity(restartIntent)
