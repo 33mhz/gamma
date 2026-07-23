@@ -13,20 +13,7 @@ class SeekBarPreferenceMod @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : SeekBarPreference(context, attrs), SeekBar.OnSeekBarChangeListener {
-    private val step: Int
-
-    init {
-        val typedArray = context.theme.obtainStyledAttributes(
-            attrs,
-            R.styleable.SeekBarPreference, 0, 0
-        )
-        step = typedArray.getInt(
-            R.styleable.SeekBarPreference_seekBarIncrement,
-            20
-        )
-        typedArray.recycle()
-
-    }
+    private val step: Int = seekBarIncrement.let { if (it == 0) 20 else it }
 
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         val newProgress = round(progress.toFloat() / step.toFloat()).toInt() * step + min
