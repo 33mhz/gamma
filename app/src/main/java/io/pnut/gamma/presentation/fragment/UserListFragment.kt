@@ -34,7 +34,7 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
     BaseListRecyclerViewAdapter.IBaseList<User, UserViewHolder>,
     UserViewHolder.Callback {
     private val updateUserObserver = Observer<User> {
-        if (it == null) return@Observer
+//        if (it == null) return@Observer
         adapter.updateItem(PageableItemWrapper.Item(it))
         viewModel.storeItems()
     }
