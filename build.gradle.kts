@@ -12,7 +12,7 @@ plugins {
     id("androidx.navigation.safeargs.kotlin") version "2.9.8" apply false
 }
 
-val kotlinVersion: String by project
+val kotlinVersion = project.property("kotlinVersion") as String
 extra.set("kotlinVersion", kotlinVersion)
 
 tasks.register<Delete>("clean") {
