@@ -54,7 +54,7 @@
         <item name="android:activityCloseEnterAnimation">@android:anim/fade_in</item>
     </style>
 
-    <style name="AppTheme" parent="BaseTheme" />
+    <style name="AppTheme" parent="BaseTheme" ></style>
 
     <style name="AppTheme.WithToolbar">
         <item name="windowActionBar">true</item>
@@ -152,7 +152,7 @@
         <item name="android:windowAnimationStyle">@style/SplashWindowAnimationStyle</item>
     </style>
 
-    <style name="AppTheme.SplashTheme" parent="BaseSplashTheme" />
+    <style name="AppTheme.SplashTheme" parent="BaseSplashTheme" ></style>
 
     <style name="BaseShareTHeme" parent="AppTheme">
         <item name="android:windowAnimationStyle">@null</item>
@@ -165,7 +165,7 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
-    <style name="AppTheme.Share" parent="BaseShareTHeme" />
+    <style name="AppTheme.Share" parent="BaseShareTHeme" ></style>
 
     <style name="BorderlessButton" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:clipToPadding">false</item>
@@ -225,7 +225,7 @@
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
 
-    <style name="FullScreenDialogStyle" parent="BaseFullScreenDialogStyle" />
+    <style name="FullScreenDialogStyle" parent="BaseFullScreenDialogStyle" ></style>
 
     <style name="NavigationDrawerStyle">
         <item name="android:fontFamily">@font/montserrat</item>
