@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import io.pnut.gamma.presentation.fragment.PostItemFragment
 import io.pnut.gamma.R
 import io.pnut.gamma.databinding.FragmentPostItemBinding
-import kotlin.collections.get
 
 
 class PostTouchHelperCallback(
@@ -100,13 +99,13 @@ class PostTouchHelperCallback(
         val binding = FragmentPostItemBinding.bind(backgroundView)
         return when {
             per < 0.1 -> null
-            0.1 <= per && per < 0.25 -> binding.actionReplyImageView.id
-            0.25 <= per && per < 0.4 -> binding.actionStarImageView.id
-            0.4 <= per && per < 0.55 -> binding.actionRepostImageView.id
+            per in 0.1..<0.25 -> binding.actionReplyImageView.id
+            per in 0.25..<0.4 -> binding.actionStarImageView.id
+            per in 0.4..<0.55 -> binding.actionRepostImageView.id
             else -> when (viewHolder.isMainItem) {
                 true -> binding.actionMoreImageView.id
                 else -> when {
-                    0.55 <= per && per < 0.7 -> binding.actionThreadImageView.id
+                    per in 0.55..<0.7 -> binding.actionThreadImageView.id
                     else -> binding.actionMoreImageView.id
                 }
             }

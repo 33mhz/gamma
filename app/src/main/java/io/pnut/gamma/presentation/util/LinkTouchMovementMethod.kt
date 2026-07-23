@@ -52,7 +52,7 @@ class LinkTouchMovementMethod : LinkMovementMethod() {
         val layout = textView.layout
         val position = layout.getOffsetForHorizontal(layout.getLineForVertical(y), x.toFloat())
 
-        val link = spannable.getSpans<TouchableSpan>(position, position, TouchableSpan::class.java)
+        val link = spannable.getSpans(position, position, TouchableSpan::class.java)
         var touchedSpan: TouchableSpan? = null
         if (link.isNotEmpty() && positionWithinTag(position, spannable, link[0])) {
             touchedSpan = link[0]

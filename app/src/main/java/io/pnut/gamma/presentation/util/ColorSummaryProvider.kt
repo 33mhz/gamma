@@ -8,7 +8,7 @@ import io.pnut.gamma.R
 class ColorSummaryProvider(context: Context) :
     Preference.SummaryProvider<ThemeColorPreference> {
     private val defaultMessage = context.getString(R.string.default_text)
-    override fun provideSummary(preference: ThemeColorPreference): CharSequence? {
+    override fun provideSummary(preference: ThemeColorPreference): CharSequence {
         val themeColor = preference.themeColor
         return themeColor?.name ?: defaultMessage
     }

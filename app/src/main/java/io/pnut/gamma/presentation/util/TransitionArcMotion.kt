@@ -8,15 +8,17 @@ import io.pnut.gamma.R
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
+import androidx.core.content.withStyledAttributes
 
 
 class TransitionArcMotion(context: Context, attrs: AttributeSet) : PathMotion(context, attrs) {
     private var curveRadius: Float = 0f
 
     init {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.TransitionArcMotion)
-        curveRadius = a.getInteger(R.styleable.TransitionArcMotion_arcRadius, DEFAULT_RADIUS).toFloat()
-        a.recycle()
+        context.withStyledAttributes(attrs, R.styleable.TransitionArcMotion) {
+            curveRadius =
+                getInteger(R.styleable.TransitionArcMotion_arcRadius, DEFAULT_RADIUS).toFloat()
+        }
     }
 
     override fun getPath(startX: Float, startY: Float, endX: Float, endY: Float): Path {

@@ -39,7 +39,7 @@ object DateUtil {
         }
     }
 
-    private fun formatAbsoluteShortDateStr(context: Context, date: Date?): String {
+    private fun formatAbsoluteShortDateStr(context: Context, date: Date): String {
         val dateCal = Calendar.getInstance().apply {
             time = date
         }
