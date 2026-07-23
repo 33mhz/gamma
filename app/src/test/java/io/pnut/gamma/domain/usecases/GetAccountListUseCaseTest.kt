@@ -16,7 +16,7 @@ class GetAccountListUseCaseTest {
         return listOf("123", "456")
       }
 
-      override fun getAccount(id: String): Account? {
+      override fun getAccount(id: String): Account {
         return Account(id, "", "", "")
       }
     })

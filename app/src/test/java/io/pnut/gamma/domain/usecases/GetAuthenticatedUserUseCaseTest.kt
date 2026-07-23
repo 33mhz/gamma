@@ -28,7 +28,7 @@ class GetAuthenticatedUserUseCaseTest {
       }
     }
     val pnutCacheRepository = object : PnutCacheRepositoryMock() {
-      override suspend fun getToken(): Token? {
+      override suspend fun getToken(): Token {
         return cachedToken
       }
 

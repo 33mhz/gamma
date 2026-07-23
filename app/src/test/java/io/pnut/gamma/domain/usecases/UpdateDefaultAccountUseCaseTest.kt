@@ -17,7 +17,7 @@ class UpdateDefaultAccountUseCaseTest {
         Assert.assertThat(id, `is`(account.id))
       }
 
-      override fun getToken(id: String): String? {
+      override fun getToken(id: String): String {
         return account.token
       }
     }, object : PnutRepositoryMock() {

@@ -18,7 +18,7 @@ class LogoutUseCaseTest {
     val anotherAccount =
       Account("456", "anotherAccountToken", "anotherAccount", "anotherAccountName")
     val useCase = LogoutUseCase(object : AccountRepositoryMock() {
-      override fun getDefaultAccount(): Account? {
+      override fun getDefaultAccount(): Account {
         return willBeDeletedAccount
       }
 
@@ -30,7 +30,7 @@ class LogoutUseCaseTest {
         return listOf(willBeDeletedAccount.id, anotherAccount.id)
       }
 
-      override fun getAccount(id: String): Account? {
+      override fun getAccount(id: String): Account {
         return anotherAccount
       }
     }, pnutRepository)
@@ -43,7 +43,7 @@ class LogoutUseCaseTest {
     val willBeDeletedAccount =
       Account("123", "deletedAccountToken", "deletedAccount", "deletedAccountName")
     val useCase = LogoutUseCase(object : AccountRepositoryMock() {
-      override fun getDefaultAccount(): Account? {
+      override fun getDefaultAccount(): Account {
         return willBeDeletedAccount
       }
 

@@ -11,7 +11,7 @@ class GetCurrentAccountUseCaseTest {
   fun success() {
     val account = Account("test", "testToken", "screenName", "name")
     val useCase = GetCurrentAccountUseCase(object : AccountRepositoryMock() {
-      override fun getDefaultAccount(): Account? {
+      override fun getDefaultAccount(): Account {
         return account
       }
     })

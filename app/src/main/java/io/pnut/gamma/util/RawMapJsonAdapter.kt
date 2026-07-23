@@ -31,7 +31,7 @@ class RawMapJsonAdapterFactory : JsonAdapter.Factory {
             Language.TYPE to Language::class.java
         )
 
-        override fun fromJson(reader: JsonReader): Map<String, List<RawValue>>? {
+        override fun fromJson(reader: JsonReader): Map<String, List<RawValue>> {
             val result = mutableMapOf<String, List<RawValue>>()
             reader.beginObject()
             while (reader.hasNext()) {
