@@ -143,14 +143,14 @@ class ComposePollOptionFragment : DialogFragment(), DialogInterface.OnClickListe
         val duration = viewModel.computedPollDeadline.duration
         setDayRange(0..14)
         when {
-            duration >= PollDeadline.maxDuration -> {
+            duration >= PollDeadline.MAX_DURATION -> {
                 // over 14 days
                 setHourRange(0..0)
                 setMinuteRange(0..0)
                 viewModel.hour = 0
                 viewModel.min = 0
             }
-            duration <= PollDeadline.minDuration -> {
+            duration <= PollDeadline.MIN_DURATION -> {
                 setHourRange(0..59)
                 setMinuteRange(1..59)
                 viewModel.day = 0

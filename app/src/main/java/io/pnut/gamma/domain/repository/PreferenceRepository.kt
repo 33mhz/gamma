@@ -42,7 +42,7 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
                     context.getString(R.string.pref_dark_theme_key),
                     "0"
                 ) ?: "0"
-                ThemeColorUtil.DarkMode.values()[strInt.toInt()]
+                ThemeColorUtil.DarkMode.entries[strInt.toInt()]
             } catch (e: Exception) {
                 ThemeColorUtil.DarkMode.FollowSystem
             }
@@ -89,7 +89,7 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
                 context.getString(R.string.pref_shape_of_avatar_key),
                 context.getString(R.string.pref_shape_of_avatar_key_default_value)
             ) ?: "0"
-            ShapeOfAvatar.values()[strInt.toInt()]
+            ShapeOfAvatar.entries[strInt.toInt()]
         } catch (e: Exception) {
             ShapeOfAvatar.Circle
         }

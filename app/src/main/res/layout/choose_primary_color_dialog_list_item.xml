@@ -23,7 +23,7 @@
             android:focusableInTouchMode="true"
             android:scaleType="center"
             android:src="@drawable/ic_check_black_24dp"
-            android:tint="@android:color/white"
+            app:tint="@android:color/white"
             tools:background="@android:color/black"
             tools:ignore="ContentDescription" />
     </androidx.constraintlayout.widget.ConstraintLayout>

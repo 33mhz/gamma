@@ -21,9 +21,9 @@
             android:layout_width="@dimen/size_post_item_avatar"
             android:layout_height="wrap_content"
             android:scaleType="center"
-            android:tint="?android:attr/textColorSecondary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:tint="?android:attr/textColorSecondary"
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_star_black_24dp" />
 

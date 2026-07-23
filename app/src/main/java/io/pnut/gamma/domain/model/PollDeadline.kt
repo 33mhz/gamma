@@ -13,9 +13,9 @@ data class PollDeadline(
     val min: Int
 ) : Parcelable {
     val isAvailableHour
-        get() = maxDuration - day2min(day) > 0
+        get() = MAX_DURATION - day2min(day) > 0
     val isAvailableMin
-        get() = maxDuration - (day2min(day) + hour2min(hour)) > 0
+        get() = MAX_DURATION - (day2min(day) + hour2min(hour)) > 0
     @IgnoredOnParcel
     val duration = day2min(day) + hour2min(hour) + min
 
@@ -42,8 +42,8 @@ data class PollDeadline(
     companion object {
         private fun day2min(day: Int) = day * 24 * 60
         private fun hour2min(hour: Int) = hour * 60
-        const val maxDuration = 20160 // min; equals to 14 days
-        const val minDuration = 1
+        const val MAX_DURATION = 20160 // min; equals to 14 days
+        const val MIN_DURATION = 1
 
         val defaultValue
             get() = PollDeadline(1, 0, 0)

@@ -32,7 +32,7 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fileListFragment"
         android:name="io.pnut.gamma.presentation.fragment.FileListFragment"
         android:layout_width="match_parent"

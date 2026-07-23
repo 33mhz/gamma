@@ -199,9 +199,9 @@ class PnutCacheRepository(currentUserId: String?, context: Context) : IPnutCache
     }
 
     companion object {
-        private const val userCacheDirName = "userCache"
-        fun getUserCacheDir(context: Context): File? {
-            return File(context.cacheDir, userCacheDirName)
+        private const val USER_CACHE_DIR_NAME = "userCache"
+        fun getUserCacheDir(context: Context): File {
+            return File(context.cacheDir, USER_CACHE_DIR_NAME)
         }
     }
 }

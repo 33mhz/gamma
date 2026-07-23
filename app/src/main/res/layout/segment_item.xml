@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:clickable="true"
     android:layout_width="match_parent"
@@ -13,9 +14,9 @@
         android:layout_gravity="center"
         android:contentDescription="@string/end_of_list"
         android:src="@mipmap/ic_launcher_foreground"
-        android:tint="@color/colorGrayLight"
         android:visibility="gone"
         android:duplicateParentState="true"
+        app:tint="@color/colorGrayLight"
         tools:visibility="visible" />
 
     <ProgressBar

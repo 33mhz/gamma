@@ -33,16 +33,16 @@ class AccountRepository(context: Context) : AbstractPreferenceRepository(context
     }
 
     companion object {
-        private const val delimiter = ","
+        private const val DELIMITER = ","
     }
 
     override fun setAccountIds(ids: List<String>) {
-        editor.putString(Key.AccountList.name, ids.joinToString(delimiter)).commit()
+        editor.putString(Key.AccountList.name, ids.joinToString(DELIMITER)).commit()
     }
 
     override fun getStoredIds(): List<String> {
         val refined =
-            (sharedPreferences.getString(Key.AccountList.name, "") ?: "").split(delimiter).toSet()
+            (sharedPreferences.getString(Key.AccountList.name, "") ?: "").split(DELIMITER).toSet()
                 .filterNot { it.isEmpty() }
                 .toList()
         setAccountIds(refined)

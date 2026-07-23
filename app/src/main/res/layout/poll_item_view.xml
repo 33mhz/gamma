@@ -32,6 +32,7 @@
         android:layout_marginEnd="@dimen/margin_half"
         android:duplicateParentState="true"
         android:paddingStart="@dimen/margin_half"
+        android:paddingEnd="@dimen/margin_half"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/pollOptionCountTextView"
         app:layout_constraintStart_toStartOf="parent"
