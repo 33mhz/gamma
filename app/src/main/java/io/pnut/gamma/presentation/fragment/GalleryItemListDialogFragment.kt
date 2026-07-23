@@ -245,9 +245,13 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = getItem(position)
 
+            val thumbnailRequest = Glide.with(holder.itemView)
+                .load(item.uri)
+                .sizeMultiplier(.1f)
+
             Glide.with(holder.itemView)
                 .load(item.uri)
-                .thumbnail(.1f)
+                .thumbnail(thumbnailRequest)
                 .listener(ErrorHandling(item))
                 .into(holder.imageView)
         }
