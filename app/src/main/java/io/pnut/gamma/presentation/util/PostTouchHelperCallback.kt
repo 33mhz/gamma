@@ -2,7 +2,6 @@ package io.pnut.gamma.presentation.util
 
 import android.content.Context
 import android.graphics.Canvas
-import android.util.DisplayMetrics
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.WindowManager
@@ -31,10 +30,8 @@ class PostTouchHelperCallback(
     private var prevActionViewId: Int? = null
 
     init {
-        val dm = DisplayMetrics()
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        wm.defaultDisplay.getMetrics(dm)
-        deviceWidth = dm.widthPixels
+        deviceWidth = wm.currentWindowMetrics.bounds.width()
     }
 
     override fun isItemViewSwipeEnabled(): Boolean {
