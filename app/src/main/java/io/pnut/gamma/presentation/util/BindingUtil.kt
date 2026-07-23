@@ -20,15 +20,16 @@ object BindingUtil {
             view.setImageDrawable(null)
             return
         }
-        val placeholder = view.drawable
-        val request = Glide
-            .with(view)
+
+        val currentDrawable = view.drawable
+
+        Glide.with(view)
             .load(url)
             .apply(RequestOptions.circleCropTransform())
-
-        if (placeholder != null)
-            request.placeholder(placeholder)
-        request.into(view)
+            .let { request ->
+                if (currentDrawable != null) request.placeholder(currentDrawable) else request
+            }
+            .into(view)
     }
 
     @BindingAdapter("glideSrc")
@@ -38,14 +39,13 @@ object BindingUtil {
             view.setImageDrawable(null)
             return
         }
-        val placeholder = view.drawable
-        val request = Glide
-            .with(view)
+        val currentDrawable = view.drawable
+        Glide.with(view)
             .load(url)
-
-        if (placeholder != null)
-            request.placeholder(placeholder)
-        request.into(view)
+            .let { request ->
+                if (currentDrawable != null) request.placeholder(currentDrawable) else request
+            }
+            .into(view)
     }
 
     @BindingAdapter("textId")
