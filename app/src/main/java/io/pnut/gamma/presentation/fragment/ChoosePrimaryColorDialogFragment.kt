@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import androidx.core.os.BundleCompat
-import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -63,7 +62,7 @@ class ChoosePrimaryColorDialogFragment : DialogFragment(), DialogInterface.OnCli
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val binding = FragmentChoosePrimaryColorDialogBinding.inflate(LayoutInflater.from(context))
+        val binding = FragmentChoosePrimaryColorDialogBinding.inflate(layoutInflater)
         binding.colorList.adapter = ColorListAdapter(this, themeColor)
         binding.colorList.setHasFixedSize(true)
         return MaterialAlertDialogBuilder(requireContext())

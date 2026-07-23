@@ -4,7 +4,6 @@ package io.pnut.gamma.presentation.fragment
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.fragment.app.DialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -59,7 +58,7 @@ class ChangeAccountDialogFragment : DialogFragment() {
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val binding = FragmentChangeAccountDialogBinding.inflate(LayoutInflater.from(context))
+        val binding = FragmentChangeAccountDialogBinding.inflate(layoutInflater)
         binding.accountListInclude.accountList.adapter = AccountListAdapter(
             accounts,
             accountListListener,

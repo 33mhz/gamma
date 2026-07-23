@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import androidx.core.os.BundleCompat
-import android.view.LayoutInflater
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -84,7 +83,7 @@ class ComposePollOptionFragment : DialogFragment(), DialogInterface.OnClickListe
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = DataBindingUtil.inflate(
-            LayoutInflater.from(context),
+            layoutInflater,
             R.layout.fragment_compose_poll_option,
             view?.findViewById(R.id.content),
             false

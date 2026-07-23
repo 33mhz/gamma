@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import androidx.core.os.BundleCompat
-import android.view.LayoutInflater
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
@@ -101,7 +100,7 @@ class SpoilerDialogFragment : DialogFragment(), DialogInterface.OnClickListener 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = DataBindingUtil.inflate(
-            LayoutInflater.from(context),
+            layoutInflater,
             R.layout.fragment_spoiler_dialog,
             null,
             false
