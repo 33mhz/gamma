@@ -74,26 +74,25 @@ class PostTouchHelperCallback(
         val per = dX / deviceWidth
         val direction = if (prevDX < dX) Direction.Right else Direction.Left
         if (isCurrentlyActive) {
-            animActionViews(per, backgroundView, direction, vh)
+            animActionViews(per, backgroundView, direction, vh, binding)
         }
         prevDX = dX
         getDefaultUIUtil()
             .onDraw(c, recyclerView, foregroundView, dX, dY, actionState, isCurrentlyActive)
         val immediatelyAfterRelease = prevIsCurrentlyActive && !isCurrentlyActive
         if (immediatelyAfterRelease) {
-            performClick(per, backgroundView, viewHolder)
+            performClick(per, backgroundView, viewHolder, binding)
         }
         prevIsCurrentlyActive = isCurrentlyActive
     }
 
-    private fun performClick(per: Float, backgroundView: FrameLayout, viewHolder: PostItemFragment.PostViewHolder) {
-        val viewId = getShownViewId(per, backgroundView, viewHolder) ?: return
+    private fun performClick(per: Float, backgroundView: FrameLayout, viewHolder: PostItemFragment.PostViewHolder, binding: FragmentPostItemBinding) {
+        val viewId = getShownViewId(per, viewHolder, binding) ?: return
         backgroundView.findViewById<View>(viewId)?.performClick()
     }
 
 
-    private fun getShownViewId(per: Float, backgroundView: View, viewHolder: PostItemFragment.PostViewHolder): Int? {
-        val binding = FragmentPostItemBinding.bind(backgroundView)
+    private fun getShownViewId(per: Float, viewHolder: PostItemFragment.PostViewHolder, binding: FragmentPostItemBinding): Int? {
         return when {
             per < 0.1 -> null
             per in 0.1..<0.25 -> binding.actionReplyImageView.id
@@ -113,9 +112,10 @@ class PostTouchHelperCallback(
         per: Float,
         backgroundView: View,
         direction: Direction,
-        viewHolder: PostItemFragment.PostViewHolder
+        viewHolder: PostItemFragment.PostViewHolder,
+        binding: FragmentPostItemBinding
     ) {
-        val shownViewId = getShownViewId(per, backgroundView, viewHolder)
+        val shownViewId = getShownViewId(per, viewHolder, binding)
         if (prevActionViewId == shownViewId) return
         hideActionViewAnimation(prevActionViewId, backgroundView, direction)
         showActionViewAnimation(backgroundView, shownViewId, direction)
