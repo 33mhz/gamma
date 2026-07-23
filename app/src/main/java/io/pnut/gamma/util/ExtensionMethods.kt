@@ -94,5 +94,5 @@ fun <T> Response<T>.bodyOrThrow(): T {
         LogUtil.e(json)
         throw ErrorCollections.CommunicationError.create(json)
     }
-    throw Constants.unknownErrorException
+    throw Constants.unknownErrorException()
 }

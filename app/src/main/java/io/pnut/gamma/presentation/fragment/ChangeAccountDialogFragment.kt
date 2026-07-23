@@ -18,7 +18,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ChangeAccountDialogFragment : DialogFragment() {
     private val currentUserId: String by lazy {
-        arguments?.getString(BundleKey.CurrentUserId.name) ?: throw ErrorCollections.AccountNotFound
+        arguments?.getString(BundleKey.CurrentUserId.name) ?: throw ErrorCollections.AccountNotFound()
     }
 
     private enum class BundleKey { CurrentUserId }

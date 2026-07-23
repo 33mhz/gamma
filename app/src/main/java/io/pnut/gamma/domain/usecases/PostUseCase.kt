@@ -12,7 +12,7 @@ class PostUseCase(
 ) :
     UseCase<PostOutputData, PostInputData>() {
     override fun run(params: PostInputData): PostOutputData {
-        val token = accountRepository.getToken(params.accountId) ?: throw ErrorCollections.AccountNotFound
+        val token = accountRepository.getToken(params.accountId) ?: throw ErrorCollections.AccountNotFound()
         val res = pnutRepository.createPostSync(params.postBody, token)
         return PostOutputData(res)
     }

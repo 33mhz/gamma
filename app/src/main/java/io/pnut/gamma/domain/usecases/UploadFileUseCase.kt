@@ -14,7 +14,7 @@ import java.io.File
 class UploadFileUseCase(private val pnutRepository: IPnutRepository) :
     UseCase<UploadFileOutputData, UploadFileInputData>() {
     override fun run(params: UploadFileInputData): UploadFileOutputData {
-        val bytes = params.inputStream?.readBytes() ?: throw ErrorCollections.CannotLoadFile
+        val bytes = params.inputStream?.readBytes() ?: throw ErrorCollections.CannotLoadFile()
         // When it was shared from another app, cannot get filename correctly in sometimes.
         val file = File(params.uriInfo.uri.path)
         val content = bytes.toRequestBody("multipart/form-data".toMediaTypeOrNull())

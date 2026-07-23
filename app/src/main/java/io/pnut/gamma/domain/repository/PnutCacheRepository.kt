@@ -14,6 +14,8 @@ import io.pnut.gamma.presentation.util.PageableItemWrapperConverter
 import io.pnut.gamma.util.LogUtil
 import io.pnut.gamma.util.MoshiSingleton
 import io.pnut.gamma.domain.entity.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import kotlin.math.max
@@ -58,7 +60,9 @@ class PnutCacheRepository(currentUserId: String?, context: Context) : IPnutCache
         return try {
             val file = CachePath.Token.getFile()
             if (!file.exists()) return null
-            val inputStream = FileInputStream(file)
+            val inputStream = withContext(Dispatchers.IO) {
+                FileInputStream(file)
+            }
             inputStream.reader().use {
                 val json = it.readText()
                 TokenJsonAdapter(MoshiSingleton.moshi).fromJson(json)
