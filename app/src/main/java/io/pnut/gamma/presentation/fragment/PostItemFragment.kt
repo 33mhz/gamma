@@ -74,6 +74,7 @@ import io.pnut.gamma.presentation.util.EntityOnTouchListener
 import io.pnut.gamma.presentation.util.FragmentHelper
 import io.pnut.gamma.presentation.util.PostTouchHelperCallback
 import io.pnut.gamma.presentation.util.Util
+import io.pnut.gamma.presentation.view.LinkableTextView
 import io.pnut.gamma.service.PostWorker
 import io.pnut.gamma.util.LogUtil
 import io.pnut.gamma.util.SingleLiveEvent
@@ -765,7 +766,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             }
         }
         val screenNameTextView: TextView = itemView.findViewById(R.id.screenNameTextView)
-        val bodyTextView: TextView = itemView.findViewById(R.id.bodyTextView)
+        val bodyTextView: LinkableTextView = itemView.findViewById(R.id.bodyTextView)
         val dateTextView: TextView = itemView.findViewById(R.id.relativeTimeTextView)
         val handleNameTextView: TextView = itemView.findViewById(R.id.handleNameTextView)
         val repostedByTextView: TextView = itemView.findViewById(R.id.repostedByTextView)

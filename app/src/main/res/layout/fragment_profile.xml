@@ -165,7 +165,7 @@
                                 tools:text="https://example.com/"
                                 tools:visibility="visible" />
 
-                            <TextView
+                            <io.pnut.gamma.presentation.view.LinkableTextView
                                 android:id="@+id/profileDescriptionTextView"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"

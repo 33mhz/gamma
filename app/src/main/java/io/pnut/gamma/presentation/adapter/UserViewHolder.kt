@@ -11,6 +11,7 @@ import io.pnut.gamma.databinding.FragmentUserItemBinding
 import io.pnut.gamma.domain.Relationship
 import io.pnut.gamma.domain.entity.User
 import io.pnut.gamma.presentation.util.ColorResource
+import io.pnut.gamma.presentation.view.LinkableTextView
 import io.pnut.gamma.presentation.util.EntityOnTouchListener
 import com.bumptech.glide.Glide
 import io.pnut.gamma.presentation.util.Util
@@ -22,7 +23,7 @@ class UserViewHolder(mView: View) :
     private val avatarView: ImageView = binding.avatarImageView
     private val screenNameTextView: TextView = binding.screenNameTextView
     private val handleNameTextView: TextView = binding.handleNameTextView
-    private val bodyTextView: TextView = binding.bodyTextView
+    private val bodyTextView: LinkableTextView = binding.bodyTextView
     private val relationshipTextView: TextView = binding.relationshipTextView
     private val actionButton: MaterialButton = binding.actionButton
     private val entityListener: View.OnTouchListener = EntityOnTouchListener()

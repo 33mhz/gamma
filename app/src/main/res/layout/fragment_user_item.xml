@@ -73,7 +73,7 @@
             app:layout_constraintTop_toTopOf="@id/screenNameTextView"
             tools:text="@string/following" />
 
-        <TextView
+        <io.pnut.gamma.presentation.view.LinkableTextView
             android:id="@+id/bodyTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
