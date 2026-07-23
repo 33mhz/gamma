@@ -1,9 +1,9 @@
 package io.pnut.gamma.presentation.fragment
 
+import android.content.ContentValues
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
@@ -18,7 +18,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContentResolverCompat
-import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.DiffUtil
@@ -80,37 +79,20 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
         return true
     }
 
-    private fun createImageFile(): File? {
-        val storageDir =
-            File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), Constants.GAMMA)
-        storageDir.mkdirs()
-        val file = File.createTempFile(
-            System.currentTimeMillis().toString(),
-            ".jpg",
-            storageDir
-        )
-        currentPhotoPath = Uri.fromFile(file)
-        return file
-    }
-
-    private fun galleryAddPic() {
-        val photoPath = currentPhotoPath ?: return
-        Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).also { mediaScanIntent ->
-            val f = File(photoPath.path ?: "")
-            mediaScanIntent.data = Uri.fromFile(f)
-            context?.sendBroadcast(mediaScanIntent)
-        }
-    }
-
     enum class RequestCode { TakePhoto, Library }
 
     private val takePhotoLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        if (success) {
-            galleryAddPic()
-            currentPhotoPath?.let {
-                listener?.onGalleryItemClicked(it, tag)
-                dismiss()
+        val uri = currentPhotoPath
+        if (success && uri != null) {
+            val contentValues = ContentValues().apply {
+                put(MediaStore.MediaColumns.IS_PENDING, 0)
             }
+            context?.contentResolver?.update(uri, contentValues, null, null)
+            listener?.onGalleryItemClicked(uri, tag)
+            dismiss()
+        } else if (uri != null) {
+            context?.contentResolver?.delete(uri, null, null)
+            currentPhotoPath = null
         }
     }
 
@@ -123,15 +105,17 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
 
     // https://developer.android.com/training/camera/photobasics
     private fun openCamera() {
-        val photoFile = createImageFile()
-        photoFile?.also {
-            val photoURI: Uri = FileProvider.getUriForFile(
-                requireContext(),
-                "${requireContext().packageName}.fileprovider",
-                it
-            )
-            takePhotoLauncher.launch(photoURI)
+        val resolver = context?.contentResolver ?: return
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, "${System.currentTimeMillis()}.jpg")
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/${Constants.GAMMA}")
+            put(MediaStore.MediaColumns.IS_PENDING, 1)
         }
+
+        val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        currentPhotoPath = uri
+        uri?.let { takePhotoLauncher.launch(it) }
     }
 
     private fun openLibrary() {
