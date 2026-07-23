@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModel
@@ -53,7 +54,7 @@ class ChoosePrimaryColorDialogFragment : DialogFragment(), DialogInterface.OnCli
     }
 
     private val themeColor by lazy {
-        arguments?.getSerializable(BundleKey.ThemeColor.name) as? ThemeColorUtil.ThemeColor
+        arguments?.let { BundleCompat.getSerializable(it, BundleKey.ThemeColor.name, ThemeColorUtil.ThemeColor::class.java) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

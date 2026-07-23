@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
@@ -48,19 +49,19 @@ class BasicDialogFragment : DialogFragment(), DialogInterface.OnClickListener {
     }
 
     private val title by lazy {
-        arguments?.getSerializable(BundleKey.Title.name) as? BundledValue
+        arguments?.let { BundleCompat.getSerializable(it, BundleKey.Title.name, BundledValue::class.java) }
     }
     private val message by lazy {
-        arguments?.getSerializable(BundleKey.Message.name) as? BundledValue
+        arguments?.let { BundleCompat.getSerializable(it, BundleKey.Message.name, BundledValue::class.java) }
     }
     private val positive by lazy {
-        arguments?.getSerializable(BundleKey.Positive.name) as? BundledValue
+        arguments?.let { BundleCompat.getSerializable(it, BundleKey.Positive.name, BundledValue::class.java) }
     }
     private val negative by lazy {
-        arguments?.getSerializable(BundleKey.Negative.name) as? BundledValue
+        arguments?.let { BundleCompat.getSerializable(it, BundleKey.Negative.name, BundledValue::class.java) }
     }
     private val neutral by lazy {
-        arguments?.getSerializable(BundleKey.Neutral.name) as? BundledValue
+        arguments?.let { BundleCompat.getSerializable(it, BundleKey.Neutral.name, BundledValue::class.java) }
     }
     private val requestCode by lazy {
         arguments?.getInt(BundleKey.RequestCode.name) ?: -1
