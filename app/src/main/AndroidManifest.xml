@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -39,8 +40,7 @@
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
-            android:exported="false"
-            xmlns:tools="http://schemas.android.com/tools">
+            android:exported="false">
             <meta-data
                 android:name="androidx.work.WorkManagerInitializer"
                 android:value="androidx.startup"
@@ -119,10 +119,8 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/AppTheme.PhotoView" />
         <activity
-            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
-            android:theme="@style/AppTheme.WithToolbar" />
-        <activity
-            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
-            android:theme="@style/AppTheme.WithToolbar" />
+            android:name="com.google.android.gms.oss.licenses.v2.OssLicensesMenuActivity"
+            android:theme="@style/AppTheme.WithToolbar"
+            tools:replace="android:theme" />
     </application>
 </manifest>

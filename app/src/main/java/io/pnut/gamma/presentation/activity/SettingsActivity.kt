@@ -21,7 +21,7 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.google.android.gms.oss.licenses.v2.OssLicensesMenuActivity
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.BuildConfig
@@ -287,7 +287,7 @@ class SettingsActivity : BaseActivity(),
             clearGlideCacheButton?.isEnabled =
                 context?.let { Glide.getPhotoCacheDir(it)?.exists() } ?: true
             clearStreamCacheButton?.isEnabled =
-                context?.let { PnutCacheRepository.getUserCacheDir(it)?.exists() } ?: true
+                context?.let { PnutCacheRepository.getUserCacheDir(it).exists() } ?: true
 
             childFragmentManager.setFragmentResultListener(RequestCode.ClearStreamCache.name, this) { _, bundle ->
                 if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == RESULT_OK) {

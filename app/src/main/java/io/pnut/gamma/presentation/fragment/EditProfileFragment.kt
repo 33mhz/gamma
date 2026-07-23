@@ -305,10 +305,6 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     private fun setupLocaleView() {
         PopupMenu(binding.localeLayout.context, binding.localeLayout).also { popupMenu ->
