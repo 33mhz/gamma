@@ -2,7 +2,7 @@ package io.pnut.gamma.domain.repository
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import io.pnut.gamma.domain.model.preference.ShapeOfAvatar
 import io.pnut.gamma.presentation.util.ThemeColorUtil
 import io.pnut.gamma.R
