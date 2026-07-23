@@ -9,6 +9,6 @@
 /build
 /captures
 .externalNativeBuild
-.idea/assetWizardSettings.xml
 /keystore.properties
 app/google-services.json
+.idea
