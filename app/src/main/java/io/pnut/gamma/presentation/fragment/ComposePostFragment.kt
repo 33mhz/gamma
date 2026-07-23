@@ -466,7 +466,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
 
     private fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> cancelToCompose()
+            R.id.home -> cancelToCompose()
             R.id.menuInsertPhoto -> requestGalleryDialog()
             R.id.menuNsfw -> toggleNSFW(item)
             R.id.menuPost -> send()

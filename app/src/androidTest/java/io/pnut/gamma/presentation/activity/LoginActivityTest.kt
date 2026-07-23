@@ -14,7 +14,6 @@ import androidx.test.ext.truth.content.IntentSubject.assertThat
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.android.material.R as Rm
 import com.google.common.collect.Iterables
-import io.pnut.gamma.presentation.activity.LoginActivity
 import io.pnut.gamma.R
 import org.junit.Rule
 import org.junit.Test

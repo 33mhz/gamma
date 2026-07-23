@@ -47,7 +47,6 @@ import io.pnut.gamma.presentation.util.BindingUtil
 import io.pnut.gamma.presentation.util.EntityOnTouchListener
 import com.bumptech.glide.Glide
 import io.pnut.gamma.presentation.util.ShareUtil
-import io.pnut.gamma.presentation.view.LinkableTextView
 import io.pnut.gamma.presentation.util.Util
 import io.pnut.gamma.util.SingleLiveEvent
 import java.util.Calendar
@@ -119,7 +118,7 @@ class ProfileFragment : BaseFragment() {
             if (iconUrl != null && iconUrl.isNotBlank()) {
                 fixTransition(iconUrl)
             }
-            val user = BundleCompat.getParcelable(bundle, BundleKey.User.name, User::class.java)
+            val user: User? = BundleCompat.getParcelable(bundle, BundleKey.User.name, User::class.java)
 //            val iconTransitionName = bundle.getString(BundleKey.IconTransitionName.name)
 //            binding.circleImageView.transitionName = iconTransitionName
             viewModel.user.value = user

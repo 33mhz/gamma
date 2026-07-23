@@ -1,6 +1,5 @@
 package io.pnut.gamma.presentation.activity
 
-import io.pnut.gamma.R
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.MenuItem

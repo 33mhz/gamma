@@ -59,7 +59,7 @@ class RawMapJsonAdapterFactory : JsonAdapter.Factory {
                 writer.name(type)
                 writer.beginArray()
                 list.forEach { item ->
-                    val adapter = moshi.adapter<RawValue>(item.javaClass)
+                    val adapter = moshi.adapter(item.javaClass)
                     adapter.toJson(writer, item)
                 }
                 writer.endArray()

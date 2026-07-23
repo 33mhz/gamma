@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.text.TextUtils
 import android.text.format.DateFormat
+import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -22,17 +23,17 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 fun Snackbar.showAsError() {
-    val view = this.view
-    val bgColor = ContextCompat.getColor(view.context, R.color.colorError)
+    val view: View = this.view
+    val bgColor: Int = ContextCompat.getColor(view.context, R.color.colorError)
     view.setBackgroundColor(bgColor)
-    val textView = view.findViewById<TextView>(Rm.id.snackbar_text)
+    val textView: TextView = view.findViewById(Rm.id.snackbar_text)
     textView.setTextColor(Color.WHITE)
     show()
 }
 
 fun Snackbar.oneLine(): Snackbar {
-    val view = this.view
-    val textView = view.findViewById<TextView>(Rm.id.snackbar_text)
+    val view: View = this.view
+    val textView: TextView = view.findViewById(Rm.id.snackbar_text)
     textView.maxLines = 1
     textView.ellipsize = TextUtils.TruncateAt.END
     return this
@@ -80,17 +81,17 @@ fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observ
 }
 
 fun Date.toFormatString(context: Context?): String {
-    val dateFormatTemplate = context?.getString(R.string.file_date_format_template)
+    val dateFormatTemplate: String? = context?.getString(R.string.file_date_format_template)
     return DateFormat.format(dateFormatTemplate, this).toString()
 }
 
 fun <T> Response<T>.bodyOrThrow(): T {
-    val res = this
-    val body = res.body()
-    val errorBody = res.errorBody()
+    val res: Response<T> = this
+    val body: T? = res.body()
+    val errorBody: okhttp3.ResponseBody? = res.errorBody()
     if (body != null) return body
     if (errorBody != null) {
-        val json = errorBody.string()
+        val json: String = errorBody.string()
         LogUtil.e(json)
         throw ErrorCollections.CommunicationError.create(json)
     }

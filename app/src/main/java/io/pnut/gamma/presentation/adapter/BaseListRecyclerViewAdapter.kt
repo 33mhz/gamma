@@ -31,7 +31,7 @@ class PageableItemWrapperDiffCallback<T : UniquePageable> : DiffUtil.ItemCallbac
 
 class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolder>(
     private val options: BaseListRecyclerViewAdapterOptions<T, V>
-) : ListAdapter<PageableItemWrapper<T>, V>(PageableItemWrapperDiffCallback<T>()) {
+) : ListAdapter<PageableItemWrapper<T>, V>(PageableItemWrapperDiffCallback()) {
     data class BaseListRecyclerViewAdapterOptions<TT : UniquePageable, VV>(
         val itemList: ArrayList<PageableItemWrapper<TT>>,
         var listener: IBaseList<TT, VV>,

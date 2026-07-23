@@ -131,10 +131,10 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
             Action.Repost -> if (post.mainPost.youReposted == true) R.string.repost else R.string.delete_repost
             Action.Delete -> R.string.delete
         }
-        val actionName = getString(actionNameRes)
-        val username = post.mainPost.user?.username ?: return
-        val content = post.content?.text ?: return
-        val message =
+        val actionName: String = getString(actionNameRes)
+        val username: String = post.mainPost.user?.username ?: return
+        val content: String = post.content?.text ?: return
+        val message: String =
             getString(R.string.action_result_snackbar_template, actionName, username, content)
         showSnackBar(message, snackbarCallback)
     }
@@ -145,7 +145,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     }
 
     private fun showSnackBar(text: String, snackbarCallback: SnackbarCallback? = null) {
-        val view = findViewById<View>(R.id.content) ?: return
+        val view: View = findViewById(R.id.content) ?: return
         Snackbar.make(view, text, Snackbar.LENGTH_SHORT).oneLine().apply {
             setAnchorView(R.id.fab)
             if (snackbarCallback != null) setAction(
@@ -167,11 +167,11 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
     private val showAccountMenuObserver = Observer<Boolean> { showAccountMenu ->
         val res = if (showAccountMenu) R.drawable.ic_arrow_drop_up_to_down else R.drawable.ic_arrow_drop_down_to_up
-        val headerView = binding.navigationView.getHeaderView(0)
-        val headerBinding = NavigationDrawerHeaderBinding.bind(headerView)
+        val headerView: View = binding.navigationView.getHeaderView(0)
+        val headerBinding: NavigationDrawerHeaderBinding = NavigationDrawerHeaderBinding.bind(headerView)
         
         headerBinding.switchAccountIndicatorImageView.let { imageView ->
-            val avd = AnimatedVectorDrawableCompat.create(this, res) ?: return@let
+            val avd: AnimatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(this, res) ?: return@let
             imageView.setImageDrawable(avd)
             avd.start()
         }

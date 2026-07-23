@@ -9,7 +9,7 @@ import io.pnut.gamma.R
 
 class PreferenceRepository(val context: Context) : IPreferenceRepository {
     val sharedPreferences: SharedPreferences by lazy {
-        PreferenceManager.getDefaultSharedPreferences(context)
+        PreferenceManager.getDefaultSharedPreferences(context) as SharedPreferences
     }
     private val editor: SharedPreferences.Editor
         get() = sharedPreferences.edit()
@@ -18,7 +18,7 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
         load()
     }
 
-    val res = context.resources
+    val res: android.content.res.Resources = context.resources
 
     override fun reload() = load()
 
@@ -27,7 +27,7 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
 
     override val themeColor: ThemeColorUtil.ThemeColor
         get() {
-            val themeColorStr =
+            val themeColorStr: String? =
                 sharedPreferences.getString(
                     context.getString(R.string.pref_change_primary_color_key),
                     null
@@ -38,7 +38,7 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
     override val darkMode: ThemeColorUtil.DarkMode
         get() {
             return try {
-                val strInt = sharedPreferences.getString(
+                val strInt: String = sharedPreferences.getString(
                     context.getString(R.string.pref_dark_theme_key),
                     "0"
                 ) ?: "0"
@@ -85,7 +85,7 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
 
     override val shapeOfAvatar: ShapeOfAvatar
         get() = try {
-            val strInt = sharedPreferences.getString(
+            val strInt: String = sharedPreferences.getString(
                 context.getString(R.string.pref_shape_of_avatar_key),
                 context.getString(R.string.pref_shape_of_avatar_key_default_value)
             ) ?: "0"
