@@ -6,7 +6,7 @@ import io.pnut.gamma.domain.repository.IAccountRepository
 open class AccountRepositoryMock(private val accounts: List<Account> = emptyList()) :
     IAccountRepository {
     private val memoryDb by lazy {
-        accounts.map { it.id to it }.toMap().toMutableMap()
+        accounts.associateBy { it.id }.toMutableMap()
     }
     private var defaultAccount: Account? = null
 

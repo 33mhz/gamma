@@ -32,7 +32,7 @@ class VerifyTokenActivityTest {
 
   @Before
   fun setup() {
-      OverrideModules {
+      OverrideModules { it ->
           it.fakeUseCaseModule.verifyTokenUseCase =
               Mockito.mock(VerifyTokenUseCase::class.java).also {
                   runBlocking {

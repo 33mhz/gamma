@@ -50,7 +50,7 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         val files: Map<String, File> = emptyMap()
     )
 
-    private fun <T : Unique> List<T>.toMap() = this.map { it.uniqueKey to it }.toMap()
+    private fun <T : Unique> List<T>.toMap() = this.associateBy { it.uniqueKey }
 
     private val pnutMemoryDb by lazy {
         PnutMemoryDB(

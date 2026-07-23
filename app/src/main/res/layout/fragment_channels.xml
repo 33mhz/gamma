@@ -20,7 +20,7 @@
             app:contentInsetStartWithNavigation="0dp"
             app:layout_scrollFlags="scroll|enterAlways"
             app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
-            app:title="@string/channel"></androidx.appcompat.widget.Toolbar>
+            app:title="@string/channel" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/channelsTabLayout"
