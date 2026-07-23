@@ -206,8 +206,11 @@ class InteractionFragment :
 
         override fun loadCache() {
             viewModelScope.launch {
-                val res = getCachedInteractionListUseCase.run(Unit)
-                items.addAll(res.interactions.data)
+                runCatching {
+                    getCachedInteractionListUseCase.run(Unit)
+                }.onSuccess {
+                    items.addAll(it.interactions.data)
+                }
                 super.loadCache()
             }
         }

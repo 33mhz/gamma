@@ -230,7 +230,6 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
         val willRemoveSegmentIndex = options.itemList.indexOf(requestPager)
         if (willRemoveSegmentIndex < 0) return 0
         options.itemList.removeAt(willRemoveSegmentIndex)
-        submitList(ArrayList(options.itemList))
         return willRemoveSegmentIndex
     }
 
@@ -240,10 +239,7 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
         response: PnutResponse<List<T>>
     ) {
         if (response.meta.more == true) {
-            val baseSegment = PageableItemWrapper.Pager.createFromMeta(response.meta, requestPager)
-            val segment = baseSegment
-                .takeIf { index == options.itemList.size - 1 }
-                ?.copy(maxId = null) ?: baseSegment
+            val segment = PageableItemWrapper.Pager.createFromMeta(response.meta, requestPager)
             options.itemList.add(index, segment)
         } else if (response.meta.more == false && index == options.itemList.size) {
             options.itemList.add(
@@ -265,6 +261,19 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
         response: PnutResponse<List<T>>,
         insertIndex: Int
     ) {
+        val items = response.data
+        val pageableItemWrapperItems = items.map { PageableItemWrapper.Item(it) }
+
+        options.itemList.addAll(insertIndex, pageableItemWrapperItems)
+        addSegmentIfNeed(insertIndex + items.size, requestPager, response)
+        submitList(ArrayList(options.itemList))
+    }
+
+    fun updateItems(
+        requestPager: PageableItemWrapper<T>?,
+        response: PnutResponse<List<T>>
+    ) {
+        val insertIndex = removeSegmentIfNeed(requestPager)
         val items = response.data
         val pageableItemWrapperItems = items.map { PageableItemWrapper.Item(it) }
 

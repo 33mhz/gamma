@@ -48,11 +48,13 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
     private fun initialized() {
         viewModel.initialized = true
         adapter.submitList(ArrayList(viewModel.items))
+        view?.let { getRecyclerView(it).requestLayout() }
         viewModel.loadNewItems()
         viewModel.loadMoreItems()
     }
 
     private fun failure(t: Throwable) {
+        viewModel.loading.value = false
         ErrorIntent.broadcast(context ?: return, t)
         adapter.showRetryMessage()
     }
@@ -74,10 +76,12 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
         requestPager: PageableItemWrapper<T>?
     ) {
         LogUtil.e("receiveNewItems ${response.data.size}")
-        val insertIndex = adapter.removeSegmentIfNeed(requestPager)
-        adapter.insertItems(requestPager, response, insertIndex)
-        viewModel.loading.postValue(false)
-        getSwipeRefreshLayout(view ?: return).isRefreshing = false
+        adapter.updateItems(requestPager, response)
+        viewModel.loading.value = false
+        view?.let {
+            val recyclerView = getRecyclerView(it)
+            recyclerView.requestLayout()
+        }
         if (preferenceRepository.cache) viewModel.storeItems()
         onReceiveNewItemsAfter()
     }
@@ -138,7 +142,11 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView(getRecyclerView(view))
-        getSwipeRefreshLayout(view).setOnRefreshListener(this)
+        val swipeRefreshLayout = getSwipeRefreshLayout(view)
+        swipeRefreshLayout.setOnRefreshListener(this)
+        viewModel.loading.observe(viewLifecycleOwner) {
+            swipeRefreshLayout.isRefreshing = it
+        }
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
@@ -216,6 +224,7 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
                     listEvent.postValue(ListEvent.ReceiveNewItems(it, requestPager))
                 }.onFailure {
                     LogUtil.e(it.message ?: "no message")
+                    loading.postValue(false)
                     listEvent.postValue(ListEvent.Failure(it))
                     lastPagination = null
                 }

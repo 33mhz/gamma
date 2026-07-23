@@ -115,8 +115,11 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
 
         override fun loadCache() {
             viewModelScope.launch {
-                val res = cachedUserListUseCase.run(GetCachedUserListInputData((userListType)))
-                items.addAll(res.users.data)
+                runCatching {
+                    cachedUserListUseCase.run(GetCachedUserListInputData((userListType)))
+                }.onSuccess {
+                    items.addAll(it.users.data)
+                }
                 super.loadCache()
             }
         }
