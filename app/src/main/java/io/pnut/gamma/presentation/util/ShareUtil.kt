@@ -17,7 +17,7 @@ object ShareUtil {
 
     private fun getShareIntent(activity: Activity?, text: String, shareType: ShareType) {
         if (activity == null) return
-        return ShareCompat.IntentBuilder.from(activity)
+        ShareCompat.IntentBuilder(activity)
             .setType("text/plain")
             .setText(text)
             .setChooserTitle(shareType.titleRes)
