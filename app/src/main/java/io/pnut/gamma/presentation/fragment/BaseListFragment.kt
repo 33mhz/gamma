@@ -47,7 +47,7 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
 
     private fun initialized() {
         viewModel.initialized = true
-        adapter.notifyDataSetChanged()
+        adapter.submitList(ArrayList(viewModel.items))
         viewModel.loadNewItems()
         viewModel.loadMoreItems()
     }
@@ -84,7 +84,7 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
 
     override fun onStart() {
         super.onStart()
-        adapter.notifyDataSetChanged()
+        adapter.submitList(ArrayList(viewModel.items))
     }
 
     protected val adapter: BaseListRecyclerViewAdapter<T, V> by lazy {

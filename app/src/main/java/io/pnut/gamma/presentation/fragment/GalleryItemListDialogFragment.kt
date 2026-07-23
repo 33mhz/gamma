@@ -21,6 +21,8 @@ import androidx.core.content.ContentResolverCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
@@ -51,12 +53,12 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = GalleryItemAdapter(galleryItemList)
+        val adapter = GalleryItemAdapter()
         val pictureList = view.findViewById<RecyclerView>(R.id.pictureList)
         val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
         Thread {
             galleryItemList.addAll(getImages())
-            pictureList.post { adapter.notifyDataSetChanged() }
+            pictureList.post { adapter.submitList(ArrayList(galleryItemList)) }
         }.start()
         toolbar.setNavigationOnClickListener { dismiss() }
         toolbar.setOnMenuItemClickListener(::onMenuItemClick)
@@ -177,21 +179,6 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
         listener?.onDismiss()
     }
 
-    private inner class ViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
-        RecyclerView.ViewHolder(inflater.inflate(R.layout.fragment_gallery_item_list_dialog_item, parent, false)) {
-
-        val imageView: ImageView = itemView.findViewById(R.id.imageView)
-
-        init {
-            imageView.setOnClickListener {
-                listener?.let { listener ->
-                    listener.onGalleryItemClicked(galleryItemList[bindingAdapterPosition].uri, tag)
-                    dismiss()
-                }
-            }
-        }
-    }
-
     private fun getImages(): ArrayList<GalleryItem> {
         val res = ArrayList<GalleryItem>()
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
@@ -212,10 +199,37 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
 
     data class GalleryItem(val uri: Uri)
 
-    private inner class GalleryItemAdapter(val items: ArrayList<GalleryItem>) :
-        RecyclerView.Adapter<ViewHolder>() {
+    private object GalleryItemDiffCallback : DiffUtil.ItemCallback<GalleryItem>() {
+        override fun areItemsTheSame(oldItem: GalleryItem, newItem: GalleryItem): Boolean {
+            return oldItem.uri == newItem.uri
+        }
+
+        override fun areContentsTheSame(oldItem: GalleryItem, newItem: GalleryItem): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    private inner class GalleryItemAdapter :
+        ListAdapter<GalleryItem, GalleryItemAdapter.ViewHolder>(GalleryItemDiffCallback) {
+
+        inner class ViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
+            RecyclerView.ViewHolder(inflater.inflate(R.layout.fragment_gallery_item_list_dialog_item, parent, false)) {
+
+            val imageView: ImageView = itemView.findViewById(R.id.imageView)
+
+            init {
+                imageView.setOnClickListener {
+                    val position = bindingAdapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
+                        listener?.onGalleryItemClicked(getItem(position).uri, tag)
+                        dismiss()
+                    }
+                }
+            }
+        }
+
         private inner class ErrorHandling(
-            val position: Int
+            val item: GalleryItem
         ) : RequestListener<Drawable> {
             override fun onLoadFailed(
                 e: GlideException?,
@@ -223,8 +237,8 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
                 target: Target<Drawable>,
                 isFirstResource: Boolean
             ): Boolean {
-                items.removeAt(position)
-                this@GalleryItemAdapter.notifyItemRemoved(position)
+                galleryItemList.remove(item)
+                submitList(ArrayList(galleryItemList))
                 return false
             }
 
@@ -245,16 +259,14 @@ class GalleryItemListDialogFragment : BaseBottomSheetDialogFragment() {
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val item = items[position]
+            val item = getItem(position)
 
             Glide.with(holder.itemView)
                 .load(item.uri)
                 .thumbnail(.1f)
-                .listener(ErrorHandling(position))
+                .listener(ErrorHandling(item))
                 .into(holder.imageView)
         }
-
-        override fun getItemCount(): Int = items.size
     }
 
     private enum class Mode { Single, Multiple }

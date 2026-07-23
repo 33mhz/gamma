@@ -37,7 +37,6 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
         if (it == null) return@Observer
         adapter.updateItem(PageableItemWrapper.Item(it))
         viewModel.storeItems()
-
     }
     override val itemNameRes: Int = R.string.users
     override fun onClickSegmentListener(

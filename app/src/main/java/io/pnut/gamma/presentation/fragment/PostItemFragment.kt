@@ -105,11 +105,8 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         val item = items[index] as? PageableItemWrapper.Item<Post> ?: return@Observer
         val post = item.item
         post.poll = getPoll.poll
-        post.pollOptionsAdapter?.let {
-            it.setPollDetail(getPoll.poll)
-            it.notifyDataSetChanged()
-            adapter.notifyItemChanged(index)
-        }
+        post.pollOptionsAdapter?.setPollDetail(getPoll.poll)
+        adapter.updateItem(PageableItemWrapper.Item(post))
         viewModel.storeItems()
     }
     private val wifiManager by lazy {
@@ -543,7 +540,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             viewHolder.pollVoteButton.visibility = getVisibility((!pollLikeValue.alreadyClosed))
             viewHolder.pollFooterTextView.text = pollLikeValue.getDateText(context)
             if (poll != null) {
-                // prevent  chosen position to be initialized when it is triggered update like notifyDataSetChanged.
+                // prevent chosen position to be initialized when it is triggered update like notifyDataSetChanged.
                 if (viewHolder.pollOptionsRecyclerView.adapter != item.pollOptionsAdapter) {
                     viewHolder.pollOptionsRecyclerView.adapter = item.pollOptionsAdapter?.also {
                         it.setPollDetail(poll)
@@ -554,7 +551,6 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
                         }
                     }
                 }
-                item.pollOptionsAdapter?.setPollDetail(poll)
                 viewHolder.pollVoteButton.isEnabled = item.pollOptionsAdapter?.votable ?: false
                 viewHolder.pollVoteButton.setOnClickListener {
                     viewModel.vote(

@@ -5,22 +5,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.checkbox.MaterialCheckBox
+import io.pnut.gamma.R
+import io.pnut.gamma.databinding.PollItemViewBinding
 import io.pnut.gamma.domain.entity.Poll
 import io.pnut.gamma.domain.entity.PollLikeValue
 import io.pnut.gamma.util.LogUtil
-import io.pnut.gamma.R
-import io.pnut.gamma.databinding.PollItemViewBinding
 
 class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var poll: Poll? = null) :
-    RecyclerView.Adapter<PollOptionsAdapter.OptionsViewHolder>() {
+    ListAdapter<Poll.PollOption, PollOptionsAdapter.OptionsViewHolder>(PollOptionDiffCallback()) {
+
+    init {
+        submitList(poll?.options ?: pollLikeValue.options)
+    }
+
     val reachedLimit: Boolean
         get() = (poll?.maxOptions ?: 1) < chosenPositions.size
     val votable
         get() = !reachedLimit && chosenPositions.isNotEmpty()
-    private val options
-        get() = poll?.options ?: pollLikeValue.options
 
     interface Callback {
         fun onUpdateChoiceState(votable: Boolean)
@@ -42,23 +47,19 @@ class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var p
             poll.options.withIndex().filter { it.value.isYourResponse == true }.map { it.index }
         LogUtil.e("positions $positions")
         chosenPositions.addAll(positions)
-        notifyDataSetChanged()
+        submitList(poll.options)
     }
 
     private val chosenPositions = mutableSetOf<Int>()
     val getChosenPositions
         get() = chosenPositions.toSet()
 
-    override fun getItemCount(): Int = options.size
-
     override fun onBindViewHolder(holder: OptionsViewHolder, position: Int) {
-        val option = options[position]
+        val option = getItem(position)
         val pollLocal = poll
         holder.bindTo(option, chosenPositions, pollLocal) {
             listener?.onUpdateChoiceState(votable)
-
         }
-
     }
 
     class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -67,6 +68,7 @@ class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var p
         private val pollOptionCheckBox: MaterialCheckBox = binding.pollOptionCheckBox
         private val pollOptionCountTextView: TextView = binding.pollOptionCountTextView
         private val pollOptionLayout: ViewGroup = binding.pollOptionLayout
+
         fun bindTo(
             option: Poll.PollOption,
             chosenPositions: MutableSet<Int>,
@@ -94,7 +96,15 @@ class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var p
                 callback()
             }
         }
-
     }
 
+    class PollOptionDiffCallback : DiffUtil.ItemCallback<Poll.PollOption>() {
+        override fun areItemsTheSame(oldItem: Poll.PollOption, newItem: Poll.PollOption): Boolean {
+            return oldItem.position == newItem.position
+        }
+
+        override fun areContentsTheSame(oldItem: Poll.PollOption, newItem: Poll.PollOption): Boolean {
+            return oldItem == newItem
+        }
+    }
 }

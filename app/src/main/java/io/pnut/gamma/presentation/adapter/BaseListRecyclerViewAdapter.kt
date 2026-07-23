@@ -3,18 +3,35 @@ package io.pnut.gamma.presentation.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import io.pnut.gamma.R
+import io.pnut.gamma.databinding.SegmentItemBinding
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.UniquePageable
 import io.pnut.gamma.domain.model.PageableItemWrapper
-import io.pnut.gamma.util.LogUtil
-import io.pnut.gamma.R
-import io.pnut.gamma.databinding.SegmentItemBinding
 import java.util.Locale
+
+class PageableItemWrapperDiffCallback<T : UniquePageable> : DiffUtil.ItemCallback<PageableItemWrapper<T>>() {
+    override fun areItemsTheSame(oldItem: PageableItemWrapper<T>, newItem: PageableItemWrapper<T>): Boolean {
+        return if (oldItem is PageableItemWrapper.Item && newItem is PageableItemWrapper.Item) {
+            oldItem.item.uniqueKey == newItem.item.uniqueKey
+        } else if (oldItem is PageableItemWrapper.Pager && newItem is PageableItemWrapper.Pager) {
+            oldItem.maxId == newItem.maxId && oldItem.minId == newItem.minId
+        } else {
+            false
+        }
+    }
+
+    override fun areContentsTheSame(oldItem: PageableItemWrapper<T>, newItem: PageableItemWrapper<T>): Boolean {
+        return oldItem == newItem
+    }
+}
 
 class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolder>(
     private val options: BaseListRecyclerViewAdapterOptions<T, V>
-) : RecyclerView.Adapter<V>() {
+) : ListAdapter<PageableItemWrapper<T>, V>(PageableItemWrapperDiffCallback<T>()) {
     data class BaseListRecyclerViewAdapterOptions<TT : UniquePageable, VV>(
         val itemList: ArrayList<PageableItemWrapper<TT>>,
         var listener: IBaseList<TT, VV>,
@@ -22,11 +39,9 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
         val mainItemId: String = ""
     )
 
-    // empty view; loading indicator;
-    override fun getItemCount(): Int = bodyItemCount
-
-    private val bodyItemCount: Int
-        get() = options.itemList.size
+    init {
+        submitList(ArrayList(options.itemList))
+    }
 
     var recyclerView: RecyclerView? = null
 
@@ -38,30 +53,10 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
     private enum class ViewType { Body, Segment }
 
     override fun getItemViewType(position: Int): Int {
-        return when (options.reverse) {
-            true -> {
-//                val isFirstItem = position == 0
-                when {
-//                    isFirstItem -> ViewType.Segment
-                    else -> when (options.itemList[position]) {
-                        is PageableItemWrapper.Pager -> ViewType.Segment
-                        else -> ViewType.Body
-                    }
-                }.ordinal
-            }
-            false -> {
-//                val isLastItem = itemCount == position + 1
-                when {
-//                    isLastItem -> ViewType.Segment
-                    else -> when (options.itemList[position]) {
-                        is PageableItemWrapper.Pager -> ViewType.Segment
-                        else -> ViewType.Body
-                    }
-                }.ordinal
-            }
-
-        }
-
+        return when (getItem(position)) {
+            is PageableItemWrapper.Pager -> ViewType.Segment
+            else -> ViewType.Body
+        }.ordinal
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): V {
@@ -95,13 +90,10 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
     }
 
     override fun onBindViewHolder(holder: V, position: Int) {
-//        val offset = if (options.reverse) -1 else 0
-        //        LogUtil.e("options.itemList[itemPosition] ${options.itemList[itemPosition]}")
+        val itemWrapper = getItem(position)
         when (ViewType.entries[getItemViewType(position)]) {
             ViewType.Body -> {
-                val itemWrapper =
-                    options.itemList[position] as? PageableItemWrapper.Item ?: return
-                val item = itemWrapper.item
+                val item = (itemWrapper as? PageableItemWrapper.Item)?.item ?: return
                 holder.itemView.setOnClickListener {
                     options.listener.onClickItemListener(
                         holder,
@@ -117,8 +109,7 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
                 )
             }
             ViewType.Segment -> {
-                val pager =
-                    options.itemList[position] as? PageableItemWrapper.Pager ?: return
+                val pager = itemWrapper as? PageableItemWrapper.Pager ?: return
                 val viewHolder = holder as? SegmentViewHolder ?: return
                 when {
                     pager.state == PageableItemWrapper.Pager.State.Error -> {
@@ -130,11 +121,12 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
                         setClickableSegment(viewHolder, pager) {
                             viewHolder.binding.retryButton.visibility = View.GONE
                             viewHolder.binding.loadingIndicatorProgressBar.visibility = View.VISIBLE
-//                        options.itemList[position] = pager.copy(state = PageableItemWrapper.Pager.State.Loading)
-                            notifyItemChanged(
-                                position,
-                                pager.copy(state = PageableItemWrapper.Pager.State.Loading)
-                            )
+                            val newPager = pager.copy(state = PageableItemWrapper.Pager.State.Loading)
+                            val idx = options.itemList.indexOf(pager)
+                            if (idx >= 0) {
+                                options.itemList[idx] = newPager
+                                submitList(ArrayList(options.itemList))
+                            }
                         }
                     }
                     pager.state == PageableItemWrapper.Pager.State.Loading -> {
@@ -155,13 +147,13 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
                         setClickableSegment(viewHolder, pager) {
                             viewHolder.binding.segmentImageView.visibility = View.GONE
                             viewHolder.binding.loadingIndicatorProgressBar.visibility = View.VISIBLE
-//                        options.itemList[position] = pager.copy(state = PageableItemWrapper.Pager.State.Loading)
-                            notifyItemChanged(
-                                position,
-                                pager.copy(state = PageableItemWrapper.Pager.State.Loading)
-                            )
+                            val newPager = pager.copy(state = PageableItemWrapper.Pager.State.Loading)
+                            val idx = options.itemList.indexOf(pager)
+                            if (idx >= 0) {
+                                options.itemList[idx] = newPager
+                                submitList(ArrayList(options.itemList))
+                            }
                         }
-
                     }
                     !pager.more && position == 0 -> {
                         // empty
@@ -176,7 +168,6 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
                         viewHolder.binding.noItemsMessageTextView.text =
                             context.getString(R.string.no_items_template, itemName)
                         disableSegment(viewHolder)
-
                     }
                     else -> {
                         // loaded all items
@@ -207,38 +198,39 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
 
     private fun disableSegment(viewHolder: SegmentViewHolder) {
         viewHolder.itemView.setOnClickListener(null)
-
     }
 
     fun updateItem(item: PageableItemWrapper<T>) {
-        LogUtil.e(item.toString())
         val index = options.itemList.indexOfFirst {
-            LogUtil.e("$it ${it.uniqueKey}")
             it.uniqueKey == item.uniqueKey
         }
-        LogUtil.e("index $index")
         if (index < 0) return
-        notifyItemChanged(index)
+        options.itemList[index] = item
+        submitList(ArrayList(options.itemList))
     }
 
     fun removeItem(item: PageableItemWrapper<T>) {
         val index = options.itemList.indexOf(item)
         if (index < 0) return
         options.itemList.removeAt(index)
-        notifyItemRemoved(index)
+        submitList(ArrayList(options.itemList))
     }
 
     fun showRetryMessage() {
-        notifyItemChanged(bodyItemCount)
+        val pagerIndex = options.itemList.indexOfLast { it is PageableItemWrapper.Pager }
+        if (pagerIndex >= 0) {
+            val pager = options.itemList[pagerIndex] as PageableItemWrapper.Pager<T>
+            options.itemList[pagerIndex] = pager.copy(state = PageableItemWrapper.Pager.State.Error)
+            submitList(ArrayList(options.itemList))
+        }
     }
 
     fun removeSegmentIfNeed(requestPager: PageableItemWrapper<T>?): Int {
         if (requestPager == null) return 0
         val willRemoveSegmentIndex = options.itemList.indexOf(requestPager)
         if (willRemoveSegmentIndex < 0) return 0
-        LogUtil.e("willRemoveSegmentIndex $willRemoveSegmentIndex")
         options.itemList.removeAt(willRemoveSegmentIndex)
-        notifyItemRemoved(willRemoveSegmentIndex)
+        submitList(ArrayList(options.itemList))
         return willRemoveSegmentIndex
     }
 
@@ -247,32 +239,24 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
         requestPager: PageableItemWrapper<T>?,
         response: PnutResponse<List<T>>
     ) {
-        LogUtil.e("addSegmentIfNeed $index, ${options.itemList.size}")
         if (response.meta.more == true) {
             val baseSegment = PageableItemWrapper.Pager.createFromMeta(response.meta, requestPager)
             val segment = baseSegment
                 .takeIf { index == options.itemList.size - 1 }
                 ?.copy(maxId = null) ?: baseSegment
-            LogUtil.e("add more segment $segment")
             options.itemList.add(index, segment)
-            notifyItemInserted(index)
         } else if (response.meta.more == false && index == options.itemList.size) {
-            LogUtil.e("add footer segment")
-            // Add the footer segment if insert position is end of list and more is false
             options.itemList.add(
                 index,
                 PageableItemWrapper.Pager.createFromMeta(response.meta, requestPager)
             )
-            notifyItemInserted(index)
         } else if (response.meta.more == false && 0 == index && options.itemList.isEmpty()) {
-            // no items footer segment
             options.itemList.add(
                 PageableItemWrapper.Pager.createFromMeta(
                     response.meta,
                     requestPager
                 )
             )
-            notifyItemInserted(0)
         }
     }
 
@@ -283,14 +267,10 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
     ) {
         val items = response.data
         val pageableItemWrapperItems = items.map { PageableItemWrapper.Item(it) }
-        LogUtil.e("requestPager $requestPager ")
-        LogUtil.e("itemsS size ${pageableItemWrapperItems.size}")
-        LogUtil.e("Insert range $insertIndex ${insertIndex + items.size}")
 
         options.itemList.addAll(insertIndex, pageableItemWrapperItems)
-        notifyItemRangeInserted(insertIndex, items.size)
-
         addSegmentIfNeed(insertIndex + items.size, requestPager, response)
+        submitList(ArrayList(options.itemList))
     }
 
     class SegmentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

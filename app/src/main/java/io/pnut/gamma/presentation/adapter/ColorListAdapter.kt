@@ -5,39 +5,39 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import io.pnut.gamma.R
-import androidx.appcompat.R as Rc
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import io.pnut.gamma.presentation.util.ThemeColorUtil
+import io.pnut.gamma.R
 import io.pnut.gamma.databinding.ChoosePrimaryColorDialogListItemBinding
+import io.pnut.gamma.presentation.util.ThemeColorUtil
+import androidx.appcompat.R as Rc
 
 class ColorListAdapter(private val listener: Callback, currentColor: ThemeColorUtil.ThemeColor?) :
-    RecyclerView.Adapter<ColorListAdapter.ColorListViewHolder>() {
-    private val additionalThemes =
-        ThemeColorUtil.ThemeColor.entries.filterNot { it == ThemeColorUtil.ThemeColor.Default }
-    private var chooseColor: ThemeColorUtil.ThemeColor? = null
-    private var prevPosition = additionalThemes.indexOf(currentColor)
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ColorListViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.choose_primary_color_dialog_list_item, parent, false)
-        return ColorListViewHolder(view, listenerInternal)
-    }
+    ListAdapter<ThemeColorUtil.ThemeColor, ColorListAdapter.ColorListViewHolder>(ColorDiffCallback) {
+
+    private var prevPosition = RecyclerView.NO_POSITION
 
     private val listenerInternal = object : CallbackInternal {
         override fun chooseThemeColor(themeColor: ThemeColorUtil.ThemeColor, position: Int) {
-            chooseColor = themeColor
-            listener.chooseThemeColor(themeColor)
-            // Not working correctly
-//            notifyItemChanged(position)
-//            notifyItemChanged(prevPosition)
-            notifyDataSetChanged()
+            val oldPosition = prevPosition
             prevPosition = position
-            if (prevPosition < 0) return
+            listener.chooseThemeColor(themeColor)
+
+            if (oldPosition != RecyclerView.NO_POSITION) {
+                notifyItemChanged(oldPosition)
+            }
+            if (prevPosition != RecyclerView.NO_POSITION) {
+                notifyItemChanged(prevPosition)
+            }
         }
     }
 
     init {
         setHasStableIds(true)
+        val additionalThemes = ThemeColorUtil.ThemeColor.entries.filterNot { it == ThemeColorUtil.ThemeColor.Default }
+        prevPosition = additionalThemes.indexOf(currentColor)
+        submitList(additionalThemes)
     }
 
     interface Callback {
@@ -48,15 +48,19 @@ class ColorListAdapter(private val listener: Callback, currentColor: ThemeColorU
         fun chooseThemeColor(themeColor: ThemeColorUtil.ThemeColor, position: Int)
     }
 
-    override fun getItemCount(): Int = additionalThemes.size
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ColorListViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.choose_primary_color_dialog_list_item, parent, false)
+        return ColorListViewHolder(view, listenerInternal)
+    }
 
     override fun onBindViewHolder(holder: ColorListViewHolder, position: Int) {
-        val additionalTheme = additionalThemes[position]
+        val additionalTheme = getItem(position)
         holder.bindTo(additionalTheme, prevPosition == position, position)
     }
 
     override fun getItemId(position: Int): Long {
-        return additionalThemes[position].ordinal.toLong()
+        return getItem(position).ordinal.toLong()
     }
 
     class ColorListViewHolder(itemView: View, private val listener: CallbackInternal) :
@@ -78,5 +82,17 @@ class ColorListAdapter(private val listener: Callback, currentColor: ThemeColorU
             themeColorCheck.visibility = if (checked) View.VISIBLE else View.GONE
             itemView.setOnClickListener { listener.chooseThemeColor(themeColor, position) }
         }
+    }
+
+    private object ColorDiffCallback : DiffUtil.ItemCallback<ThemeColorUtil.ThemeColor>() {
+        override fun areItemsTheSame(
+            oldItem: ThemeColorUtil.ThemeColor,
+            newItem: ThemeColorUtil.ThemeColor
+        ): Boolean = oldItem == newItem
+
+        override fun areContentsTheSame(
+            oldItem: ThemeColorUtil.ThemeColor,
+            newItem: ThemeColorUtil.ThemeColor
+        ): Boolean = oldItem == newItem
     }
 }
