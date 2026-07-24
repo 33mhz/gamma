@@ -15,12 +15,18 @@ import java.util.Locale
 
 class PageableItemWrapperDiffCallback<T : UniquePageable> : DiffUtil.ItemCallback<PageableItemWrapper<T>>() {
     override fun areItemsTheSame(oldItem: PageableItemWrapper<T>, newItem: PageableItemWrapper<T>): Boolean {
-        return if (oldItem is PageableItemWrapper.Item && newItem is PageableItemWrapper.Item) {
-            oldItem.item.uniqueKey == newItem.item.uniqueKey
-        } else if (oldItem is PageableItemWrapper.Pager && newItem is PageableItemWrapper.Pager) {
-            oldItem.maxId == newItem.maxId && oldItem.minId == newItem.minId
-        } else {
-            false
+        return when (oldItem) {
+            is PageableItemWrapper.Item if newItem is PageableItemWrapper.Item -> {
+                oldItem.item.uniqueKey == newItem.item.uniqueKey
+            }
+
+            is PageableItemWrapper.Pager if newItem is PageableItemWrapper.Pager -> {
+                oldItem.maxId == newItem.maxId && oldItem.minId == newItem.minId
+            }
+
+            else -> {
+                false
+            }
         }
     }
 
@@ -238,21 +244,27 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
         requestPager: PageableItemWrapper<T>?,
         response: PnutResponse<List<T>>
     ) {
-        if (response.meta.more == true) {
-            val segment = PageableItemWrapper.Pager.createFromMeta(response.meta, requestPager)
-            options.itemList.add(index, segment)
-        } else if (response.meta.more == false && index == options.itemList.size) {
-            options.itemList.add(
-                index,
-                PageableItemWrapper.Pager.createFromMeta(response.meta, requestPager)
-            )
-        } else if (response.meta.more == false && 0 == index && options.itemList.isEmpty()) {
-            options.itemList.add(
-                PageableItemWrapper.Pager.createFromMeta(
-                    response.meta,
-                    requestPager
+        when (response.meta.more) {
+            true -> {
+                val segment = PageableItemWrapper.Pager.createFromMeta(response.meta, requestPager)
+                options.itemList.add(index, segment)
+            }
+            false if index == options.itemList.size -> {
+                options.itemList.add(
+                    index,
+                    PageableItemWrapper.Pager.createFromMeta(response.meta, requestPager)
                 )
-            )
+            }
+            false if 0 == index && options.itemList.isEmpty() -> {
+                options.itemList.add(
+                    PageableItemWrapper.Pager.createFromMeta(
+                        response.meta,
+                        requestPager
+                    )
+                )
+            }
+
+            else -> {}
         }
     }
 
