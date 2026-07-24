@@ -14,7 +14,7 @@ class ClearStreamCacheWorker(context: Context, params: WorkerParameters) :
     CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
-        val cacheDir = PnutCacheRepository.getUserCacheDir(applicationContext) ?: return Result.failure()
+        val cacheDir = PnutCacheRepository.getUserCacheDir(applicationContext)
         cacheDir.deleteRecursively()
         val broadcast = Intent(ACTION)
         applicationContext.sendBroadcast(broadcast)
