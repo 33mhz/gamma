@@ -30,6 +30,7 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/button_text_compose"
             android:src="@drawable/ic_create_black_24dp"
             android:transitionName="@string/fab_transition"
             app:layout_anchor="@id/bottomAppBar" />

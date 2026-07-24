@@ -43,6 +43,7 @@
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/button_upload_file"
         app:fabSize="mini"
         android:text="@string/upload"
         app:icon="@drawable/ic_file_upload_black_24dp"

@@ -25,6 +25,7 @@ jacoco {
 }
 
 tasks.register<JacocoReport>("jacocoTestReport") {
+    description = "Generate Jacoco coverage reports for tests"
     dependsOn("testDebugUnitTest", "connectedDebugAndroidTest", "createDebugCoverageReport")
   reports {
     xml.required.set(true)
@@ -218,7 +219,7 @@ dependencies {
 }
 
 if (file("google-services.json").exists()) {
-  apply(plugin = "com.google.gms.google-services")
+    pluginManager.apply("com.google.gms.google-services")
 }
 
 // Remove androidExtensions and apply plugin google-services

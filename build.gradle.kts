@@ -16,5 +16,6 @@ val kotlinVersion = project.property("kotlinVersion") as String
 extra.set("kotlinVersion", kotlinVersion)
 
 tasks.register<Delete>("clean") {
+    description = "Delete the build directory"
     delete(rootProject.layout.buildDirectory)
 }
