@@ -34,7 +34,7 @@ class VerifyTokenUseCaseTest {
             }
         }
     }
-    private val myAccount = Account(RandomID.get, "access token", "foo", "bar")
+    private val myAccount = Account(RandomID.getID, "access token", "foo", "bar")
     private val accountRepository = AccountRepositoryMock(listOf(myAccount))
     private val verifyTokenUseCase = VerifyTokenUseCase(accountRepository, pnutRepository)
 

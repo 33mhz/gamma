@@ -52,7 +52,7 @@ android {
     targetSdk = 37
     versionCode = 6
     versionName = "0.5.0"
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner = "io.pnut.gamma.HiltTestRunner"
     renderscriptTargetApi = 33
     renderscriptSupportModeEnabled = true
   }
@@ -108,15 +108,7 @@ android {
     }
   }
 
-  sourceSets {
-    val sharedTestDir = "src/sharedTest/java"
-    getByName("test") {
-      java.directories.add(sharedTestDir)
-    }
-    getByName("androidTest") {
-      java.directories.add(sharedTestDir)
-    }
-  }
+
 }
 
 tasks.withType<KotlinCompile>().configureEach {
@@ -173,8 +165,8 @@ dependencies {
   val daggerVersion = "2.60.1"
   implementation("com.google.dagger:dagger:$daggerVersion")
   implementation("com.google.dagger:hilt-android:$daggerVersion")
-  ksp("com.google.dagger:dagger-compiler:$daggerVersion")
   ksp("com.google.dagger:hilt-android-compiler:$daggerVersion")
+  androidTestImplementation("com.google.dagger:hilt-android-testing:$daggerVersion")
 
   implementation("com.github.CanHub:Android-Image-Cropper:4.5.0")
   implementation("com.github.thefuntasty.hauler:library:2.0.0")

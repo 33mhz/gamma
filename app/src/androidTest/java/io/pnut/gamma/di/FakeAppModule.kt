@@ -2,8 +2,10 @@ package io.pnut.gamma.di
 
 import android.app.Application
 import android.content.Context
+import androidx.hilt.work.HiltWorkerFactory
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.migration.DisableInstallInCheck
 import io.pnut.gamma.domain.repository.AccountRepository
 import io.pnut.gamma.domain.repository.IAccountRepository
 import io.pnut.gamma.domain.repository.IPnutCacheRepository
@@ -12,8 +14,10 @@ import io.pnut.gamma.domain.repository.IPreferenceRepository
 import io.pnut.gamma.domain.repository.PnutCacheRepository
 import io.pnut.gamma.domain.repository.PnutRepository
 import io.pnut.gamma.domain.repository.PreferenceRepository
+import org.mockito.Mockito
 import javax.inject.Singleton
 
+@DisableInstallInCheck
 @Module(
   subcomponents = [
 //    FakeUseCaseComponent::class
@@ -43,4 +47,7 @@ class FakeAppModule(private val application: Application) {
   @Provides
   @Singleton
   fun provideAccountRepository(): IAccountRepository = accountRepository
+
+  @Provides
+  fun provideHiltWorkerFactory(): HiltWorkerFactory = Mockito.mock(HiltWorkerFactory::class.java)
 }

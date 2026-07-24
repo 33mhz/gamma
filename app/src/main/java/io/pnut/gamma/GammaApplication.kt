@@ -22,16 +22,11 @@ import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 
-@HiltAndroidApp
 open class GammaApplication : Application(), CoroutineScope by MainScope(), Configuration.Provider {
 
-  @Inject
   lateinit var preferenceRepository: IPreferenceRepository
-  @Inject
   lateinit var pnutRepository: IPnutRepository
-  @Inject
   lateinit var accountRepository: IAccountRepository
-  @Inject
   lateinit var workerFactory: HiltWorkerFactory
 
   override val workManagerConfiguration: Configuration
@@ -41,17 +36,19 @@ open class GammaApplication : Application(), CoroutineScope by MainScope(), Conf
 
   override fun onCreate() {
     super.onCreate()
+  }
+
+  fun initApplication() {
     updateBaseTheme()
     updateTheme()
-    val config = BundledEmojiCompatConfig(this)
-      .setReplaceAll(true)
-    EmojiCompat.init(config)
+    runCatching {
+      val config = BundledEmojiCompatConfig(this)
+        .setReplaceAll(true)
+      EmojiCompat.init(config)
+    }
     runCatching {
       FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
     }
-
-//        if (!setToken()) return backToLoginActivity() // failed
-
   }
 
   fun updateBaseTheme() {
@@ -82,4 +79,25 @@ open class GammaApplication : Application(), CoroutineScope by MainScope(), Conf
   companion object {
     fun getInstance(activity: Activity) = activity.application as GammaApplication
   }
+}
+
+@HiltAndroidApp
+class GammaHiltApplication : GammaApplication() {
+    @Inject
+    fun injectDependencies(
+        preferenceRepository: IPreferenceRepository,
+        pnutRepository: IPnutRepository,
+        accountRepository: IAccountRepository,
+        workerFactory: HiltWorkerFactory
+    ) {
+        this.preferenceRepository = preferenceRepository
+        this.pnutRepository = pnutRepository
+        this.accountRepository = accountRepository
+        this.workerFactory = workerFactory
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        initApplication()
+    }
 }

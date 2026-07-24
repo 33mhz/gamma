@@ -15,7 +15,7 @@ import org.junit.Test
 class PostUseCaseTest {
     private val pnutRepositoryMockData = PnutRepositoryMock.PnutMockData()
     private val pnutRepository = PnutRepositoryMock(pnutRepositoryMockData)
-    private val me = Account(RandomID.get, "valid token", "foo", "bar")
+    private val me = Account(RandomID.getID, "valid token", "foo", "bar")
     private val accountRepository = AccountRepositoryMock(listOf(me))
     private val postUseCase = PostUseCase(pnutRepository, accountRepository)
 

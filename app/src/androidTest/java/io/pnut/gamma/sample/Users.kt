@@ -9,7 +9,7 @@ import java.util.*
 object Users {
     val me
         get() = User(
-            id = RandomID.get,
+            id = RandomID.getID,
         content = User.UserContent(
             avatarImage = Avatar(false, 1, 1, "https://example.com/avatar"),
             coverImage = Cover(false, 1, 1, "https://example.com/avatar"),
@@ -35,7 +35,7 @@ object Users {
 
     val others
         get() = User(
-            id = RandomID.get,
+            id = RandomID.getID,
         content = User.UserContent(
             avatarImage = Avatar(false, 1, 1, "https://example.com/avatar"),
             coverImage = Cover(false, 1, 1, "https://example.com/avatar"),

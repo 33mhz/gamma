@@ -30,6 +30,6 @@ data class OverrideModules(private val callback: (modules: Modules) -> Unit) {
       .fakeAppModule(modules.fakeAppModule)
       .build()
     component.inject(app)
-    app.updateAppComponent(component)
+    // app.updateAppComponent(component)
   }
 }

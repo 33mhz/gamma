@@ -5,6 +5,6 @@ import io.pnut.gamma.util.RandomID
 
 object Accounts {
   val account
-    get() = Account(RandomID.get, "token", "screenName", "name")
+    get() = Account(RandomID.getID, "token", "screenName", "name")
 
 }

@@ -51,21 +51,21 @@ class UserTest {
     Assert.assertThat(size96AvatarUrl, `is`("https://api.pnut.io/v0/users/123/avatar?h=96"))
 
     val user = Users.me
-    val link = user.content.avatarImage.link
+    val url = user.content.avatarImage.url
     val originalAvatarUrlOfUser = User.getAvatarUrl(user, null)
-    Assert.assertThat(originalAvatarUrlOfUser, `is`(link))
+    Assert.assertThat(originalAvatarUrlOfUser, `is`(url))
 
     val size24AvatarUrlOfUser = User.getAvatarUrl(user, User.AvatarSize.Mini)
-    Assert.assertThat(size24AvatarUrlOfUser, `is`("$link?h=24"))
+    Assert.assertThat(size24AvatarUrlOfUser, `is`("$url?h=24"))
 
     val size48AvatarUrlOfUser = User.getAvatarUrl(user, User.AvatarSize.Small)
-    Assert.assertThat(size48AvatarUrlOfUser, `is`("$link?h=48"))
+    Assert.assertThat(size48AvatarUrlOfUser, `is`("$url?h=48"))
 
     val size64AvatarUrlOfUser = User.getAvatarUrl(user, User.AvatarSize.Normal)
-    Assert.assertThat(size64AvatarUrlOfUser, `is`("$link?h=64"))
+    Assert.assertThat(size64AvatarUrlOfUser, `is`("$url?h=64"))
 
     val size96AvatarUrlOfUser = User.getAvatarUrl(user, User.AvatarSize.Large)
-    Assert.assertThat(size96AvatarUrlOfUser, `is`("$link?h=96"))
+    Assert.assertThat(size96AvatarUrlOfUser, `is`("$url?h=96"))
 
   }
 }

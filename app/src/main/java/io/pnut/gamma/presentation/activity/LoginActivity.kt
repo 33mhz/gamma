@@ -42,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
     private fun showSnackBarWhenRaisedError() {
         errorMessage?.let {
             Snackbar
-                .make(findViewById(R.id.content), it, Snackbar.LENGTH_LONG)
+                .make(findViewById(android.R.id.content), it, Snackbar.LENGTH_LONG)
                 .showAsError()
         }
     }

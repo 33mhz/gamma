@@ -4,7 +4,6 @@ import android.net.Uri
 import io.pnut.gamma.domain.entity.File
 import io.pnut.gamma.domain.entity.FileBody
 import io.pnut.gamma.domain.entity.PnutResponse
-import io.pnut.gamma.domain.entity.raw.OEmbed
 import io.pnut.gamma.domain.model.UriInfo
 import io.pnut.gamma.domain.model.io.UploadFileInputData
 import io.pnut.gamma.mock.PnutRepositoryMock
@@ -72,8 +71,7 @@ class UploadFileUseCaseTest {
     })
     val inputStream = ByteArrayInputStream("test utf8 data".toByteArray())
     val res = useCase.run(UploadFileInputData(UriInfo(dummyUri), inputStream))
-    Assert.assertThat(res.postOEmbedRaw.type, `is`(OEmbed.TYPE))
-    Assert.assertThat(res.postOEmbedRaw.value.replacementFileValue.fileId, `is`(file.id))
-    Assert.assertThat(res.postOEmbedRaw.value.replacementFileValue.fileToken, `is`(file.fileToken))
+    Assert.assertThat(res.postOEmbedRaw.replacementFileValue.fileId, `is`(file.id))
+    Assert.assertThat(res.postOEmbedRaw.replacementFileValue.fileToken, `is`(file.fileToken))
   }
 }

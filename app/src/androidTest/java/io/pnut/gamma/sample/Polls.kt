@@ -10,7 +10,7 @@ object Polls {
         get() = Poll(
         Date(),
         Date(),
-            RandomID.get,
+            RandomID.getID,
         isAnonymous = true,
         isPublic = true,
 

@@ -40,7 +40,7 @@ class UpdateUserImageUseCaseTest {
         val pnutRepository = object : PnutRepositoryMock() {
             override suspend fun updateAvatar(uri: Uri): PnutResponse<User> {
                 val user =
-                    me.copy(content = me.content.copy(avatarImage = me.content.avatarImage.copy(link = "updated")))
+                    me.copy(content = me.content.copy(avatarImage = me.content.avatarImage.copy(url = "updated")))
                 return Response.success(user)
             }
         }
@@ -53,7 +53,7 @@ class UpdateUserImageUseCaseTest {
                 )
             )
         }
-        Assert.assertThat(res.res.data.content.avatarImage.link, `is`("updated"))
+        Assert.assertThat(res.res.data.content.avatarImage.url, `is`("updated"))
     }
 
     @Test(expected = TestException::class)
@@ -79,7 +79,7 @@ class UpdateUserImageUseCaseTest {
         val pnutRepository = object : PnutRepositoryMock() {
             override suspend fun updateCover(uri: Uri): PnutResponse<User> {
                 val user =
-                    me.copy(content = me.content.copy(coverImage = me.content.coverImage.copy(link = "updated")))
+                    me.copy(content = me.content.copy(coverImage = me.content.coverImage.copy(url = "updated")))
                 return Response.success(user)
             }
         }
@@ -92,7 +92,7 @@ class UpdateUserImageUseCaseTest {
                 )
             )
         }
-        Assert.assertThat(res.res.data.content.coverImage.link, `is`("updated"))
+        Assert.assertThat(res.res.data.content.coverImage.url, `is`("updated"))
     }
 
     @Test(expected = TestException::class)
@@ -121,7 +121,7 @@ class UpdateUserImageUseCaseTest {
                     me.copy(
                         content = me.content.copy(
                             avatarImage = me.content.avatarImage.copy(
-                                link = "deleted",
+                                url = "deleted",
                                 isDefault = true
                             )
                         )
@@ -149,7 +149,7 @@ class UpdateUserImageUseCaseTest {
                     me.copy(
                         content = me.content.copy(
                             coverImage = me.content.coverImage.copy(
-                                link = "deleted",
+                                url = "deleted",
                                 isDefault = true
                             )
                         )

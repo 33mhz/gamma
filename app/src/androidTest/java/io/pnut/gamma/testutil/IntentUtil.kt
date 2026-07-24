@@ -15,11 +15,9 @@ object IntentUtil {
   }
 
   fun assertIntent(activityClass: KClass<out Activity>, operation: () -> Unit) {
-    Intents.init()
     stubIntentResponse(activityClass)
     operation()
     assertIntent(activityClass)
-    Intents.release()
   }
 
   fun assertIntent(activityClass: KClass<out Activity>) {

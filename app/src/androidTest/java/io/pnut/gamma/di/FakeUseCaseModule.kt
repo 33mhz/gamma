@@ -2,6 +2,7 @@ package io.pnut.gamma.di
 
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.migration.DisableInstallInCheck
 import io.pnut.gamma.domain.usecases.CacheInteractionUseCase
 import io.pnut.gamma.domain.usecases.CachePostUseCase
 import io.pnut.gamma.domain.usecases.CacheUserUseCase
@@ -33,6 +34,7 @@ import io.pnut.gamma.domain.usecases.VerifyTokenUseCase
 import io.pnut.gamma.domain.usecases.VoteUseCase
 import org.mockito.Mockito
 
+@DisableInstallInCheck
 @Module
 class FakeUseCaseModule {
   lateinit var setupTokenUseCase: SetupTokenUseCase
