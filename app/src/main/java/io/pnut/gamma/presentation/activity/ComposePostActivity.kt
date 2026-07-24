@@ -106,11 +106,9 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
 
 
     override fun onFinish() {
-        Util.hideKeyboard(window.decorView, {
-            // dirty hack
-            // workaround for strange animation
+        Util.hideKeyboard(window.decorView) {
             supportFinishAfterTransition()
-        })
+        }
     }
 
 

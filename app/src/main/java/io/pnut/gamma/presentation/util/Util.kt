@@ -9,7 +9,6 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.appcompat.R as Rc
@@ -20,30 +19,42 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.view.MenuItemCompat
 import io.pnut.gamma.R
 import androidx.core.net.toUri
-import androidx.core.view.size
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.get
+import androidx.core.view.size
 
 object Util {
     fun showKeyboard(view: View) {
-        val imm = getImm(view.context)
-        imm.showSoftInput(view, 0)
-
+        val window = view.context.findWindow() ?: return
+        WindowInsetsControllerCompat(window, view).show(WindowInsetsCompat.Type.ime())
     }
 
-    fun hideKeyboard(view: View, callback: (() -> Unit)? = null, delayMs: Long = 10) {
-        val imm = getImm(view.context)
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
-        if(callback != null) {
+    fun hideKeyboard(view: View, callback: (() -> Unit)? = null) {
+        val window = view.context.findWindow()
+        if (window != null) {
+            WindowInsetsControllerCompat(window, view).hide(WindowInsetsCompat.Type.ime())
+        }
+
+        if (callback != null) {
             Handler(Looper.getMainLooper()).postDelayed({
-                // dirty hack
-                // workaround for strange animation
                 callback()
-            }, delayMs)
+            }, 30)
         }
     }
 
-    private fun getImm(context: Context) =
-        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    private fun Context.findWindow(): android.view.Window? {
+        var context = this
+        while (true) {
+            if (context is android.app.Activity) return context.window
+            if (context is android.content.ContextWrapper) {
+                context = context.baseContext
+            } else {
+                break
+            }
+        }
+        return null
+    }
 
     interface DrawerContentFragment {
         val menuItemId: Int
