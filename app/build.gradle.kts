@@ -221,5 +221,3 @@ dependencies {
 if (file("google-services.json").exists()) {
     pluginManager.apply("com.google.gms.google-services")
 }
-
-// Remove androidExtensions and apply plugin google-services
