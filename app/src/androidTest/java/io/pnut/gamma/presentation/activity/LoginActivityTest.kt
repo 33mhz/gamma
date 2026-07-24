@@ -47,7 +47,7 @@ class LoginActivityTest {
     ).joinToString(",")
 
     assertThat(intent).hasAction(Intent.ACTION_VIEW)
-    assertThat(intent).hasData(Uri.parse("https://pnut.io/oauth/authorize?client_id=WYEwPba2HqCw0g3ygspd2CSNfxAGlMyS&redirect_uri=gamma://authenticate&scope=${scopes}&response_type=token&simple_login=1"))
+    assertThat(intent).hasData(Uri.parse("https://pnut.io/oauth/authorize?client_id=I-FlBf-QWcE4HNhiIzz0AoaELF_mBkQf&redirect_uri=gamma://authenticate&scope=${scopes}&response_type=token&simple_login=1"))
   }
 
   @Test
