@@ -29,6 +29,6 @@
             android:title="@string/license" />
         <Preference
             android:key="@string/pref_version_key"
-            android:title="@string/epsilon_version" />
+            android:title="@string/gamma_version" />
     </PreferenceCategory>
 </PreferenceScreen>

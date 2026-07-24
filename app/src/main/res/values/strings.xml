@@ -170,7 +170,7 @@
     <string name="license">License</string>
     <string name="pref_header_general">General</string>
     <string name="pref_version_key">pref_version_key</string>
-    <string name="epsilon_version">Epsilon version</string>
+    <string name="gamma_version">Gamma version</string>
     <string name="cannot_load_file">Cannot load file</string>
     <string name="accounts">Accounts</string>
     <string name="account_not_found">Account not found</string>
