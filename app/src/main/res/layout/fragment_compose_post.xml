@@ -141,7 +141,7 @@
                     android:layout_marginEnd="@dimen/margin_half"
                     android:background="@android:color/transparent"
                     android:gravity="top|start"
-                    android:inputType="textMultiLine"
+                    android:inputType="textCapSentences|textMultiLine"
                     android:minLines="5"
                     android:padding="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
