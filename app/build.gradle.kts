@@ -25,8 +25,8 @@ jacoco {
 }
 
 tasks.register<JacocoReport>("jacocoTestReport") {
-    description = "Generate Jacoco coverage reports for tests"
-    dependsOn("testDebugUnitTest", "connectedDebugAndroidTest", "createDebugCoverageReport")
+  description = "Generate Jacoco coverage reports for tests"
+  dependsOn("testDebugUnitTest", "connectedDebugAndroidTest", "createDebugCoverageReport")
   reports {
     xml.required.set(true)
     csv.required.set(false)
@@ -42,15 +42,29 @@ tasks.register<JacocoReport>("jacocoTestReport") {
   })
 }
 
+val versionPropsFile = file("version.properties")
+val versionProps = Properties()
+if (versionPropsFile.exists()) {
+  versionProps.load(FileInputStream(versionPropsFile))
+} else {
+  versionProps["versionCode"] = "1"
+  versionProps.store(versionPropsFile.writer(), null)
+}
+
+val isReleaseBuild = gradle.startParameter.taskNames.any { it.contains("Release", ignoreCase = true) }
+val currentVersionCode = versionProps.getProperty("versionCode").toInt()
+val nextVersionCode = if (isReleaseBuild) currentVersionCode + 1 else currentVersionCode
+
 android {
   namespace = "io.pnut.gamma"
   ndkVersion = "26.1.10909125"
   compileSdk = 37
+
   defaultConfig {
     applicationId = "io.pnut.gamma"
     minSdk = 33
     targetSdk = 37
-    versionCode = 13
+    versionCode = nextVersionCode
     versionName = "0.5.0"
     testInstrumentationRunner = "io.pnut.gamma.HiltTestRunner"
     renderscriptTargetApi = 33
@@ -117,6 +131,28 @@ tasks.withType<KotlinCompile>().configureEach {
     jvmTarget.set(JvmTarget.JVM_17)
   }
 }
+
+tasks.register("incrementVersionCode") {
+  group = "versioning"
+  description = "Increments the version code in version.properties"
+  doLast {
+    val props = Properties()
+    val file = file("version.properties")
+    props.load(FileInputStream(file))
+    val current = props.getProperty("versionCode").toInt()
+    val next = current + 1
+    props.setProperty("versionCode", next.toString())
+    props.store(file.writer(), "Automatically incremented by build")
+    println("Incremented versionCode in version.properties to $next")
+  }
+}
+
+tasks.configureEach {
+  if (name.contains("assembleRelease", ignoreCase = true) || name.contains("bundleRelease", ignoreCase = true)) {
+    dependsOn("incrementVersionCode")
+  }
+}
+
 val kotlinVersion = extra["kotlinVersion"] as String
 
 dependencies {
