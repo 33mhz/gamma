@@ -6,6 +6,7 @@ import android.view.MenuItem
 import io.pnut.gamma.GammaApplication
 import io.pnut.gamma.domain.repository.IPreferenceRepository
 import io.pnut.gamma.presentation.util.ThemeColorUtil
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -27,6 +28,7 @@ abstract class BaseActivity : AppCompatActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         GammaApplication.getInstance(this).updateBaseTheme()
         darkThemeMode = ThemeColorUtil.currentDarkThemeMode(this)
         themeColorWhenCreated = ThemeColorUtil.applyTheme(this)

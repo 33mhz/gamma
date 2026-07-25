@@ -25,6 +25,9 @@ import io.pnut.gamma.util.LogUtil
 import io.pnut.gamma.util.SingleLiveEvent
 import kotlinx.coroutines.launch
 import io.pnut.gamma.R
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 
 
 abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder> : BaseFragment(),
@@ -141,11 +144,18 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupRecyclerView(getRecyclerView(view))
+        val recyclerView = getRecyclerView(view)
+        setupRecyclerView(recyclerView)
         val swipeRefreshLayout = getSwipeRefreshLayout(view)
         swipeRefreshLayout.setOnRefreshListener(this)
         viewModel.loading.observe(viewLifecycleOwner) {
             swipeRefreshLayout.isRefreshing = it
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(bottom = systemBars.bottom + resources.getDimensionPixelSize(R.dimen.margin_list_bottom))
+            insets
         }
     }
 

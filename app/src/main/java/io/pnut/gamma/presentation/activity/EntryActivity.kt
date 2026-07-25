@@ -3,7 +3,6 @@ package io.pnut.gamma.presentation.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.domain.usecases.SetupTokenUseCase
 import io.pnut.gamma.service.ClearCacheWorker
@@ -21,7 +20,6 @@ class EntryActivity : BaseActivity(), CoroutineScope by MainScope() {
   lateinit var setupTokenUseCase: SetupTokenUseCase
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    enableEdgeToEdge()
     super.onCreate(savedInstanceState)
   }
 

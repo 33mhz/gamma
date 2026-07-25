@@ -4,17 +4,12 @@ import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Bundle
 import android.util.Pair
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.app.SharedElementCallback
 import androidx.core.content.IntentCompat
-import androidx.core.view.marginBottom
-import androidx.core.view.marginLeft
-import androidx.core.view.marginRight
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
@@ -100,23 +95,6 @@ class PhotoViewActivity : BaseActivity() {
     }
 
     private lateinit var binding: ActivityPhotoViewBinding
-
-    private fun fixTopPadding() {
-        val rect = Rect()
-        window.decorView.getWindowVisibleDisplayFrame(rect)
-        val statusBarHeight = rect.top
-        binding.toolbar.layoutParams = FrameLayout.LayoutParams(binding.toolbar.layoutParams).also {
-            it.leftMargin = binding.toolbar.marginLeft
-            it.bottomMargin = binding.toolbar.marginBottom
-            it.rightMargin = binding.toolbar.marginRight
-            it.topMargin = statusBarHeight
-        }
-    }
-
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        fixTopPadding()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setupAnimation()

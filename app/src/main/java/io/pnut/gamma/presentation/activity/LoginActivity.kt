@@ -4,7 +4,6 @@ import io.pnut.gamma.R
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import io.pnut.gamma.databinding.ActivityLoginBinding
 import io.pnut.gamma.presentation.util.LoginUtil
@@ -14,7 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import androidx.core.net.toUri
 
 @AndroidEntryPoint
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity() {
     enum class IntentKey {
         Error
     }
