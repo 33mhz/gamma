@@ -12,6 +12,9 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.IntentCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
@@ -303,6 +306,18 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
                 R.id.menuSave -> save()
             }
             true
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+            v.updatePadding(
+                left = systemBars.left,
+                top = systemBars.top,
+                right = systemBars.right,
+                bottom = maxOf(systemBars.bottom, ime.bottom)
+            )
+            insets
         }
     }
 

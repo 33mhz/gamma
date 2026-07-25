@@ -50,7 +50,7 @@ android {
     applicationId = "io.pnut.gamma"
     minSdk = 33
     targetSdk = 37
-    versionCode = 12
+    versionCode = 13
     versionName = "0.5.0"
     testInstrumentationRunner = "io.pnut.gamma.HiltTestRunner"
     renderscriptTargetApi = 33

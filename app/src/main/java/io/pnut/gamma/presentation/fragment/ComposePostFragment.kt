@@ -29,6 +29,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import kotlinx.parcelize.Parcelize
 import io.pnut.gamma.databinding.ComposeThumbnailImageBinding
 import io.pnut.gamma.databinding.FragmentComposePostBinding
@@ -406,6 +409,18 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         val longPostMenuItem = menu.findItem(R.id.menuLongPost) ?: return
         longPostMenuItem.isChecked = viewModel.longPost != null
         Util.setTintForCheckableMenuItem(view.context, longPostMenuItem)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+            v.updatePadding(
+                left = systemBars.left,
+                top = systemBars.top,
+                right = systemBars.right,
+                bottom = maxOf(systemBars.bottom, ime.bottom)
+            )
+            insets
+        }
     }
 
     private fun setupToolbar() {

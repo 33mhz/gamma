@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.transition.platform.MaterialArcMotion
 import com.google.android.material.transition.platform.MaterialContainerTransform
@@ -27,6 +28,7 @@ class EditProfileActivity : BaseActivity(), EditProfileFragment.Callback {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
         setupAnimation()

@@ -154,7 +154,8 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
 
         ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(bottom = systemBars.bottom + resources.getDimensionPixelSize(R.dimen.margin_list_bottom))
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+            v.updatePadding(bottom = maxOf(systemBars.bottom, ime.bottom) + resources.getDimensionPixelSize(R.dimen.margin_list_bottom))
             insets
         }
     }
