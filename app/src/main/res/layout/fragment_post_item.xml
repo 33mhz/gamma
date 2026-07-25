@@ -230,6 +230,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/margin_regular"
+                        app:cardBackgroundColor="?attr/colorSurface"
                         app:cardUseCompatPadding="true"
                         app:contentPadding="@dimen/margin_regular">
 
