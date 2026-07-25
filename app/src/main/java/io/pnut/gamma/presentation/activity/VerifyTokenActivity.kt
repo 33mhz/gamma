@@ -8,7 +8,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.launch
 import io.pnut.gamma.R
 import io.pnut.gamma.domain.entity.ErrorResponse
@@ -52,14 +51,10 @@ class VerifyTokenActivity : BaseActivity() {
         val modUri = uri.toString().replace("#", "?").toUri()
         intent
         if (modUri.getQueryParameter("error") == "access_denied") {
-            try {
-                val res = modUri.getQueryParameter("error_description")?.let {
-                    ErrorResponse.getResource(it)
-                } ?: R.string.cannot_get_intent_data
-                failure(Exception(getString(res)))
-            } catch (e: Exception) {
-                FirebaseCrashlytics.getInstance().recordException(e)
-            }
+            val res = modUri.getQueryParameter("error_description")?.let {
+                ErrorResponse.getResource(it)
+            } ?: R.string.cannot_get_intent_data
+            failure(Exception(getString(res)))
 
         } else {
             viewModel.verifyToken(uri)

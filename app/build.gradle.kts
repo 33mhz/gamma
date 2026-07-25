@@ -50,18 +50,25 @@ android {
     applicationId = "io.pnut.gamma"
     minSdk = 33
     targetSdk = 37
-    versionCode = 6
+    versionCode = 11
     versionName = "0.5.0"
     testInstrumentationRunner = "io.pnut.gamma.HiltTestRunner"
     renderscriptTargetApi = 33
     renderscriptSupportModeEnabled = true
   }
   buildTypes {
-    getByName("release") {
-      isMinifyEnabled = false
-      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+    release {
+      signingConfig = signingConfigs.getByName("debug")
+//      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+//      isMinifyEnabled = false
+//      optimization {
+//        enable = true
+//      }
+//      ndk {
+//        debugSymbolLevel = "FULL"
+//      }
     }
-    getByName("debug") {
+    debug {
       enableUnitTestCoverage = true
       enableAndroidTestCoverage = true
     }
@@ -73,13 +80,7 @@ android {
   }
   val keystorePropertiesFile = rootProject.file("keystore.properties")
   if (keystorePropertiesFile.exists()) {
-    // Create a variable called keystorePropertiesFile, and initialize it to your
-    // keystore.properties file, in the rootProject folder.
-
-    // Initialize a new Properties() object called keystoreProperties.
     val keystoreProperties = Properties()
-
-    // Load your keystore.properties file into the keystoreProperties object.
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
     signingConfigs {
       create("release") {
@@ -173,8 +174,8 @@ dependencies {
 
   implementation("com.google.android.gms:play-services-oss-licenses:17.5.1")
 
-  implementation("com.google.firebase:firebase-analytics-ktx:22.5.0")
-  implementation("com.google.firebase:firebase-crashlytics-ktx:19.4.4")
+  implementation(platform("com.google.firebase:firebase-bom:34.16.0"))
+  implementation("com.google.firebase:firebase-crashlytics")
 
   implementation("jp.wasabeef:glide-transformations:4.3.0")
   implementation("me.zhanghai.android.materialprogressbar:library:1.6.1")
@@ -211,5 +212,5 @@ dependencies {
 }
 
 if (file("google-services.json").exists()) {
-    pluginManager.apply("com.google.gms.google-services")
+  pluginManager.apply("com.google.gms.google-services")
 }

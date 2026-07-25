@@ -8,7 +8,6 @@ import androidx.emoji.bundled.BundledEmojiCompatConfig
 import androidx.emoji.text.EmojiCompat
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.HiltAndroidApp
 import io.pnut.gamma.domain.repository.IAccountRepository
 import io.pnut.gamma.domain.repository.IPnutRepository
@@ -45,9 +44,6 @@ open class GammaApplication : Application(), CoroutineScope by MainScope(), Conf
       val config = BundledEmojiCompatConfig(this)
         .setReplaceAll(true)
       EmojiCompat.init(config)
-    }
-    runCatching {
-      FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
     }
   }
 

@@ -163,7 +163,23 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
                     id = "1",
                     content = Post.PostContent(
                         text = postBody.text
-                    )
+                    ),
+                    isDeleted = TODO(),
+                    isNsfw = TODO(),
+                    isRevised = TODO(),
+                    revision = TODO(),
+                    source = TODO(),
+                    user = TODO(),
+                    threadId = TODO(),
+                    replyTo = TODO(),
+                    repostOf = TODO(),
+                    counts = TODO(),
+                    youBookmarked = TODO(),
+                    youReposted = TODO(),
+                    paginationId = TODO(),
+                    raw = TODO(),
+                    bookmarkedBy = TODO(),
+                    repostedBy = TODO()
                 )
             }
         }
