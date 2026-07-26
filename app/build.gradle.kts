@@ -242,6 +242,9 @@ dependencies {
 
   // pin to handle NoSuchMethodError in PackageManager.PackageInfoFlags.of(long)
   implementation("androidx.profileinstaller:profileinstaller:1.4.1")
+  // pin to handle NoSuchMethodError in getOnBackInvokedDispatcher()
+  implementation("androidx.activity:activity-ktx:1.13.0")
+  implementation("androidx.fragment:fragment-ktx:1.8.9")
 
   val workVersion = "2.11.2"
   implementation("androidx.work:work-runtime-ktx:$workVersion")
