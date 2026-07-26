@@ -240,6 +240,9 @@ dependencies {
   implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
   implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
 
+  // pin to handle NoSuchMethodError in PackageManager.PackageInfoFlags.of(long)
+  implementation("androidx.profileinstaller:profileinstaller:1.4.1")
+
   val workVersion = "2.11.2"
   implementation("androidx.work:work-runtime-ktx:$workVersion")
   implementation("androidx.hilt:hilt-work:1.4.0")
