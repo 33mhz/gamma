@@ -11,7 +11,9 @@ import android.view.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.IntentCompat
 import androidx.core.widget.doAfterTextChanged
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -40,7 +42,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
-    GalleryItemListDialogFragment.Listener,
     BaseFragment() {
 
     interface Callback {
@@ -111,25 +112,6 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
         }
     }
 
-    override fun onGalleryItemClicked(uri: Uri, tag: String?) {
-        when (tag) {
-            DialogKey.Cover.name -> {
-                val newIntent = EditPhotoActivity.newIntent(requireContext(), uri)
-                coverLauncher.launch(newIntent)
-            }
-            DialogKey.Avatar.name -> {
-                val newIntent = EditPhotoActivity.newIntentSquareMode(requireContext(), uri)
-                avatarLauncher.launch(newIntent)
-            }
-        }
-    }
-
-    override fun onShow() {
-    }
-
-    override fun onDismiss() {
-    }
-
     private val loadingObserver = Observer<Boolean> {
         binding.toolbar.menu.let { menu ->
             val saveItem = menu.findItem(R.id.menuSave) ?: return@let
@@ -169,13 +151,11 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
     }
 
     private fun changeCover() {
-        val fragment = GalleryItemListDialogFragment.chooseSingle()
-        fragment.show(childFragmentManager, DialogKey.Cover.name)
+        pickCoverMediaLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
     }
 
     private fun changeAvatar() {
-        val fragment = GalleryItemListDialogFragment.chooseSingle()
-        fragment.show(childFragmentManager, DialogKey.Avatar.name)
+        pickAvatarMediaLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
     }
 
     private val savingObserver = Observer<Boolean> {
@@ -237,6 +217,20 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
         if (result.resultCode == Activity.RESULT_OK) {
             val res = result.data?.let { EditPhotoActivity.parseIntent(it) } ?: return@registerForActivityResult
             viewModel.newAvatarUri.value = ImageState.NewImage(res.uri)
+        }
+    }
+
+    private val pickCoverMediaLauncher = registerForActivityResult(PickVisualMedia()) { uri ->
+        if (uri != null) {
+            val newIntent = EditPhotoActivity.newIntent(requireContext(), uri)
+            coverLauncher.launch(newIntent)
+        }
+    }
+
+    private val pickAvatarMediaLauncher = registerForActivityResult(PickVisualMedia()) { uri ->
+        if (uri != null) {
+            val newIntent = EditPhotoActivity.newIntentSquareMode(requireContext(), uri)
+            avatarLauncher.launch(newIntent)
         }
     }
 
@@ -349,7 +343,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
         }
     }
 
-    private enum class RequestCode { Discard, Avatar, Cover }
+    private enum class RequestCode { Discard }
     private enum class DialogKey { Discard, Avatar, Cover }
 
     private val changed: Boolean

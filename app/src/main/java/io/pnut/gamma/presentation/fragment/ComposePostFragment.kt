@@ -2,12 +2,10 @@ package io.pnut.gamma.presentation.fragment
 
 
 import android.R as Rr
-import android.Manifest
 import io.pnut.gamma.R
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
@@ -16,10 +14,11 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -62,7 +61,7 @@ import javax.inject.Inject
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listener,
+class ComposePostFragment : BaseFragment(),
     AnimationCallback,
     BackPressedHookable, ComposeLongPostFragment.Callback, SpoilerDialogFragment.Callback,
     ChangeAccountDialogFragment.Callback, ComposePollFragment.Callback {
@@ -113,14 +112,10 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
     }
 
     private enum class DialogKey {
-        Gallery, Discard, Spoiler, Accounts
+        Discard, Spoiler, Accounts
     }
 
-    private enum class PermissionRequestCode {
-        Storage
-    }
-
-    private enum class RequestCode { EditPhoto, Discard }
+    private enum class RequestCode { Discard }
 
     private val enablePollObserver = Observer<Boolean> {
         updatePollMenuItem()
@@ -341,6 +336,15 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         }
     }
 
+    private val pickMultipleMediaLauncher = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
+        uris.forEach { uri ->
+            adapter.add(UriInfo(uri))
+        }
+        if (uris.isNotEmpty()) {
+            viewModel.previewAttachmentsVisibility.value = View.VISIBLE
+        }
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -435,45 +439,6 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
         }
     }
 
-    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        if (isGranted) {
-            showGalleryDialog()
-        }
-    }
-
-    private fun requestGalleryDialog() {
-        val permission =
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        } else {
-            showGalleryDialog()
-        }
-    }
-
-
-    private fun showGalleryDialog() {
-        val fragment = GalleryItemListDialogFragment.chooseMultiple()
-        fragment.show(childFragmentManager, DialogKey.Gallery.name)
-    }
-
-    override fun onGalleryItemClicked(uri: Uri, tag: String?) {
-        adapter.add(UriInfo(uri))
-        viewModel.previewAttachmentsVisibility.value = View.VISIBLE
-    }
-
-
-    override fun onShow() {
-    }
-
-    override fun onDismiss() {
-        focusToEditText()
-    }
-
-
     fun focusToEditText() {
         binding.composeTextEditText.requestFocus()
         Util.showKeyboard(binding.composeTextEditText)
@@ -482,7 +447,7 @@ class ComposePostFragment : BaseFragment(), GalleryItemListDialogFragment.Listen
     private fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.home -> cancelToCompose()
-            R.id.menuInsertPhoto -> requestGalleryDialog()
+            R.id.menuInsertPhoto -> pickMultipleMediaLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
             R.id.menuNsfw -> toggleNSFW(item)
             R.id.menuPost -> send()
             R.id.menuLongPost -> composeLongPost()
