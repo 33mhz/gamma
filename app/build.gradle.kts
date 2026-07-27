@@ -62,12 +62,12 @@ android {
 
   defaultConfig {
     applicationId = "io.pnut.gamma"
-    minSdk = 33
+    minSdk = 30
     targetSdk = 37
     versionCode = nextVersionCode
     versionName = "0.5.0"
     testInstrumentationRunner = "io.pnut.gamma.HiltTestRunner"
-    renderscriptTargetApi = 33
+    renderscriptTargetApi = 30
     renderscriptSupportModeEnabled = true
   }
   buildTypes {
@@ -241,10 +241,10 @@ dependencies {
   implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
 
   // pin to handle NoSuchMethodError in PackageManager.PackageInfoFlags.of(long)
-  implementation("androidx.profileinstaller:profileinstaller:1.4.1")
+//  implementation("androidx.profileinstaller:profileinstaller:1.4.1")
   // pin to handle NoSuchMethodError in getOnBackInvokedDispatcher()
-  implementation("androidx.activity:activity-ktx:1.13.0")
-  implementation("androidx.fragment:fragment-ktx:1.8.9")
+//  implementation("androidx.activity:activity-ktx:1.9.3")
+//  implementation("androidx.fragment:fragment-ktx:1.8.5")
 
   val workVersion = "2.11.2"
   implementation("androidx.work:work-runtime-ktx:$workVersion")
