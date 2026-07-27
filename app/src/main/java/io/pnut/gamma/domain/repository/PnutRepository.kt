@@ -98,7 +98,7 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         return defaultPnutService.createFile(
             MultipartBody.Part.createFormData("content", fileBody.name, content),
             fileBody.name.toRequestBody("text/plain".toMediaTypeOrNull()),
-            fileBody.kind.name.toRequestBody("text/plain".toMediaTypeOrNull()),
+            fileBody.kind.name.lowercase(Locale.ROOT).toRequestBody("text/plain".toMediaTypeOrNull()),
             BuildConfig.APPLICATION_ID.toRequestBody("text/plain".toMediaTypeOrNull()),
             "true".toRequestBody("text/plain".toMediaTypeOrNull())
         ).execute().bodyOrThrow()

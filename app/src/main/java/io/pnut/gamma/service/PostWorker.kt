@@ -3,6 +3,8 @@ package io.pnut.gamma.service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.core.content.IntentCompat
 import androidx.hilt.work.HiltWorker
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -62,7 +64,7 @@ class PostWorker @AssistedInject constructor(
     }
 
     private enum class IntentKey { PostBody, PostId, NewState }
-    private enum class ResultIntentKey { Post }
+    enum class ResultIntentKey { Post }
 
     override suspend fun doWork(): Result {
         val action = inputData.getString(ACTION_KEY) ?: return Result.failure()
@@ -80,8 +82,15 @@ class PostWorker @AssistedInject constructor(
                 val replacementFileRawList = postBodyOuter.files
                     .map {
                         val inputStream = applicationContext.contentResolver.openInputStream(it.uri)
-                        val res = uploadFileUseCase.run(UploadFileInputData(it, inputStream)).postOEmbedRaw
+                        val fileName = getFileName(it.uri)
+                        val res = uploadFileUseCase.run(UploadFileInputData(it, inputStream, fileName)).postOEmbedRaw
                         inputStream?.close()
+
+                        // Cleanup cache file
+                        if (it.uri.scheme == "file") {
+                            it.uri.path?.let { path -> java.io.File(path).delete() }
+                        }
+
                         res
                     }
                 postBodyOuter.pollPostBody?.let { it ->
@@ -168,6 +177,20 @@ class PostWorker @AssistedInject constructor(
         }
     }
 
+    private fun getFileName(uri: Uri): String? {
+        if (uri.scheme == "content") {
+            applicationContext.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (index != -1) {
+                        return cursor.getString(index)
+                    }
+                }
+            }
+        }
+        return uri.path?.let { java.io.File(it).name }
+    }
+
     companion object {
         private const val ACTION_KEY = "action"
 
@@ -226,5 +249,12 @@ class PostWorker @AssistedInject constructor(
 
         fun getPost(intent: Intent): Post? =
             IntentCompat.getParcelableExtra(intent, ResultIntentKey.Post.name, Post::class.java)
+
+        fun sendResultBroadcast(context: Context, action: Actions, post: Post) {
+            val intent = Intent(action.getActionName()).apply {
+                putExtra(ResultIntentKey.Post.name, post)
+            }
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+        }
     }
 }

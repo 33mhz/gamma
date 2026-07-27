@@ -31,20 +31,33 @@ import com.bumptech.glide.Glide
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import io.pnut.gamma.databinding.ComposeThumbnailImageBinding
 import io.pnut.gamma.databinding.FragmentComposePostBinding
 import io.pnut.gamma.domain.entity.Post
 import io.pnut.gamma.domain.entity.PostBody
-import io.pnut.gamma.domain.entity.PostBodyOuter
+import io.pnut.gamma.domain.entity.PollPostBody
 import io.pnut.gamma.domain.entity.User
 import io.pnut.gamma.domain.entity.raw.LongPost
+import io.pnut.gamma.domain.entity.raw.OEmbed
+import io.pnut.gamma.domain.entity.raw.PollNotice
 import io.pnut.gamma.domain.entity.raw.RawValue
 import io.pnut.gamma.domain.entity.raw.Spoiler
+import io.pnut.gamma.domain.entity.raw.replacement.PostPoll
 import io.pnut.gamma.domain.model.Account
 import io.pnut.gamma.domain.model.UriInfo
+import io.pnut.gamma.domain.model.io.CreatePollInputData
+import io.pnut.gamma.domain.model.io.PostInputData
+import io.pnut.gamma.domain.model.io.UploadFileInputData
+import io.pnut.gamma.domain.usecases.CreatePollUseCase
 import io.pnut.gamma.domain.usecases.GetAccountListUseCase
 import io.pnut.gamma.domain.usecases.GetCurrentAccountUseCase
+import io.pnut.gamma.domain.usecases.PostUseCase
+import io.pnut.gamma.domain.usecases.UploadFileUseCase
 import io.pnut.gamma.presentation.activity.EditPhotoActivity
 import io.pnut.gamma.presentation.util.AnimationCallback
 import io.pnut.gamma.presentation.util.BackPressedHookable
@@ -53,8 +66,11 @@ import io.pnut.gamma.presentation.util.DateUtil
 import io.pnut.gamma.presentation.util.Util
 import io.pnut.gamma.service.PostWorker
 import io.pnut.gamma.util.Constants
+import io.pnut.gamma.util.ErrorCollections
+import io.pnut.gamma.util.LogUtil
 import io.pnut.gamma.util.SingleLiveEvent
 import io.pnut.gamma.util.observeOnce
+import io.pnut.gamma.util.showAsError
 import java.util.ArrayList
 import java.util.Date
 import javax.inject.Inject
@@ -210,7 +226,10 @@ class ComposePostFragment : BaseFragment(),
                 replyTarget,
                 mentionToMyself,
                 initialText,
-                currentUserId
+                currentUserId,
+                uploadFileUseCase,
+                postUseCase,
+                createPollUseCase,
             )
         )[ComposePostViewModel::class.java]
     }
@@ -227,12 +246,39 @@ class ComposePostFragment : BaseFragment(),
     @Inject
     lateinit var getAccountListUseCase: GetAccountListUseCase
 
+    @Inject
+    lateinit var uploadFileUseCase: UploadFileUseCase
+
+    @Inject
+    lateinit var postUseCase: PostUseCase
+
+    @Inject
+    lateinit var createPollUseCase: CreatePollUseCase
+
     private val hasAnotherAccounts by lazy { getAccountListUseCase.run(Unit).accounts.filterNot { it.id == currentUserId }.size > 1 }
 
     private val eventObserver = Observer<Event> {
         when (it) {
-            is Event.ShowAccountList -> showAccountList()
+            Event.ShowAccountList -> showAccountList()
+            is Event.Success -> listener?.onFinish()
+            is Event.Failed -> {
+                val message = when (val throwable = it.t) {
+                    is ErrorCollections -> throwable.getErrorMessage(requireContext())
+                    else -> throwable.localizedMessage ?: getString(R.string.communication_error)
+                }
+                com.google.android.material.snackbar.Snackbar.make(binding.root, message, com.google.android.material.snackbar.Snackbar.LENGTH_LONG).showAsError()
+            }
         }
+    }
+
+    private val loadingObserver = Observer<Boolean> { loading ->
+        binding.loadingLayout.visibility = if (loading) View.VISIBLE else View.GONE
+        binding.viewRightActionMenuView.isEnabled = !loading
+        binding.viewLeftActionMenuView.isEnabled = !loading
+    }
+
+    private val statusObserver = Observer<String?> { status ->
+        binding.statusTextView.text = status
     }
 
     private fun showAccountList() {
@@ -272,26 +318,7 @@ class ComposePostFragment : BaseFragment(),
         }
 
     private fun send() {
-        val text = viewModel.text.value ?: return
-        val isNsfw = viewModel.nsfw.value ?: false
-        val currentUserId = viewModel.currentUserIdLiveData.value ?: return
-        val raw = mutableMapOf<String, MutableList<RawValue>>()
-        viewModel.longPost?.let {
-            raw.getOrPut(LongPost.TYPE) { mutableListOf() }.add(it.copy(tstamp = Date().time))
-        }
-        viewModel.spoiler?.let {
-            raw.getOrPut(Spoiler.TYPE) { mutableListOf() }.add(it)
-        }
-
-
-        val postBodyOuter = PostBodyOuter(
-            currentUserId,
-            PostBody(text, replyTarget?.id, isNsfw = isNsfw, raw = raw.toMap()),
-            adapter.getItems(),
-            pollPostBody
-        )
-        context?.let { PostWorker.enqueueSendPost(it, postBodyOuter) }
-        listener?.onFinish()
+        viewModel.sendPost(requireContext(), adapter.getItems(), pollPostBody)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -351,6 +378,9 @@ class ComposePostFragment : BaseFragment(),
 
         setupToolbar()
         syncMenuState()
+
+        viewModel.loading.observe(viewLifecycleOwner, loadingObserver)
+        viewModel.status.observe(viewLifecycleOwner, statusObserver)
 
         adapter = ThumbnailAdapter(viewModel.media.toMutableList(), thumbnailAdapterListener)
         viewModel.previewAttachmentsVisibility.observe(viewLifecycleOwner) {
@@ -573,6 +603,8 @@ class ComposePostFragment : BaseFragment(),
 
     sealed class Event {
         object ShowAccountList : Event()
+        data class Success(val post: Post) : Event()
+        data class Failed(val t: Throwable) : Event()
     }
 
 
@@ -580,7 +612,10 @@ class ComposePostFragment : BaseFragment(),
         replyTargetArg: Post?,
         mentionToMyself: Boolean,
         initialText: String? = null,
-        currentUserId: String
+        currentUserId: String,
+        private val uploadFileUseCase: UploadFileUseCase,
+        private val postUseCase: PostUseCase,
+        private val createPollUseCase: CreatePollUseCase
     ) : ViewModel() {
         val event = SingleLiveEvent<Event>()
         val currentUserIdLiveData: MutableLiveData<String> =
@@ -618,17 +653,124 @@ class ComposePostFragment : BaseFragment(),
         }
         var enablePoll = MutableLiveData<Boolean>().apply { value = false }
 
+        val loading = MutableLiveData<Boolean>().apply { value = false }
+        val status = MutableLiveData<String?>()
+
         init {
             text.value = computedInitialText
         }
 
         fun showAccountList() = event.emit((Event.ShowAccountList))
 
+        fun sendPost(context: Context, adapterItems: List<UriInfo>, pollPostBody: PollPostBody?) {
+            val text = text.value ?: return
+            val isNsfw = nsfw.value ?: false
+            val currentUserId = currentUserIdLiveData.value ?: return
+
+            viewModelScope.launch {
+                loading.value = true
+                status.value = context.getString(R.string.uploading_images)
+                
+                try {
+                    val cachedFiles = withContext(Dispatchers.IO) {
+                        adapterItems.mapNotNull { uriInfo ->
+                            copyUriToCache(context, uriInfo.uri)?.let { UriInfo(it) }
+                        }
+                    }
+
+                    val raw = mutableMapOf<String, MutableList<RawValue>>()
+                    longPost?.let {
+                        raw.getOrPut(LongPost.TYPE) { mutableListOf() }.add(it.copy(tstamp = Date().time))
+                    }
+                    spoiler?.let {
+                        raw.getOrPut(Spoiler.TYPE) { mutableListOf() }.add(it)
+                    }
+
+                    val replacementFileRawList = withContext(Dispatchers.IO) {
+                        cachedFiles.map {
+                            val inputStream = context.contentResolver.openInputStream(it.uri)
+                            val fileName = getFileName(context, it.uri)
+                            val res = uploadFileUseCase.run(UploadFileInputData(it, inputStream, fileName)).postOEmbedRaw
+                            inputStream?.close()
+
+                            // Cleanup cache file
+                            if (it.uri.scheme == "file") {
+                                it.uri.path?.let { path -> java.io.File(path).delete() }
+                            }
+
+                            res
+                        }
+                    }
+
+                    pollPostBody?.let {
+                        status.value = context.getString(R.string.creating_poll)
+                        val res = withContext(Dispatchers.IO) {
+                            createPollUseCase.run(CreatePollInputData(it))
+                        }
+                        val pollNotice = PostPoll.createFromPoll(res.poll)
+                        raw.getOrPut(PollNotice.TYPE) { mutableListOf() }.add(pollNotice)
+                    }
+
+                    replacementFileRawList.forEach {
+                        raw.getOrPut(OEmbed.TYPE) { mutableListOf() }.add(it)
+                    }
+
+                    status.value = context.getString(R.string.creating_post)
+                    val modifiedPostBody = PostBody(text, replyTarget.value?.id, isNsfw = isNsfw, raw = raw.toMap())
+                    val postOutputData = withContext(Dispatchers.IO) {
+                        postUseCase.run(PostInputData(modifiedPostBody, currentUserId))
+                    }
+                    
+                    val post = postOutputData.res.data
+                    PostWorker.sendResultBroadcast(context, PostWorker.Actions.SendPost, post)
+                    event.emit(Event.Success(post))
+                } catch (e: Exception) {
+                    LogUtil.e(e.message)
+                    event.emit(Event.Failed(e))
+                } finally {
+                    loading.value = false
+                    status.value = null
+                }
+            }
+        }
+
+        private fun copyUriToCache(context: Context, uri: Uri): Uri? {
+            return try {
+                val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+                val extension = context.contentResolver.getType(uri)?.split("/")?.lastOrNull() ?: "jpg"
+                val file = java.io.File(context.cacheDir, "upload_${System.currentTimeMillis()}_${(0..1000).random()}.$extension")
+                file.outputStream().use { outputStream ->
+                    inputStream.use { it.copyTo(outputStream) }
+                }
+                Uri.fromFile(file)
+            } catch (e: Exception) {
+                LogUtil.e(e.message)
+                null
+            }
+        }
+
+        private fun getFileName(context: Context, uri: Uri): String? {
+            if (uri.scheme == "content") {
+                context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        val index = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+                        if (index != -1) {
+                            return cursor.getString(index)
+                        }
+                    }
+                }
+            }
+            return uri.path?.let { java.io.File(it).name }
+        }
+
         class Factory(
             private val replyTarget: Post?,
             private val mentionToMyself: Boolean,
             private val initialText: String? = null,
-            private val currentUserId: String
+            private val currentUserId: String,
+            private val uploadFileUseCase: UploadFileUseCase,
+            private val postUseCase: PostUseCase,
+            private val createPollUseCase: CreatePollUseCase
         ) :
             ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -637,7 +779,10 @@ class ComposePostFragment : BaseFragment(),
                     replyTarget,
                     mentionToMyself,
                     initialText,
-                    currentUserId
+                    currentUserId,
+                    uploadFileUseCase,
+                    postUseCase,
+                    createPollUseCase
                 ) as T
             }
 

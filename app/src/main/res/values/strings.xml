@@ -285,4 +285,7 @@
     <string name="shared_element_edit_profile">shared_element_edit_profile</string>
     <string name="button_text_compose">Compose</string>
     <string name="button_upload_file">Upload file</string>
+    <string name="uploading_images">Uploading images…</string>
+    <string name="creating_poll">Creating poll…</string>
+    <string name="creating_post">Creating post…</string>
 </resources>

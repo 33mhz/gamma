@@ -15,14 +15,13 @@ class UploadFileUseCase(private val pnutRepository: IPnutRepository) :
     UseCase<UploadFileOutputData, UploadFileInputData>() {
     override fun run(params: UploadFileInputData): UploadFileOutputData {
         val bytes = params.inputStream?.readBytes() ?: throw ErrorCollections.CannotLoadFile()
-        // When it was shared from another app, cannot get filename correctly in sometimes.
-        val file = File(params.uriInfo.uri.path)
+        val fileName = params.fileName ?: File(params.uriInfo.uri.path ?: "upload.jpg").name
         val content = bytes.toRequestBody("multipart/form-data".toMediaTypeOrNull())
         val res = pnutRepository.createFile(
             content,
             FileBody(
                 io.pnut.gamma.domain.entity.File.FileKind.IMAGE, // TODO: Fix it
-                file.name
+                fileName
             )
         )
         val oEmbedRaw = PostOEmbed(
