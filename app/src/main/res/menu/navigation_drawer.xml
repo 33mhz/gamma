@@ -48,9 +48,13 @@
         android:orderInCategory="250"
         android:visible="false">
         <item
-            android:id="@+id/channels"
+            android:id="@+id/privateMessages"
             android:icon="@drawable/ic_mail_black_24dp"
-            android:title="@string/channels" />
+            android:title="@string/private_messages" />
+        <item
+            android:id="@+id/channels"
+            android:icon="@drawable/ic_forum_black_24dp"
+            android:title="@string/chat_rooms" />
         <!--            <item-->
         <!--                android:id="@+id/file"-->
         <!--                android:icon="@drawable/ic_cloud_black_24dp"-->

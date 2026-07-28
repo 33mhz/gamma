@@ -3,8 +3,7 @@ package io.pnut.gamma.domain.entity
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import io.pnut.gamma.domain.entity.entities.Entities
-import io.pnut.gamma.domain.entity.entities.HaveEntities
+import io.pnut.gamma.domain.entity.entities.BaseContent
 import io.pnut.gamma.domain.entity.raw.PollNotice
 import io.pnut.gamma.domain.entity.raw.Spoiler
 import io.pnut.gamma.presentation.adapter.PollOptionsAdapter
@@ -30,7 +29,7 @@ data class Post(
     @Json(name = "reply_to") var replyTo: String? = null,
     @Json(name = "repost_of") var repostOf: Post? = null,
     var counts: PostCount,
-    var content: PostContent? = null,
+    var content: BaseContent? = null,
     @Json(name = "you_bookmarked") var youBookmarked: Boolean? = null,
     @Json(name = "you_reposted") var youReposted: Boolean? = null,
     @Json(name = "pagination_id") override var paginationId: String? = null,
@@ -40,13 +39,6 @@ data class Post(
 ) : UniquePageable, Parcelable {
     @IgnoredOnParcel
     override val uniqueKey: String by lazy { id }
-
-    @Parcelize
-    data class PostContent(
-        override var text: String? = null,
-        override var html: String? = null,
-        override var entities: Entities? = null,
-    ) : HaveEntities, Parcelable
 
     @Parcelize
     data class PostCount(

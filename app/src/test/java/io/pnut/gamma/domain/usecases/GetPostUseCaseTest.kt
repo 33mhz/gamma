@@ -3,6 +3,7 @@ package io.pnut.gamma.domain.usecases
 import kotlinx.coroutines.runBlocking
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.Post
+import io.pnut.gamma.domain.entity.entities.BaseContent
 import io.pnut.gamma.domain.model.StreamType
 import io.pnut.gamma.domain.model.io.GetPostInputData
 import io.pnut.gamma.domain.model.params.composed.GetPostsParam
@@ -16,9 +17,9 @@ import org.junit.Test
 class GetPostUseCaseTest {
 
   private fun generatePosts(prefix: String): List<Post> {
-    val post1 = Posts.normalPost.copy(content = Posts.normalPost.content?.copy(text = "${prefix}1"))
-    val post2 = Posts.normalPost.copy(content = Posts.normalPost.content?.copy(text = "${prefix}2"))
-    val post3 = Posts.normalPost.copy(content = Posts.normalPost.content?.copy(text = "${prefix}3"))
+    val post1 = Posts.normalPost.copy(content = BaseContent(text = "${prefix}1"))
+    val post2 = Posts.normalPost.copy(content = BaseContent(text = "${prefix}2"))
+    val post3 = Posts.normalPost.copy(content = BaseContent(text = "${prefix}3"))
     return listOf(post1, post2, post3)
   }
 

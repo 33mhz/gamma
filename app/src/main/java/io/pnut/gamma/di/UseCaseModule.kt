@@ -19,6 +19,7 @@ import io.pnut.gamma.domain.usecases.GetCachedInteractionListUseCase
 import io.pnut.gamma.domain.usecases.GetCachedPostListUseCase
 import io.pnut.gamma.domain.usecases.GetCachedUserListUseCase
 import io.pnut.gamma.domain.usecases.GetChannelsUseCase
+import io.pnut.gamma.domain.usecases.GetMessagesUseCase
 import io.pnut.gamma.domain.usecases.GetCurrentAccountUseCase
 import io.pnut.gamma.domain.usecases.GetFilesUseCase
 import io.pnut.gamma.domain.usecases.GetInteractionUseCase
@@ -36,6 +37,7 @@ import io.pnut.gamma.domain.usecases.UpdateProfileUseCase
 import io.pnut.gamma.domain.usecases.UpdateRelationshipUseCase
 import io.pnut.gamma.domain.usecases.UpdateUserImageUseCase
 import io.pnut.gamma.domain.usecases.UploadFileUseCase
+import io.pnut.gamma.domain.usecases.UpdateMarkerUseCase
 import io.pnut.gamma.domain.usecases.VerifyTokenUseCase
 import io.pnut.gamma.domain.usecases.VoteUseCase
 
@@ -203,4 +205,14 @@ object UseCaseModule {
     fun provideGetChannelsUseCase(
         pnutRepository: IPnutRepository
     ): GetChannelsUseCase = GetChannelsUseCase(pnutRepository)
+
+    @Provides
+    fun provideGetMessagesUseCase(
+        pnutRepository: IPnutRepository
+    ): GetMessagesUseCase = GetMessagesUseCase(pnutRepository)
+
+    @Provides
+    fun provideUpdateMarkerUseCase(
+        pnutRepository: IPnutRepository
+    ): UpdateMarkerUseCase = UpdateMarkerUseCase(pnutRepository)
 }

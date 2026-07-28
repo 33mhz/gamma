@@ -6,6 +6,7 @@ import io.pnut.gamma.domain.entity.File
 import io.pnut.gamma.domain.entity.IDs
 import io.pnut.gamma.domain.entity.Interaction
 import io.pnut.gamma.domain.entity.InteractionFilter
+import io.pnut.gamma.domain.entity.Marker
 import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.Poll
@@ -179,9 +180,6 @@ interface PnutService {
     @GET("channels/{channelId}/messages")
     fun getChannelMessages(@Path("channelId") channelId: String, @QueryMap paging: Map<String, String>): Call<PnutResponse<List<Message>>>
 
-    @GET("users/me/channels")
-    fun getChannelsCreatedByMe(@QueryMap paging: Map<String, String>): Call<PnutResponse<List<Channel>>>
-
 
     @GET("users/me/channels/existing_pm")
     fun getExistingPm(@Query("ids") ids: IDs): Call<PnutResponse<Channel>>
@@ -191,6 +189,15 @@ interface PnutService {
 
     @GET("users/me/channels/subscribed")
     fun getSubscribedChannels(@QueryMap paging: Map<String, String>): Call<PnutResponse<List<Channel>>>
+
+    @GET("users/me/channels/subscribed")
+    fun getPmChannels(@QueryMap paging: Map<String, String>): Call<PnutResponse<List<Channel>>>
+
+    @GET("channels/streams/explore/topical")
+    fun getTopicalChannels(@QueryMap paging: Map<String, String>): Call<PnutResponse<List<Channel>>>
+
+    @GET("users/me/channels")
+    fun getChannels(@QueryMap paging: Map<String, String>): Call<PnutResponse<List<Channel>>>
 
     @GET("users/me/files")
     fun getFiles(@QueryMap paging: Map<String, String>): Call<PnutResponse<List<File>>>
@@ -219,5 +226,8 @@ interface PnutService {
 
     @DELETE("users/me/cover")
     fun deleteCover(): Call<PnutResponse<User>>
+
+    @POST("markers")
+    fun updateMarkers(@Body markers: List<Marker>): Call<PnutResponse<List<Marker>>>
 
 }

@@ -33,10 +33,6 @@ open class GammaApplication : Application(), CoroutineScope by MainScope(), Conf
       .setWorkerFactory(workerFactory)
       .build()
 
-  override fun onCreate() {
-    super.onCreate()
-  }
-
   fun initApplication() {
     updateBaseTheme()
     updateTheme()

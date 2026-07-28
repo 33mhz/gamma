@@ -131,4 +131,12 @@ object TestUseCaseModule {
     @Provides
     @Singleton
     fun provideGetChannelsUseCase(): GetChannelsUseCase = Mockito.mock(GetChannelsUseCase::class.java)
+
+    @Provides
+    @Singleton
+    fun provideGetMessagesUseCase(): GetMessagesUseCase = Mockito.mock(GetMessagesUseCase::class.java)
+
+    @Provides
+    @Singleton
+    fun provideUpdateMarkerUseCase(): UpdateMarkerUseCase = Mockito.mock(UpdateMarkerUseCase::class.java)
 }

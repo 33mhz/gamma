@@ -28,27 +28,27 @@ class UserTest {
   @Test
   fun getCoverUrl() {
     val coverUrl = User.getCoverUrl("123")
-    Assert.assertThat(coverUrl, `is`("https://api.pnut.io/v0/users/123/cover"))
+    Assert.assertThat(coverUrl, `is`("https://api.pnut.io/v1/users/123/cover"))
   }
 
   @Test
   fun avatarSize() {
     val defaultSizeAvatarUrl = User.getAvatarUrl("123")
-    Assert.assertThat(defaultSizeAvatarUrl, `is`("https://api.pnut.io/v0/users/123/avatar?h=64"))
+    Assert.assertThat(defaultSizeAvatarUrl, `is`("https://api.pnut.io/v1/users/123/avatar?h=64"))
 
     val originalAvatarUrl = User.getAvatarUrl("123", null)
-    Assert.assertThat(originalAvatarUrl, `is`("https://api.pnut.io/v0/users/123/avatar"))
+    Assert.assertThat(originalAvatarUrl, `is`("https://api.pnut.io/v1/users/123/avatar"))
 
     val size24AvatarUrl = User.getAvatarUrl("123", User.AvatarSize.Mini)
-    Assert.assertThat(size24AvatarUrl, `is`("https://api.pnut.io/v0/users/123/avatar?h=24"))
+    Assert.assertThat(size24AvatarUrl, `is`("https://api.pnut.io/v1/users/123/avatar?h=24"))
     val size48AvatarUrl = User.getAvatarUrl("123", User.AvatarSize.Small)
-    Assert.assertThat(size48AvatarUrl, `is`("https://api.pnut.io/v0/users/123/avatar?h=48"))
+    Assert.assertThat(size48AvatarUrl, `is`("https://api.pnut.io/v1/users/123/avatar?h=48"))
 
     val size64AvatarUrl = User.getAvatarUrl("123", User.AvatarSize.Normal)
-    Assert.assertThat(size64AvatarUrl, `is`("https://api.pnut.io/v0/users/123/avatar?h=64"))
+    Assert.assertThat(size64AvatarUrl, `is`("https://api.pnut.io/v1/users/123/avatar?h=64"))
 
     val size96AvatarUrl = User.getAvatarUrl("123", User.AvatarSize.Large)
-    Assert.assertThat(size96AvatarUrl, `is`("https://api.pnut.io/v0/users/123/avatar?h=96"))
+    Assert.assertThat(size96AvatarUrl, `is`("https://api.pnut.io/v1/users/123/avatar?h=96"))
 
     val user = Users.me
     val url = user.content.avatarImage.url

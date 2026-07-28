@@ -3,8 +3,7 @@ package io.pnut.gamma.domain.entity
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import io.pnut.gamma.domain.entity.entities.Entities
-import io.pnut.gamma.domain.entity.entities.HaveEntities
+import io.pnut.gamma.domain.entity.entities.BaseContent
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.util.Date
@@ -22,7 +21,7 @@ data class Message(
     @Json(name = "thread_id") val threadId: String,
     val user: User?,
     @Json(name = "user_id") val userId: String? = null,
-    val content: MessageContent?,
+    val content: BaseContent?,
     @Json(name = "pagination_id") override var paginationId: String? = null
 
 ) : Parcelable, UniquePageable {
@@ -34,14 +33,6 @@ data class Message(
     data class MessageCount(
         val replies: Int,
     ) : Parcelable
-
-    @Parcelize
-    @JsonClass(generateAdapter = true)
-    data class MessageContent(
-        override val entities: Entities?,
-        override val html: String?,
-        override val text: String?
-    ) : HaveEntities, Parcelable
 }
 
 

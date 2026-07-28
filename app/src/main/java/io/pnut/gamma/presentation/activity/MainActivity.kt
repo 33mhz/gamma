@@ -38,6 +38,7 @@ import io.pnut.gamma.domain.usecases.UpdateDefaultAccountUseCase
 import io.pnut.gamma.presentation.adapter.AccountListAdapter
 import io.pnut.gamma.presentation.fragment.BaseListFragment
 import io.pnut.gamma.presentation.fragment.ChannelsFragment
+import io.pnut.gamma.presentation.fragment.PrivateMessagesFragment
 import io.pnut.gamma.presentation.fragment.ExploreFragment
 import io.pnut.gamma.presentation.fragment.HomeFragment
 import io.pnut.gamma.presentation.fragment.ProfileFragment
@@ -420,6 +421,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
                 R.id.trending,
                 R.id.global -> showExploreStream(item.itemId)
 //                    R.id.file -> goToFiles()
+                R.id.privateMessages -> goToPrivateMessages()
                 R.id.channels -> goToChannels()
                 R.id.settings -> goToSettings()
             }
@@ -439,6 +441,13 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         val tag = ChannelsFragment::class.java.simpleName
         val cache = supportFragmentManager.findFragmentByTag(tag)
         val fragment = cache ?: ChannelsFragment.newInstance()
+        FragmentHelper.addFragment(supportFragmentManager, fragment, tag)
+    }
+
+    private fun goToPrivateMessages() {
+        val tag = PrivateMessagesFragment::class.java.simpleName
+        val cache = supportFragmentManager.findFragmentByTag(tag)
+        val fragment = cache ?: PrivateMessagesFragment.newInstance()
         FragmentHelper.addFragment(supportFragmentManager, fragment, tag)
     }
 

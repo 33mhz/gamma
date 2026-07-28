@@ -40,6 +40,7 @@ object MoshiSingleton {
                 .withSubtype(Interaction.Bookmark::class.java, "bookmark")
         )
         .add(RawMapJsonAdapterFactory())
+        .add(BaseContentJsonAdapterFactory())
         .add(MicroTimestampAdapter())
         .add(
             PolymorphicJsonAdapterFactory.of(OEmbed::class.java, "type")

@@ -250,10 +250,11 @@
     <string name="following">Following</string>
     <string name="blocked">Blocked</string>
     <string name="muted">Muted</string>
-    <string name="private_channels">Private messages</string>
-    <string name="public_channels">Chat rooms</string>
+    <string name="private_messages">Private messages</string>
+    <string name="chat_rooms">Chat rooms</string>
     <string name="channel">Room</string>
-    <string name="channels">Chat rooms</string>
+    <string name="channels_subscribed">Subscribed</string>
+    <string name="channels_topical">Topical</string>
     <plurals name="poll_day_template">
         <item quantity="zero" />
         <item quantity="one">%d day</item>

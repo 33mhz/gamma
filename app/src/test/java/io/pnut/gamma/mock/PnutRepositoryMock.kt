@@ -6,6 +6,7 @@ import io.pnut.gamma.domain.entity.ErrorResponse
 import io.pnut.gamma.domain.entity.File
 import io.pnut.gamma.domain.entity.FileBody
 import io.pnut.gamma.domain.entity.Interaction
+import io.pnut.gamma.domain.entity.Marker
 import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.Poll
@@ -23,6 +24,8 @@ import io.pnut.gamma.domain.model.params.composed.GetInteractionsParam
 import io.pnut.gamma.domain.model.params.composed.GetPostsParam
 import io.pnut.gamma.domain.model.params.composed.GetUsersParam
 import io.pnut.gamma.domain.model.params.single.PaginationParam
+import io.pnut.gamma.domain.entity.entities.BaseContent
+import io.pnut.gamma.sample.Clients
 import io.pnut.gamma.domain.repository.IPnutRepository
 import io.pnut.gamma.sample.Users
 import io.pnut.gamma.util.ErrorCollections
@@ -161,25 +164,10 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
                 Post(
                     createdAt = Date(),
                     id = "1",
-                    content = Post.PostContent(
-                        text = postBody.text
-                    ),
-                    isDeleted = TODO(),
-                    isNsfw = TODO(),
-                    isRevised = TODO(),
-                    revision = TODO(),
-                    source = TODO(),
-                    user = TODO(),
-                    threadId = TODO(),
-                    replyTo = TODO(),
-                    repostOf = TODO(),
-                    counts = TODO(),
-                    youBookmarked = TODO(),
-                    youReposted = TODO(),
-                    paginationId = TODO(),
-                    raw = TODO(),
-                    bookmarkedBy = TODO(),
-                    repostedBy = TODO()
+                    source = Clients.testClient,
+                    threadId = "1",
+                    counts = Post.PostCount(0, 0, 0, 0),
+                    content = BaseContent(text = postBody.text)
                 )
             }
         }
@@ -305,8 +293,16 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun getChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun getSubscribedChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
+        TODO("not implemented")
+    }
+
+    override suspend fun getPmChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
+        TODO("not implemented")
+    }
+
+    override suspend fun getTopicalChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
+        TODO("not implemented")
     }
 
     override suspend fun getMessages(
@@ -349,7 +345,6 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-
     override suspend fun vote(
         pollId: String,
         pollToken: String,
@@ -366,5 +361,9 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
             accPoll.copy(options = newOptions)
         }
         return success { newPoll }
+    }
+
+    override suspend fun updateMarkers(markers: List<Marker>): PnutResponse<List<Marker>> {
+        TODO("not implemented")
     }
 }

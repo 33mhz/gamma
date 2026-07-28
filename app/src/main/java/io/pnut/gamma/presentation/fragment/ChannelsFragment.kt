@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import com.google.android.material.tabs.TabLayoutMediator
 import io.pnut.gamma.presentation.adapter.pager.ChannelsPagerAdapter
 import io.pnut.gamma.databinding.FragmentChannelsBinding
+import io.pnut.gamma.R
 
 class ChannelsFragment : BaseFragment() {
     private val adapter by lazy {
@@ -23,6 +24,7 @@ class ChannelsFragment : BaseFragment() {
     ): View {
         _binding = FragmentChannelsBinding.inflate(inflater, container, false)
         binding.toolbar.setNavigationOnClickListener { backToPrevFragment() }
+        binding.toolbar.setTitle(R.string.chat_rooms)
         return binding.root
     }
 

@@ -3,10 +3,7 @@ package io.pnut.gamma.domain.entity
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import io.pnut.gamma.domain.entity.entities.Entities
-import io.pnut.gamma.domain.entity.entities.HaveEntities
-import io.pnut.gamma.domain.entity.image.Avatar
-import io.pnut.gamma.domain.entity.image.Cover
+import io.pnut.gamma.domain.entity.entities.UserContent
 import io.pnut.gamma.util.Constants
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -36,17 +33,6 @@ data class User(
 ) : UniquePageable, Parcelable {
     @IgnoredOnParcel
     override val uniqueKey: String by lazy { id }
-
-    @Parcelize
-    @JsonClass(generateAdapter = true)
-    data class UserContent(
-        @Json(name = "avatar_image") val avatarImage: Avatar,
-        @Json(name = "cover_image") val coverImage: Cover,
-        override val entities: Entities?,
-        override val html: String?,
-        @Json(name = "markdown_text") val markdownText: String?,
-        override val text: String?
-    ) : HaveEntities, Parcelable
 
     @Parcelize
     @JsonClass(generateAdapter = true)

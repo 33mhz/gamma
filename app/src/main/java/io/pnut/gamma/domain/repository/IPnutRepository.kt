@@ -5,6 +5,7 @@ import io.pnut.gamma.domain.entity.Channel
 import io.pnut.gamma.domain.entity.File
 import io.pnut.gamma.domain.entity.FileBody
 import io.pnut.gamma.domain.entity.Interaction
+import io.pnut.gamma.domain.entity.Marker
 import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.Poll
@@ -73,7 +74,9 @@ interface IPnutRepository {
     suspend fun deleteAvatar(): PnutResponse<User>
 
     // channel and messages
-    suspend fun getChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
+    suspend fun getSubscribedChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
+    suspend fun getPmChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
+    suspend fun getTopicalChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
     suspend fun getMessages(channelId: String, paginationParam: PaginationParam): PnutResponse<List<Message>>
 
     // others
@@ -89,4 +92,6 @@ interface IPnutRepository {
     fun createPoll(pollPostBody: PollPostBody): PnutResponse<Poll>
     suspend fun getPoll(pollId: String, pollToken: String): PnutResponse<Poll>
     suspend fun vote(pollId: String, pollToken: String, voteBody: VoteBody): PnutResponse<Poll>
+
+    suspend fun updateMarkers(markers: List<Marker>): PnutResponse<List<Marker>>
 }

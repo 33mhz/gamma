@@ -8,4 +8,9 @@ class LinkableTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = android.R.attr.textViewStyle
-) : AppCompatTextView(context, attrs, defStyleAttr)
+) : AppCompatTextView(context, attrs, defStyleAttr) {
+
+    override fun performClick(): Boolean {
+        return super.performClick()
+    }
+}

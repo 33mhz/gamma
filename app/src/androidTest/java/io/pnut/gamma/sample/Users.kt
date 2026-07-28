@@ -1,6 +1,7 @@
 package io.pnut.gamma.sample
 
 import io.pnut.gamma.domain.entity.User
+import io.pnut.gamma.domain.entity.entities.UserContent
 import io.pnut.gamma.domain.entity.image.Avatar
 import io.pnut.gamma.domain.entity.image.Cover
 import io.pnut.gamma.util.RandomID
@@ -10,7 +11,7 @@ object Users {
     val me
         get() = User(
             id = RandomID.getID,
-        content = User.UserContent(
+        content = UserContent(
             avatarImage = Avatar(false, 1, 1, "https://example.com/avatar"),
             coverImage = Cover(false, 1, 1, "https://example.com/avatar"),
             entities = null,
@@ -36,7 +37,7 @@ object Users {
     val others
         get() = User(
             id = RandomID.getID,
-        content = User.UserContent(
+        content = UserContent(
             avatarImage = Avatar(false, 1, 1, "https://example.com/avatar"),
             coverImage = Cover(false, 1, 1, "https://example.com/avatar"),
             entities = null,
@@ -61,7 +62,7 @@ object Users {
 
     val user3 = User(
         id = "3",
-        content = User.UserContent(
+        content = UserContent(
             avatarImage = Avatar(false, 1, 1, "https://example.com/avatar"),
             coverImage = Cover(false, 1, 1, "https://example.com/avatar"),
             entities = null,
@@ -86,7 +87,7 @@ object Users {
 
     val user4 = User(
         id = "4",
-        content = User.UserContent(
+        content = UserContent(
             avatarImage = Avatar(false, 1, 1, "https://example.com/avatar"),
             coverImage = Cover(false, 1, 1, "https://example.com/avatar"),
             entities = null,
@@ -111,7 +112,7 @@ object Users {
 
     val user5 = User(
         id = "5",
-        content = User.UserContent(
+        content = UserContent(
             avatarImage = Avatar(false, 1, 1, "https://example.com/avatar"),
             coverImage = Cover(false, 1, 1, "https://example.com/avatar"),
             entities = null,

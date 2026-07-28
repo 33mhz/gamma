@@ -4,6 +4,7 @@ import io.pnut.gamma.R
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +16,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityOptionsCompat
@@ -301,6 +303,7 @@ class SettingsActivity : BaseActivity(),
             }
         }
 
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         override fun onResume() {
             super.onResume()
             activity?.registerReceiver(

@@ -8,25 +8,31 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import io.pnut.gamma.R
-import io.pnut.gamma.databinding.ChannelItemBinding
 import io.pnut.gamma.domain.entity.Channel
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.raw.ChatSettings
 import io.pnut.gamma.domain.model.ChannelType
 import io.pnut.gamma.domain.model.PageableItemWrapper
 import io.pnut.gamma.domain.model.io.GetChannelsInputData
+import io.pnut.gamma.domain.model.io.UpdateMarkerInputData
 import io.pnut.gamma.domain.model.params.composed.GetChannelsParam
 import io.pnut.gamma.domain.model.params.single.GeneralChannelParam
 import io.pnut.gamma.domain.model.params.single.PaginationParam
 import io.pnut.gamma.domain.usecases.GetChannelsUseCase
+import io.pnut.gamma.domain.usecases.UpdateMarkerUseCase
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
 import io.pnut.gamma.presentation.util.BindingUtil
+import io.pnut.gamma.presentation.util.FragmentHelper
 import io.pnut.gamma.domain.entity.User
+import io.pnut.gamma.presentation.util.DateUtil
+import io.pnut.gamma.databinding.FragmentChannelPostItemBinding
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.ChannelViewHolder>(),
+open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.ChannelViewHolder>(),
     BaseListRecyclerViewAdapter.IBaseList<Channel, ChannelListFragment.ChannelViewHolder> {
     private val channelType: ChannelType by lazy {
         arguments?.let { BundleCompat.getSerializable(it, BundleKey.ChannelType.name, ChannelType::class.java) }
@@ -35,6 +41,9 @@ class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.Channe
 
     @Inject
     lateinit var getChannelUseCase: GetChannelsUseCase
+
+    @Inject
+    lateinit var updateMarkerUseCase: UpdateMarkerUseCase
 
     override fun getFragmentLayout(): Int = R.layout.fragment_base_list
     override fun getRecyclerView(view: View): RecyclerView = view.findViewById(R.id.baseList)
@@ -56,7 +65,15 @@ class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.Channe
         item: Channel,
         itemWrapper: PageableItemWrapper<Channel>
     ) {
-        // TODO
+        if (item.hasUnread && item.recentMessageId != null) {
+            lifecycleScope.launch {
+                updateMarkerUseCase.run(UpdateMarkerInputData(item.id, item.recentMessageId))
+            }
+        }
+        val chatSettings = ChatSettings.getChatSettings(item.raw)
+        val title = chatSettings?.name ?: (item.user?.username ?: "Channel ${item.id}")
+        val fragment = ChannelMessagesFragment.newInstance(item.id, title)
+        FragmentHelper.addFragment(requireContext(), fragment, item.id)
     }
 
     override fun onBindViewHolder(
@@ -65,18 +82,31 @@ class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.Channe
         position: Int,
         isMainItem: Boolean
     ) {
-        val chatSettings = ChatSettings.getChatSettings(item.raw)
-        viewHolder.binding.channelName.text = chatSettings?.name ?: (item.user?.username ?: "Channel ${item.id}")
-        viewHolder.binding.recentMessage.text = item.recentMessage?.content?.text ?: ""
-
-        val user = item.recentMessage?.user ?: item.user
-        val avatarUrl = user?.let { User.getAvatarUrl(it, User.AvatarSize.Small) }
-        BindingUtil.glideAvatarSrc(viewHolder.binding.channelAvatar, avatarUrl)
+        onBindChannelViewHolder(item, viewHolder, position, isMainItem)
     }
 
-    override fun getItemLayout(): Int = R.layout.channel_item
+    open fun onBindChannelViewHolder(
+        item: Channel,
+        viewHolder: ChannelViewHolder,
+        position: Int,
+        isMainItem: Boolean
+    ) {
+        val chatSettings = ChatSettings.getChatSettings(item.raw)
+        viewHolder.binding.screenNameTextView.text = chatSettings?.name ?: (item.user?.username ?: "Channel ${item.id}")
+        
+        val user = item.recentMessage?.user ?: item.user
+        user?.let {
+            viewHolder.binding.handleNameTextView.text = viewHolder.itemView.context.getString(R.string.user_name_format, it.username)
+            BindingUtil.glideAvatarSrc(viewHolder.binding.avatarImageView, User.getAvatarUrl(it, User.AvatarSize.Small))
+        }
 
-    override val itemNameRes: Int = R.string.channels
+        viewHolder.binding.bodyTextView.text = item.recentMessage?.content?.getSpannableStringBuilder(viewHolder.itemView.context)
+        viewHolder.binding.relativeTimeTextView.text = DateUtil.getShortDateStr(viewHolder.itemView.context, item.recentMessage?.createdAt)
+    }
+
+    override fun getItemLayout(): Int = R.layout.fragment_channel_post_item
+
+    override val itemNameRes: Int = R.string.chat_rooms
 
     override fun onClickSegmentListener(
         viewHolder: BaseListRecyclerViewAdapter.SegmentViewHolder,
@@ -85,11 +115,11 @@ class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.Channe
         viewModel.loadMoreItems()
     }
 
-    class ChannelViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
-        val binding = ChannelItemBinding.bind(mView)
+    open class ChannelViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
+        val binding: FragmentChannelPostItemBinding by lazy { FragmentChannelPostItemBinding.bind(mView) }
     }
 
-    private enum class BundleKey { ChannelType }
+    protected enum class BundleKey { ChannelType }
 
     class ChannelListViewModel(
         private val channelType: ChannelType,
@@ -97,7 +127,8 @@ class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.Channe
     ) : BaseListViewModel<Channel>() {
         override suspend fun getItems(requestPager: PageableItemWrapper.Pager<Channel>?): PnutResponse<List<Channel>> {
             val params = GetChannelsParam().also { getChannelParams ->
-                getChannelParams.add(GeneralChannelParam(includeRecentMessage = true, channelTypes = channelType.value))
+                val type = if (channelType == ChannelType.PublicChat) null else channelType.value
+                getChannelParams.add(GeneralChannelParam(includeRecentMessage = true, channelTypes = type))
                 requestPager?.let { getChannelParams.add(PaginationParam.createFromPager(it)) }
             }
             val getChannelsOutputData =
@@ -119,6 +150,9 @@ class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.Channe
     companion object {
         fun pmChannels() = newInstance(ChannelType.PM)
         fun chatChannels() = newInstance(ChannelType.Chat)
+        fun subscribedChannels() = newInstance(ChannelType.Chat)
+        fun topicalChannels() = newInstance(ChannelType.PublicChat)
+
         private fun newInstance(channelType: ChannelType) = ChannelListFragment().apply {
             arguments = Bundle().apply {
                 putSerializable(BundleKey.ChannelType.name, channelType)

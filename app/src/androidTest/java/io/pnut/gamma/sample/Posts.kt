@@ -1,6 +1,7 @@
 package io.pnut.gamma.sample
 
 import io.pnut.gamma.domain.entity.Post
+import io.pnut.gamma.domain.entity.entities.BaseContent
 import io.pnut.gamma.domain.entity.entities.Entities
 import io.pnut.gamma.util.RandomID
 import java.util.*
@@ -15,7 +16,7 @@ object Posts {
             counts = Post.PostCount(0, 0, 0, 0),
             youBookmarked = false,
             youReposted = false,
-            content = Post.PostContent(
+            content = BaseContent(
                 text = "post",
                 html = "<span>post</span>",
                 entities = Entities(emptyList(), emptyList(), emptyList())

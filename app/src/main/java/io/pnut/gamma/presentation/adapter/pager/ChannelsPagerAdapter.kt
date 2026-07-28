@@ -15,12 +15,12 @@ class ChannelsPagerAdapter(
 
     private val fragments = listOf(
         FragmentInfo(
-            { ChannelListFragment.pmChannels() },
-            R.string.private_channels
+            { ChannelListFragment.subscribedChannels() },
+            R.string.channels_subscribed
         ),
         FragmentInfo(
-            { ChannelListFragment.chatChannels() },
-            R.string.public_channels
+            { ChannelListFragment.topicalChannels() },
+            R.string.channels_topical
         )
     )
 

@@ -8,6 +8,7 @@ import io.pnut.gamma.data.PnutService
 import io.pnut.gamma.domain.entity.Channel
 import io.pnut.gamma.domain.entity.FileBody
 import io.pnut.gamma.domain.entity.Interaction
+import io.pnut.gamma.domain.entity.Marker
 import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.Poll
@@ -267,8 +268,16 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         return defaultPnutService.unBlock(userId).await()
     }
 
-    override suspend fun getChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
+    override suspend fun getSubscribedChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
         return defaultPnutService.getSubscribedChannels(getChannelsParam.toMap()).await()
+    }
+
+    override suspend fun getPmChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
+        return defaultPnutService.getPmChannels(getChannelsParam.toMap()).await()
+    }
+
+    override suspend fun getTopicalChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
+        return defaultPnutService.getTopicalChannels(getChannelsParam.toMap()).await()
     }
 
     override suspend fun getMessages(
@@ -284,6 +293,10 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
 
     override suspend fun getFiles(getFilesParam: GetFilesParam): PnutResponse<List<io.pnut.gamma.domain.entity.File>> {
         return defaultPnutService.getFiles(getFilesParam.toMap()).await()
+    }
+
+    override suspend fun updateMarkers(markers: List<Marker>): PnutResponse<List<Marker>> {
+        return defaultPnutService.updateMarkers(markers).await()
     }
 
     override fun createPoll(pollPostBody: PollPostBody): PnutResponse<Poll> {
