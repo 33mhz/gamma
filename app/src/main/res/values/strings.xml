@@ -26,6 +26,7 @@
     <string name="following_with_name">\@%1$s\'s following</string>
     <string name="followers_with_name">\@%1$s\'s followers</string>
     <string name="since">Since: %s</string>
+    <string name="post_count">Posts: %d</string>
     <string name="follows_you">Follows you</string>
     <string name="its_me">It\'s me!</string>
     <plurals name="following">

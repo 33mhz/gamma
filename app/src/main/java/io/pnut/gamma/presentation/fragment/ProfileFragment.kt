@@ -133,6 +133,7 @@ class ProfileFragment : BaseFragment() {
             binding.profileDescriptionTextView.text = it.content.getSpannableStringBuilder(requireContext())
             binding.followingCountButton.text = resources.getQuantityString(R.plurals.following, it.counts.following, it.counts.following)
             binding.followerCountButton.text = resources.getQuantityString(R.plurals.follower, it.counts.followers, it.counts.followers)
+            binding.postCountTextView.text = getString(R.string.post_count, it.counts.posts)
         }
         viewModel.iconUrl.observe(viewLifecycleOwner) {
             BindingUtil.glideAvatarSrc(binding.circleImageView, it)

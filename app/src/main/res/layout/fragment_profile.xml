@@ -193,6 +193,17 @@
                                 tools:text="It's me!" />
 
                             <TextView
+                                android:id="@+id/postCountTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/margin_regular"
+                                android:layout_marginBottom="@dimen/margin_half"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toStartOf="@+id/sinceTextView"
+                                app:layout_constraintTop_toTopOf="@+id/relationTextView"
+                                tools:text="Posts: 0" />
+
+                            <TextView
                                 android:id="@+id/sinceTextView"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
