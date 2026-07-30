@@ -9,8 +9,11 @@ import com.google.android.material.tabs.TabLayoutMediator
 import io.pnut.gamma.presentation.adapter.pager.ChannelsPagerAdapter
 import io.pnut.gamma.databinding.FragmentChannelsBinding
 import io.pnut.gamma.R
+import io.pnut.gamma.presentation.util.Util
 
-class ChannelsFragment : BaseFragment() {
+class ChannelsFragment : BaseFragment(), Util.DrawerContentFragment {
+    override val menuItemId = R.id.channels
+
     private val adapter by lazy {
         ChannelsPagerAdapter(requireContext(), this)
     }
