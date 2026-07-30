@@ -19,9 +19,8 @@ This data remains on your device and is only transmitted to the Pnut API to perf
 ### Third-Party Services (Google Firebase)
 To help us improve the App and fix bugs, we use Google Firebase:
 *   **Firebase Crashlytics**: If the App crashes, it collects stack traces and basic device information (model, OS version) to help us diagnose the issue.
-*   **Firebase Analytics**: We collect anonymous usage data (e.g., which screens are visited) to understand how the App is used.
 
-For more information, please see [Google's Privacy Policy](https://policies.google.com/privacy).
+Crashlytics is only used in the app if a `google-services.json` file is placed in the `/app` folder. For more information, please see [Google's Privacy Policy](https://policies.google.com/privacy).
 
 ## 3. Permissions
 The App requests the following permissions:
@@ -33,7 +32,7 @@ The App requests the following permissions:
 *   **Analytics/Crash Data**: This data is stored by Google Firebase and is generally anonymized.
 
 ## 5. Open Source
-Gamma is open-source software. You can review the full source code and how it handles your data at: [https://github.com/pnut-app/Gamma](https://github.com/pnut-app/Gamma)
+Gamma is open-source software. You can review the full source code and how it handles your data at: https://github.com/33mhz/gamma
 
 ## 6. Contact
 If you have any questions about this privacy policy, please open an issue on our GitHub repository.
