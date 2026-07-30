@@ -47,6 +47,8 @@ interface IPnutRepository {
     suspend fun updatePost(postId: String, postBody: PostBody): PnutResponse<Post>
     fun deletePost(postId: String): PnutResponse<Post>
 
+    fun reportPost(postId: String, reason: io.pnut.gamma.domain.entity.ReportReason): PnutResponse<Unit>
+
     fun createStarPostSync(postId: String): PnutResponse<Post>
     fun deleteStarPostSync(postId: String): PnutResponse<Post>
 

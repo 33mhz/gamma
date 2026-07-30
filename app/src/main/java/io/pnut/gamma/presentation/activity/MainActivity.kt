@@ -62,12 +62,15 @@ import io.pnut.gamma.presentation.util.FragmentHelper
 class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callback,
     AccountListAdapter.Listener, ErrorReceiver.Callback {
     override fun onReceiveError(message: String) {
-        val view = findViewById<View>(R.id.content) ?: return
-        Snackbar.make(view, message, Snackbar.LENGTH_LONG).showAsError()
+        Snackbar.make(binding.coordinatorLayout, message, Snackbar.LENGTH_LONG).showAsError()
     }
 
     override fun onDeletePostReceive(post: Post) {
         showActionResultSnackBar(post, Action.Delete)
+    }
+
+    override fun onReportPostReceive() {
+        showSnackBar(getString(R.string.report_successful), duration = Snackbar.LENGTH_LONG)
     }
 
     override fun onAccountClick(account: Account) {
@@ -145,9 +148,8 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         showSnackBar(getString(R.string.posted, text))
     }
 
-    private fun showSnackBar(text: String, snackbarCallback: SnackbarCallback? = null) {
-        val view: View = findViewById(R.id.content) ?: return
-        Snackbar.make(view, text, Snackbar.LENGTH_SHORT).oneLine().apply {
+    private fun showSnackBar(text: String, snackbarCallback: SnackbarCallback? = null, duration: Int = Snackbar.LENGTH_SHORT) {
+        Snackbar.make(binding.coordinatorLayout, text, duration).oneLine().apply {
             setAnchorView(R.id.fab)
             if (snackbarCallback != null) setAction(
                 snackbarCallback.actionResId,

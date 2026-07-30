@@ -88,9 +88,9 @@ interface PnutService {
     @DELETE("posts/{postId}/repost?include_post_raw=1")
     fun deleteRepost(@Path("postId") postId: String): Call<PnutResponse<Post>>
 
-    // TODO: I don't know correct type
+    @FormUrlEncoded
     @POST("posts/{postId}/report")
-    fun reportPost(@Path("postId") postId: String, reason: ReportReason): Call<PnutResponse<Post>>
+    fun reportPost(@Path("postId") postId: String, @Field("reason") reason: String): Call<Void>
 
     @GET("posts/{postId}/interactions")
     fun getPostInteractions(

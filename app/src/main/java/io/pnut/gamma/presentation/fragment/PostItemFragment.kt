@@ -35,6 +35,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,6 +45,8 @@ import io.pnut.gamma.domain.entity.Poll
 import io.pnut.gamma.domain.entity.PollLikeValue
 import io.pnut.gamma.domain.entity.Post
 import io.pnut.gamma.domain.entity.User
+import io.pnut.gamma.domain.repository.IAccountRepository
+import io.pnut.gamma.domain.repository.IPreferenceRepository
 import io.pnut.gamma.domain.entity.raw.LongPost
 import io.pnut.gamma.domain.entity.raw.OEmbed
 import io.pnut.gamma.domain.entity.raw.PollNotice
@@ -147,8 +150,9 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         adapter.updateItem(PageableItemWrapper.Item(post))
     }
 
-    override fun onDeletePostReceive(post: Post) {
-    }
+    override fun onDeletePostReceive(post: Post) {}
+
+    override fun onReportPostReceive() {}
 
     private val receiverManager by lazy {
         activity?.let { LocalBroadcastManager.getInstance(it.applicationContext) }
@@ -171,6 +175,13 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
     enum class BundleKey { MainPostId }
 
     override fun onMenuShow(menu: Menu, tag: String?) {
+        val post = selectedPost ?: return
+        if (tag == DialogKey.More.name) {
+            val myIds = accountRepository.getStoredIds()
+            if (myIds.contains(post.user?.id)) {
+                menu.findItem(R.id.menuReport)?.isVisible = false
+            }
+        }
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem, tag: String?) {
@@ -183,7 +194,28 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         val post = selectedPost ?: return
         when (menuItem.itemId) {
             R.id.menuShare -> showShareMenu(post)
+            R.id.menuReport -> showReportDialog(post)
         }
+    }
+
+    private fun showReportDialog(post: Post) {
+        val reasons = io.pnut.gamma.domain.entity.ReportReason.entries
+        val reasonNames = arrayOf(
+            getString(R.string.report_reason_soliciting),
+            getString(R.string.report_reason_account_type),
+            getString(R.string.report_reason_nsfw),
+            getString(R.string.report_reason_user_abuse)
+        )
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.report_post)
+            .setItems(reasonNames) { _, which ->
+                val reason = reasons[which]
+                val accountId = accountRepository.getDefaultAccount()?.id ?: ""
+                PostWorker.enqueueReportPost(requireContext(), post.id, reason, accountId)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private fun showShareMenu(post: Post) {
@@ -267,6 +299,9 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 
     @Inject
     lateinit var voteUseCase: VoteUseCase
+
+    @Inject
+    lateinit var accountRepository: IAccountRepository
 
     private val glideRequest by lazy {
         Glide.with(this)

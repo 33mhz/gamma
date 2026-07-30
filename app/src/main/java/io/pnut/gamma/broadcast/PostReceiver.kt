@@ -13,6 +13,7 @@ class PostReceiver(private val listener: Callback) : BroadcastReceiver() {
         fun onStarReceive(post: Post)
         fun onRepostReceive(post: Post)
         fun onDeletePostReceive(post: Post)
+        fun onReportPostReceive()
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -23,6 +24,7 @@ class PostReceiver(private val listener: Callback) : BroadcastReceiver() {
             PostWorker.Actions.Star -> listener.onStarReceive(PostWorker.getPost(intent) ?: return)
             PostWorker.Actions.Repost -> listener.onRepostReceive(PostWorker.getPost(intent) ?: return)
             PostWorker.Actions.DeletePost -> listener.onDeletePostReceive(PostWorker.getPost(intent) ?: return)
+            PostWorker.Actions.ReportPost -> listener.onReportPostReceive()
         }
 
     }

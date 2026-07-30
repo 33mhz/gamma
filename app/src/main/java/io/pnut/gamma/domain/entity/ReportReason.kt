@@ -2,13 +2,13 @@ package io.pnut.gamma.domain.entity
 
 import com.squareup.moshi.Json
 
-enum class ReportReason {
+enum class ReportReason(val value: String) {
     @Json(name = "soliciting")
-    Soliciting,
+    Soliciting("soliciting"),
     @Json(name = "account_type")
-    AccountType,
+    AccountType("account_type"),
     @Json(name = "nsfw")
-    Nsfw,
+    Nsfw("nsfw"),
     @Json(name = "user_abuse")
-    UserAbuse
+    UserAbuse("user_abuse")
 }

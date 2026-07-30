@@ -26,6 +26,7 @@ import io.pnut.gamma.domain.model.params.composed.GetPostsParam
 import io.pnut.gamma.domain.model.params.composed.GetUsersParam
 import io.pnut.gamma.domain.model.params.single.PaginationParam
 import io.pnut.gamma.util.Constants
+import io.pnut.gamma.util.LogUtil
 import io.pnut.gamma.util.MoshiSingleton
 import io.pnut.gamma.util.await
 import io.pnut.gamma.util.bodyOrThrow
@@ -227,6 +228,21 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
 
     override fun deletePost(postId: String): PnutResponse<Post> {
         return defaultPnutService.deletePost(postId).execute().bodyOrThrow()
+    }
+
+    override fun reportPost(postId: String, reason: io.pnut.gamma.domain.entity.ReportReason): PnutResponse<Unit> {
+        val res = defaultPnutService.reportPost(postId, reason.value).execute()
+        if (res.isSuccessful) {
+            return PnutResponse(PnutResponse.Meta(res.code()), Unit)
+        }
+
+        val errorBody = res.errorBody()
+        if (errorBody != null) {
+            val json = errorBody.string()
+            LogUtil.e(json)
+            throw io.pnut.gamma.util.ErrorCollections.CommunicationError.create(json)
+        }
+        throw io.pnut.gamma.util.Constants.unknownErrorException()
     }
 
     override suspend fun getUserProfile(userId: String): PnutResponse<User> {

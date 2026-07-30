@@ -29,6 +29,7 @@ import io.pnut.gamma.domain.usecases.GetProfileUseCase
 import io.pnut.gamma.domain.usecases.GetUsersUseCase
 import io.pnut.gamma.domain.usecases.LogoutUseCase
 import io.pnut.gamma.domain.usecases.PostUseCase
+import io.pnut.gamma.domain.usecases.ReportPostUseCase
 import io.pnut.gamma.domain.usecases.RepostUseCase
 import io.pnut.gamma.domain.usecases.SetupTokenUseCase
 import io.pnut.gamma.domain.usecases.StarUseCase
@@ -147,6 +148,12 @@ object UseCaseModule {
     fun provideDeletePostUseCase(
         pnutRepository: IPnutRepository
     ): DeletePostUseCase = DeletePostUseCase(pnutRepository)
+
+    @Provides
+    fun provideReportPostUseCase(
+        pnutRepository: IPnutRepository,
+        accountRepository: IAccountRepository
+    ): ReportPostUseCase = ReportPostUseCase(pnutRepository, accountRepository)
 
     @Provides
     fun provideUpdateUserImageUseCase(

@@ -90,6 +90,13 @@
     <string name="star">Star</string>
     <string name="repost">Repost</string>
     <string name="unstar">Unstar</string>
+    <string name="report">Report</string>
+    <string name="report_post">Report post</string>
+    <string name="report_successful">Report successful</string>
+    <string name="report_reason_soliciting">Soliciting</string>
+    <string name="report_reason_account_type">Account Type</string>
+    <string name="report_reason_nsfw">NSFW</string>
+    <string name="report_reason_user_abuse">User Abuse</string>
     <string name="poll">Poll</string>
     <string name="spoiler">Spoiler</string>
     <string name="long_post">Long post</string>
@@ -117,7 +124,6 @@
     <string name="thread">Thread</string>
     <string name="set_as_nsfw">Set as NSFW</string>
     <string name="add_an_account">Add an account</string>
-    <string name="pref_account_header_title_key">pref_account_header_title_key</string>
     <string name="edit_image">Edit image</string>
     <string name="rotate_right">Rotate right</string>
     <string name="crop">Crop</string>
@@ -166,21 +172,10 @@
     <string name="advanced_options">Advanced options</string>
     <string name="revised">Revised</string>
     <string name="format_time">%1$tH:%1$tM:%1$tS</string>
-    <string name="pref_general_header_title_key">pref_general_header_title_key</string>
-    <string name="pref_license_key">pref_license_key</string>
-    <string name="license">License</string>
-    <string name="pref_header_general">General</string>
-    <string name="pref_version_key">pref_version_key</string>
-    <string name="gamma_version">Gamma version</string>
     <string name="cannot_load_file">Cannot load file</string>
     <string name="accounts">Accounts</string>
     <string name="account_not_found">Account not found</string>
     <string name="cannot_open_url">Cannot open URL.</string>
-    <string name="change_theme_color">Change theme color</string>
-    <string name="behavior_and_appearances">Behavior &amp; Appearances</string>
-    <string name="default_text">Default</string>
-    <string name="pref_dark_theme_key">pref_dark_theme_key2</string>
-    <string name="use_dark_theme">Use dark theme</string>
     <string name="communication_error">Communication error</string>
     <string name="post_not_bookmarked">Post not bookmarked.</string>
     <string name="no_repost_found_to_delete">No repost found to delete.</string>
@@ -190,46 +185,8 @@
     <string name="retry">Retry</string>
     <string name="end_of_list">End of list</string>
     <string name="load_more">Load more</string>
-    <string name="appearances">Appearances</string>
-    <string name="behavior">Behavior</string>
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
-    <string name="avatar_swipe">Avatar swipe</string>
-    <string name="avatar_swipe_desc">Control the post by swiping the post\'s avatar.</string>
-    <string name="avatar_swipe_key">avatar_swipe</string>
-    <string name="pref_stream_key">pref_stream</string>
-    <string name="pref_stream_title">Stream</string>
-    <string name="pref_loading">Loading</string>
-    <string name="pref_loading_size_key">loading_size</string>
-    <string name="pref_loading_size">Loading size</string>
-    <string name="pref_loading_size_desc">The count of items to be loaded.</string>
-    <string name="pref_auto_pager">Threshold of auto pager</string>
-    <string name="pref_auto_pager_key">auto_pager</string>
-    <string name="pref_auto_pager_desc">It will autoload when the count from last
-        viewing item below the configured number. Disable when set to 0.</string>
-    <string name="each_stream">Each stream and other lists</string>
-    <string name="pref_use_unified_stream_key">use_unified_stream</string>
-    <string name="pref_use_unified_stream_summary_on">Include mentions in personal stream.</string>
-    <string name="pref_use_unified_stream_summary_off">Do not include mentions in personal stream.</string>
-    <string name="pref_use_unified_stream_title">Use unified stream</string>
-    <string name="pref_shape_of_avatar_title">Avatar shape</string>
-    <string name="pref_shape_of_avatar_key">shape_of_avatar</string>
-    <string name="pref_shape_of_avatar_key_default_value">0</string>
-    <string name="cache">Cache</string>
-    <string name="pref_cache_title">Enable cache(Experimental)</string>
-    <string name="pref_cache_key">cache</string>
-    <string name="pref_cache_summary">Store list data every time fetch, and restore and show  next time.</string>
-    <string name="pref_cache_size_key">cache_size</string>
-    <string name="pref_cache_size_title">Cache size</string>
-    <string name="pref_cache_size_desc">Specify cache size(count of each list item). It will store all items when set 0.</string>
-    <string name="pref_clear_stream_cache_title">Clear cache</string>
-    <string name="pref_clear_stream_cache_key">clear_cache</string>
-    <string name="cache_cleared">Cache cleared.</string>
-    <string name="pref_clear_glide_cache_key">clear_glide_cache</string>
-    <string name="pref_clear_glide_cache_title">Clear image cache</string>
-    <string name="pref_include_directed_posts_key">include_directed_posts</string>
-    <string name="pref_include_directed_posts_title">Include directed posts</string>
-    <string name="pref_include_directed_posts_summary">Works only in personal(unified) stream.</string>
     <string name="choice_template">Choice %d</string>
     <string name="add_choice">Add a choice</string>
     <string name="poll_prompt">Prompt(Optional)</string>
@@ -271,6 +228,21 @@
         <item quantity="one">%d min</item>
         <item quantity="other">%d\ minutes</item>
     </plurals>
+    <string name="shared_element_compose">shared_element_compose</string>
+    <string name="shared_element_edit_profile">shared_element_edit_profile</string>
+    <string name="button_text_compose">Compose</string>
+    <string name="button_upload_file">Upload file</string>
+    <string name="uploading_images">Uploading images…</string>
+    <string name="creating_poll">Creating poll…</string>
+    <string name="creating_post">Creating post…</string>
+
+    <!-- Settings -->
+    <string name="pref_account_header_title_key">pref_account_header_title_key</string>
+    <string name="appearances">Appearances</string>
+    <string name="behavior">Behavior</string>
+    <string name="avatar_swipe">Avatar swipe</string>
+    <string name="avatar_swipe_desc">Control the post by swiping the post\'s avatar.</string>
+    <string name="avatar_swipe_key">avatar_swipe</string>
     <string-array name="dark_mode">
         <item>Follow system</item>
         <item>Always off</item>
@@ -283,11 +255,50 @@
         <item>2</item>
         <item>3</item>
     </string-array>
-    <string name="shared_element_compose">shared_element_compose</string>
-    <string name="shared_element_edit_profile">shared_element_edit_profile</string>
-    <string name="button_text_compose">Compose</string>
-    <string name="button_upload_file">Upload file</string>
-    <string name="uploading_images">Uploading images…</string>
-    <string name="creating_poll">Creating poll…</string>
-    <string name="creating_post">Creating post…</string>
+    <string name="change_theme_color">Change theme color</string>
+    <string name="default_text">Default</string>
+    <string name="pref_dark_theme_key">pref_dark_theme_key2</string>
+    <string name="use_dark_theme">Use dark theme</string>
+    <string name="pref_loading">Loading</string>
+    <string name="pref_loading_size_key">loading_size</string>
+    <string name="pref_loading_size">Loading size</string>
+    <string name="pref_loading_size_desc">The count of items to be loaded.</string>
+    <string name="pref_auto_pager">Threshold of auto pager</string>
+    <string name="pref_auto_pager_key">auto_pager</string>
+    <string name="pref_auto_pager_desc">It will autoload when the count from last
+        viewing item below the configured number. Disable when set to 0.</string>
+    <string name="each_stream">Each stream and other lists</string>
+    <string name="pref_use_unified_stream_key">use_unified_stream</string>
+    <string name="pref_use_unified_stream_summary_on">Include mentions in personal stream.</string>
+    <string name="pref_use_unified_stream_summary_off">Do not include mentions in personal stream.</string>
+    <string name="pref_use_unified_stream_title">Use unified stream</string>
+    <string name="pref_shape_of_avatar_title">Avatar shape</string>
+    <string name="pref_shape_of_avatar_key">shape_of_avatar</string>
+    <string name="pref_shape_of_avatar_key_default_value">0</string>
+    <string name="cache">Cache</string>
+    <string name="pref_cache_title">Enable cache(Experimental)</string>
+    <string name="pref_cache_key">cache</string>
+    <string name="pref_cache_summary">Store list data every time fetch, and restore and show  next time.</string>
+    <string name="pref_cache_size_key">cache_size</string>
+    <string name="pref_cache_size_title">Cache size</string>
+    <string name="pref_cache_size_desc">Specify cache size(count of each list item). It will store all items when set 0.</string>
+    <string name="pref_clear_stream_cache_title">Clear cache</string>
+    <string name="pref_clear_stream_cache_key">clear_cache</string>
+    <string name="cache_cleared">Cache cleared.</string>
+    <string name="pref_clear_glide_cache_key">clear_glide_cache</string>
+    <string name="pref_clear_glide_cache_title">Clear image cache</string>
+    <string name="pref_include_directed_posts_key">include_directed_posts</string>
+    <string name="pref_include_directed_posts_title">Include directed posts</string>
+    <string name="pref_include_directed_posts_summary">Works only in personal(unified) stream.</string>
+    <string name="pref_stream_key">pref_stream</string>
+    <string name="pref_stream_title">Stream</string>
+    <string name="pref_general_header_title_key">pref_general_header_title_key</string>
+    <string name="pref_license_key">pref_license_key</string>
+    <string name="pref_header_general">General</string>
+    <string name="pref_version_key">pref_version_key</string>
+    <string name="behavior_and_appearances">Behavior &amp; Appearances</string>
+    <string name="gamma_version">Gamma version</string>
+    <string name="license">License</string>
+    <string name="child_safety_standards">Child Safety Standards</string>
+    <string name="privacy_policy">Privacy Policy</string>
 </resources>

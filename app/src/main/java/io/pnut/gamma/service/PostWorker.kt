@@ -19,12 +19,14 @@ import io.pnut.gamma.domain.entity.raw.replacement.PostPoll
 import io.pnut.gamma.domain.model.io.CreatePollInputData
 import io.pnut.gamma.domain.model.io.DeletePostInputData
 import io.pnut.gamma.domain.model.io.PostInputData
+import io.pnut.gamma.domain.model.io.ReportPostInputData
 import io.pnut.gamma.domain.model.io.RepostInputData
 import io.pnut.gamma.domain.model.io.StarInputData
 import io.pnut.gamma.domain.model.io.UploadFileInputData
 import io.pnut.gamma.domain.usecases.CreatePollUseCase
 import io.pnut.gamma.domain.usecases.DeletePostUseCase
 import io.pnut.gamma.domain.usecases.PostUseCase
+import io.pnut.gamma.domain.usecases.ReportPostUseCase
 import io.pnut.gamma.domain.usecases.RepostUseCase
 import io.pnut.gamma.domain.usecases.StarUseCase
 import io.pnut.gamma.domain.usecases.UploadFileUseCase
@@ -44,11 +46,12 @@ class PostWorker @AssistedInject constructor(
     private val repostUseCase: RepostUseCase,
     private val uploadFileUseCase: UploadFileUseCase,
     private val deletePostUseCase: DeletePostUseCase,
+    private val reportPostUseCase: ReportPostUseCase,
     private val createPollUseCase: CreatePollUseCase
 ) : CoroutineWorker(context, params) {
 
     enum class Actions {
-        SendPost, Star, Repost, DeletePost;
+        SendPost, Star, Repost, DeletePost, ReportPost;
 
         fun getActionName() = "$actionPrefix.$name"
 
@@ -63,7 +66,7 @@ class PostWorker @AssistedInject constructor(
         }
     }
 
-    private enum class IntentKey { PostBody, PostId, NewState }
+    private enum class IntentKey { PostBody, PostId, NewState, ReportReason, AccountId }
     enum class ResultIntentKey { Post }
 
     override suspend fun doWork(): Result {
@@ -155,6 +158,16 @@ class PostWorker @AssistedInject constructor(
                     )
                 }
             }
+            Actions.ReportPost.getActionName() -> {
+                val postId = inputData.getString(IntentKey.PostId.name) ?: return Result.failure()
+                val reasonString = inputData.getString(IntentKey.ReportReason.name) ?: return Result.failure()
+                val accountId = inputData.getString(IntentKey.AccountId.name) ?: return Result.failure()
+                val reason = io.pnut.gamma.domain.entity.ReportReason.valueOf(reasonString)
+                runCatching {
+                    reportPostUseCase.run(ReportPostInputData(postId, reason, accountId))
+                    createResultIntent(action)
+                }
+            }
             else -> return Result.failure()
         }
         
@@ -234,6 +247,19 @@ class PostWorker @AssistedInject constructor(
             val data = Data.Builder()
                 .putString(ACTION_KEY, Actions.DeletePost.getActionName())
                 .putString(IntentKey.PostId.name, postId)
+                .build()
+            val request = OneTimeWorkRequestBuilder<PostWorker>()
+                .setInputData(data)
+                .build()
+            WorkManager.getInstance(context).enqueue(request)
+        }
+
+        fun enqueueReportPost(context: Context, postId: String, reason: io.pnut.gamma.domain.entity.ReportReason, accountId: String) {
+            val data = Data.Builder()
+                .putString(ACTION_KEY, Actions.ReportPost.getActionName())
+                .putString(IntentKey.PostId.name, postId)
+                .putString(IntentKey.ReportReason.name, reason.name)
+                .putString(IntentKey.AccountId.name, accountId)
                 .build()
             val request = OneTimeWorkRequestBuilder<PostWorker>()
                 .setInputData(data)
