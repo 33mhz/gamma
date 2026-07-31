@@ -184,7 +184,8 @@ interface PnutService {
     @GET("users/me/channels/existing_pm")
     fun getExistingPm(@Query("ids") ids: IDs): Call<PnutResponse<Channel>>
 
-    @GET("users/me/channels/num_unread/pm")
+    // TODO: "returns {"io.pnut.core.pm": 0}"
+    @GET("users/me/channels/num_unread?channel_types=io.pnut.core.pm")
     fun getUnreadPmCount(): Call<PnutResponse<Int>>
 
     @GET("users/me/channels/subscribed")

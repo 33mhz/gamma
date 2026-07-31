@@ -21,6 +21,7 @@ import io.pnut.gamma.presentation.adapter.MessageViewHolder
 import io.pnut.gamma.presentation.util.BindingUtil
 import io.pnut.gamma.presentation.util.DateUtil
 import io.pnut.gamma.presentation.util.EntityOnTouchListener
+import io.pnut.gamma.presentation.util.FragmentHelper
 import io.pnut.gamma.presentation.util.SmoothScroller
 import javax.inject.Inject
 
@@ -78,7 +79,12 @@ class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder>(),
         item.user?.let { user ->
             viewHolder.screenNameTextView.text = user.name
             viewHolder.handleNameTextView.text = viewHolder.itemView.context.getString(R.string.user_name_format, user.username)
-            BindingUtil.glideAvatarSrc(viewHolder.avatarImageView, User.getAvatarUrl(user, User.AvatarSize.Small))
+            val avatarUrl = User.getAvatarUrl(user, User.AvatarSize.Small)
+            BindingUtil.glideAvatarSrc(viewHolder.avatarImageView, avatarUrl)
+            viewHolder.avatarImageView.setOnClickListener {
+                val fragment = ProfileFragment.newInstance(user.id, avatarUrl, user)
+                FragmentHelper.addFragment(requireContext(), fragment, user.id)
+            }
         }
         viewHolder.bodyTextView.text = item.content?.getSpannableStringBuilder(viewHolder.itemView.context)
         viewHolder.relativeTimeTextView.text = DateUtil.getShortDateStr(viewHolder.itemView.context, item.createdAt)

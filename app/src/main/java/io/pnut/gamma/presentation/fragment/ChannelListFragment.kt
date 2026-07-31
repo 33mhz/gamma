@@ -95,9 +95,14 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
         viewHolder.binding.screenNameTextView.text = chatSettings?.name ?: (item.user?.username ?: "Channel ${item.id}")
         
         val user = item.recentMessage?.user ?: item.user
-        user?.let {
-            viewHolder.binding.handleNameTextView.text = viewHolder.itemView.context.getString(R.string.user_name_format, it.username)
-            BindingUtil.glideAvatarSrc(viewHolder.binding.avatarImageView, User.getAvatarUrl(it, User.AvatarSize.Small))
+        user?.let { u ->
+            viewHolder.binding.handleNameTextView.text = viewHolder.itemView.context.getString(R.string.user_name_format, u.username)
+            val avatarUrl = User.getAvatarUrl(u, User.AvatarSize.Small)
+            BindingUtil.glideAvatarSrc(viewHolder.binding.avatarImageView, avatarUrl)
+            viewHolder.binding.avatarImageView.setOnClickListener {
+                val fragment = ProfileFragment.newInstance(u.id, avatarUrl, u)
+                FragmentHelper.addFragment(requireContext(), fragment, u.id)
+            }
         }
 
         viewHolder.binding.bodyTextView.text = item.recentMessage?.content?.getSpannableStringBuilder(viewHolder.itemView.context)
