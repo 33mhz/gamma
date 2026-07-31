@@ -10,12 +10,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.presentation.util.ThemeColorUtil
+import android.os.Build
 
 @AndroidEntryPoint
 class ShareActivity : AppCompatActivity() {
     override fun finish() {
         super.finish()
-        overridePendingTransition(0, 0)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
+        } else {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(0, 0)
+        }
     }
 
     private val text by lazy {

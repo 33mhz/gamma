@@ -57,6 +57,7 @@ import javax.inject.Inject
 import androidx.core.view.size
 import androidx.core.view.get
 import io.pnut.gamma.presentation.util.FragmentHelper
+import android.os.Build
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callback,
@@ -78,7 +79,13 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         updateDefaultAccountUseCase.run(UpdateDefaultAccountInputData(account.id))
         val restartIntent = Intent(this, MainActivity::class.java)
         finish()
-        overridePendingTransition(R.anim.scale_up, R.anim.scale_down)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, R.anim.scale_up, R.anim.scale_down)
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, R.anim.scale_up, R.anim.scale_down)
+        } else {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(R.anim.scale_up, R.anim.scale_down)
+        }
         startActivity(restartIntent)
     }
 
