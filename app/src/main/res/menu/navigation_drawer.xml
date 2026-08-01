@@ -15,6 +15,10 @@
                     android:checkableBehavior="single"
                     android:orderInCategory="100">
                     <item
+                        android:id="@+id/global"
+                        android:icon="@drawable/ic_public_black_24dp"
+                        android:title="@string/global" />
+                    <item
                         android:id="@+id/conversations"
                         android:icon="@drawable/ic_forum_black_24dp"
                         android:title="@string/conversations" />
@@ -34,10 +38,6 @@
                         android:id="@+id/trending"
                         android:icon="@drawable/ic_trending_up_black_24dp"
                         android:title="@string/trending" />
-                    <item
-                        android:id="@+id/global"
-                        android:icon="@drawable/ic_public_black_24dp"
-                        android:title="@string/global" />
                 </group>
             </menu>
         </item>
