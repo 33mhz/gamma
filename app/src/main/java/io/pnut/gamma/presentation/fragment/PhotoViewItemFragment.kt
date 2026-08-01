@@ -22,6 +22,7 @@ import io.pnut.gamma.databinding.FragmentPhotoViewItemBinding
 import io.pnut.gamma.domain.model.ThumbAndFull
 import com.bumptech.glide.Glide
 import androidx.core.graphics.createBitmap
+import io.pnut.gamma.presentation.activity.PhotoViewActivity
 
 
 class PhotoViewItemFragment : Fragment() {
@@ -97,6 +98,10 @@ class PhotoViewItemFragment : Fragment() {
                     return false
                 }
             }).into(binding.photoView)
+
+        binding.photoView.setOnViewTapListener { _, _, _ ->
+            (activity as? PhotoViewActivity)?.toggleUI()
+        }
     }
 
     private enum class BundleKey { Path, SharedElementTarget }

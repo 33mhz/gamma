@@ -7,7 +7,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Pair
 import android.view.View
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.core.app.SharedElementCallback
 import androidx.core.content.IntentCompat
 import androidx.fragment.app.Fragment
@@ -16,7 +19,9 @@ import com.google.android.material.tabs.TabLayoutMediator
 import io.pnut.gamma.domain.model.ThumbAndFull
 import io.pnut.gamma.presentation.fragment.PhotoViewItemFragment
 import io.pnut.gamma.R
+import androidx.core.view.isVisible
 import io.pnut.gamma.databinding.ActivityPhotoViewBinding
+import io.pnut.gamma.util.AppUtil
 
 
 class PhotoViewActivity : BaseActivity() {
@@ -113,6 +118,33 @@ class PhotoViewActivity : BaseActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.photo_view, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_open_browser -> {
+                val url = photos?.get(binding.mediaViewPager.currentItem)?.full ?: return true
+                AppUtil.openUrl(this, url)
+                return true
+            }
+            R.id.menu_copy_url -> {
+                val url = photos?.get(binding.mediaViewPager.currentItem)?.full ?: return true
+                AppUtil.copyToClipboard(this, url)
+                Toast.makeText(this, R.string.copy_url, Toast.LENGTH_SHORT).show()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
+    fun toggleUI() {
+        binding.toolbar.isVisible = !binding.toolbar.isVisible
+        binding.mediaviewPagerIndicator.isVisible = !binding.mediaviewPagerIndicator.isVisible
+    }
 
     private fun setupAnimation() {
         setEnterSharedElementCallback(object : SharedElementCallback() {

@@ -238,6 +238,9 @@
     <string name="creating_post">Creating post…</string>
     <string name="creating_message">Creating message…</string>
 
+    <string name="open_in_browser">Open in browser</string>
+    <string name="copy_url">Copy URL</string>
+
     <!-- Settings -->
     <string name="pref_account_header_title_key">pref_account_header_title_key</string>
     <string name="appearances">Appearances</string>
