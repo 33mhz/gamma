@@ -27,8 +27,7 @@ data class File(
   val source: Client,
   val type: String,
   @Json(name = "upload_parameters") val uploadParameters: UploadParameters? = null,
-//    TODO: implement derivativeFiles
-//    val derivativeFiles: List<DerivativeFiles>,
+  @Json(name = "derived_files") val derivativeFiles: DerivativeFiles? = null,
   val user: User? = null,
   @Json(name = "pagination_id") override val paginationId: String? = null
 ) : UniquePageable, Parcelable {
@@ -39,7 +38,10 @@ data class File(
     data class UploadParameters(val method: String, val url: String) : Parcelable
 
     enum class FileKind {
-        @Json(name = "audio") AUDIO, @Json(name = "image") IMAGE, @Json(name = "other") OTHER
+        @Json(name = "audio")
+        AUDIO, @Json(name = "image")
+        IMAGE, @Json(name = "other")
+        OTHER
     }
 
     @Parcelize
@@ -51,5 +53,22 @@ data class File(
         val bitrate: Int
     ) : Parcelable
 
-}
+    @Parcelize
+    data class DerivedFile(
+        @Json(name = "audio_info") val audioInfo: AudioInfo? = null,
+        @Json(name = "image_info") val imageInfo: ImageInfo? = null,
+        @Json(name = "mime_type") val mimeType: String,
+        val name: String,
+        val sha256: String,
+        val size: Int,
+        val url: String,
+        @Json(name = "url_expires_at") val linkExpiresAt: Date,
+    ) : Parcelable
 
+    @Parcelize
+    data class DerivativeFiles(
+        @Json(name = "core_image_200s") val coreImage200s: DerivedFile? = null,
+        @Json(name = "core_image_600s") val coreimage600s: DerivedFile? = null,
+        @Json(name = "core_image_960r") val coreImage960r: DerivedFile? = null
+    ) : Parcelable
+}
