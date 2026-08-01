@@ -290,6 +290,10 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     }
 
     private fun setupBottomAppBar() {
+        binding.bottomAppBar.menu.findItem(R.id.menuSearch)?.actionView?.setOnClickListener {
+            showSearchFragment()
+        }
+
         binding.bottomAppBar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.menuSearch -> {

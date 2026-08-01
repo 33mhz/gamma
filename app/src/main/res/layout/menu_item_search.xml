@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/buttonSearch"
+    android:layout_width="56dp"
+    android:layout_height="56dp"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:contentDescription="@string/search"
+    android:padding="16dp"
+    android:scaleType="fitCenter"
+    android:src="@drawable/ic_search_24dp"
+    app:tint="@color/toolbarIcon" />
