@@ -75,6 +75,7 @@
     <string name="posts">Posts</string>
     <string name="favorites">Favorites</string>
     <string name="send_a_message">Send a Message</string>
+    <string name="send">Send</string>
     <string name="block">Block</string>
     <string name="mute">Mute</string>
     <string name="share">Share</string>
@@ -235,6 +236,7 @@
     <string name="uploading_images">Uploading images…</string>
     <string name="creating_poll">Creating poll…</string>
     <string name="creating_post">Creating post…</string>
+    <string name="creating_message">Creating message…</string>
 
     <!-- Settings -->
     <string name="pref_account_header_title_key">pref_account_header_title_key</string>

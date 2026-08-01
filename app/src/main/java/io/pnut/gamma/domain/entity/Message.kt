@@ -20,13 +20,24 @@ data class Message(
     @Json(name = "reply_to") val replyTo: String? = null,
     @Json(name = "thread_id") val threadId: String,
     val user: User?,
-    @Json(name = "user_id") val userId: String? = null,
+    @Json(name = "user_id") val rawUserId: String? = null,
     val content: BaseContent?,
     @Json(name = "pagination_id") override var paginationId: String? = null
 
 ) : Parcelable, UniquePageable {
     @IgnoredOnParcel
     override val uniqueKey by lazy { id }
+
+    @IgnoredOnParcel
+    val userId: String? get() = user?.id ?: rawUserId
+    @IgnoredOnParcel
+    val username: String? get() = user?.username
+    @IgnoredOnParcel
+    val name: String? get() = user?.name
+    @IgnoredOnParcel
+    val text: String? get() = content?.text
+    @IgnoredOnParcel
+    val avatarUrl: String? get() = user?.content?.avatarImage?.url
 
     @Parcelize
     @JsonClass(generateAdapter = true)

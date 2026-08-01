@@ -1,60 +1,48 @@
 package io.pnut.gamma.presentation.fragment
 
-
-import android.R as Rr
-import io.pnut.gamma.R
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.core.os.BundleCompat
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.Fragment
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.fragment.app.setFragmentResultListener
+import androidx.core.os.BundleCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
-import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.bumptech.glide.Glide
+import dagger.hilt.android.AndroidEntryPoint
+import io.pnut.gamma.R
 import io.pnut.gamma.databinding.ComposeThumbnailImageBinding
 import io.pnut.gamma.databinding.FragmentComposePostBinding
-import io.pnut.gamma.domain.entity.Post
+import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.entity.PostBody
-import io.pnut.gamma.domain.entity.PollPostBody
 import io.pnut.gamma.domain.entity.User
-import io.pnut.gamma.domain.entity.raw.LongPost
 import io.pnut.gamma.domain.entity.raw.OEmbed
-import io.pnut.gamma.domain.entity.raw.PollNotice
 import io.pnut.gamma.domain.entity.raw.RawValue
-import io.pnut.gamma.domain.entity.raw.Spoiler
-import io.pnut.gamma.domain.entity.raw.replacement.PostPoll
 import io.pnut.gamma.domain.model.Account
 import io.pnut.gamma.domain.model.UriInfo
+import io.pnut.gamma.domain.model.io.CreateMessageInputData
 import io.pnut.gamma.domain.model.io.CreatePollInputData
-import io.pnut.gamma.domain.model.io.PostInputData
 import io.pnut.gamma.domain.model.io.UploadFileInputData
-import io.pnut.gamma.domain.usecases.CreatePollUseCase
+import io.pnut.gamma.domain.usecases.CreateMessageUseCase
 import io.pnut.gamma.domain.usecases.GetAccountListUseCase
 import io.pnut.gamma.domain.usecases.GetCurrentAccountUseCase
-import io.pnut.gamma.domain.usecases.PostUseCase
 import io.pnut.gamma.domain.usecases.UploadFileUseCase
 import io.pnut.gamma.presentation.activity.EditPhotoActivity
 import io.pnut.gamma.presentation.util.AnimationCallback
@@ -62,20 +50,27 @@ import io.pnut.gamma.presentation.util.BackPressedHookable
 import io.pnut.gamma.presentation.util.BindingUtil
 import io.pnut.gamma.presentation.util.DateUtil
 import io.pnut.gamma.presentation.util.Util
-import io.pnut.gamma.service.PostWorker
 import io.pnut.gamma.util.Constants
 import io.pnut.gamma.util.ErrorCollections
 import io.pnut.gamma.util.LogUtil
 import io.pnut.gamma.util.SingleLiveEvent
+import io.pnut.gamma.domain.entity.PollPostBody
+import io.pnut.gamma.domain.entity.raw.LongPost
+import io.pnut.gamma.domain.entity.raw.PollNotice
+import io.pnut.gamma.domain.entity.raw.Spoiler
+import io.pnut.gamma.domain.entity.raw.replacement.PostPoll
+import io.pnut.gamma.domain.usecases.CreatePollUseCase
 import io.pnut.gamma.util.observeOnce
 import io.pnut.gamma.util.showAsError
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.ArrayList
 import java.util.Date
 import javax.inject.Inject
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ComposePostFragment : BaseFragment(),
+class ComposeMessageFragment : BaseFragment(),
     AnimationCallback,
     BackPressedHookable, ComposeLongPostFragment.Callback, SpoilerDialogFragment.Callback,
     ChangeAccountDialogFragment.Callback, ComposePollFragment.Callback {
@@ -85,19 +80,18 @@ class ComposePostFragment : BaseFragment(),
         updatePollMenuItem()
     }
 
-    override fun changeAccount(account: Account) {
-        viewModel.currentUserIdLiveData.value = account.id
-    }
-
     override fun onUpdateLongPost(longPost: LongPost?) {
         viewModel.longPost = longPost
         updateLongPostMenuItem()
     }
 
-
     override fun onUpdateSpoiler(spoiler: Spoiler?) {
         viewModel.spoiler = spoiler
         updateSpoilerMenuItem()
+    }
+
+    override fun changeAccount(account: Account) {
+        viewModel.currentUserIdLiveData.value = account.id
     }
 
     override fun onAnimationEnd(open: Boolean) {
@@ -122,7 +116,7 @@ class ComposePostFragment : BaseFragment(),
     }
 
     private enum class BundleKey {
-        ReplyTarget, InitialText, InitialPhoto
+        ChannelId, ReplyTarget, InitialText, InitialPhoto
     }
 
     private enum class DialogKey {
@@ -143,13 +137,12 @@ class ComposePostFragment : BaseFragment(),
         val ft = childFragmentManager.beginTransaction()
         if (it) {
             ft
-                .setCustomAnimations(Rr.anim.fade_in, Rr.anim.fade_out)
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.pollLayout, ComposePollFragment.newInstance())
         } else {
             pollFragment?.let { ft.remove(it) }
         }
         ft.commit()
-
     }
 
     private var listener: Callback? = null
@@ -197,6 +190,17 @@ class ComposePostFragment : BaseFragment(),
         Util.setTintForCheckableMenuItem(requireContext(), nsfwMenuItem)
     }
 
+    private fun updatePollMenuItem() {
+        val pollMenuItem = findMenuItemWithinLeftMenu(R.id.menuPoll) ?: return
+        pollMenuItem.isChecked = viewModel.enablePoll.value == true
+        Util.setTintForCheckableMenuItem(requireContext(), pollMenuItem)
+    }
+
+    private fun updateSpoilerMenuItem() {
+        val spoilerMenuItem = findMenuItemWithinLeftMenu(R.id.menuSpoiler) ?: return
+        spoilerMenuItem.isChecked = viewModel.spoiler != null
+        Util.setTintForCheckableMenuItem(requireContext(), spoilerMenuItem)
+    }
 
     private fun syncMenuState() {
         updateSendMenuItem()
@@ -212,35 +216,28 @@ class ComposePostFragment : BaseFragment(),
         Util.setTintForCheckableMenuItem(requireContext(), longPostMenuItem)
     }
 
-    private fun updatePollMenuItem() {
-        val pollMenuItem = findMenuItemWithinLeftMenu(R.id.menuPoll) ?: return
-        pollMenuItem.isChecked = viewModel.enablePoll.value == true
-        Util.setTintForCheckableMenuItem(requireContext(), pollMenuItem)
-    }
-
-    private fun updateSpoilerMenuItem() {
-        val spoilerMenuItem = findMenuItemWithinLeftMenu(R.id.menuSpoiler) ?: return
-        spoilerMenuItem.isChecked = viewModel.spoiler != null
-        Util.setTintForCheckableMenuItem(requireContext(), spoilerMenuItem)
-    }
-
-    private val viewModel: ComposePostViewModel by lazy {
+    private val viewModel: ComposeMessageViewModel by lazy {
         ViewModelProvider(
             this,
-            ComposePostViewModel.Factory(
+            ComposeMessageViewModel.Factory(
+                channelId,
                 replyTarget,
                 mentionToMyself,
                 initialText,
                 currentUserId,
                 uploadFileUseCase,
-                postUseCase,
+                createMessageUseCase,
                 createPollUseCase,
             )
-        )[ComposePostViewModel::class.java]
+        )[ComposeMessageViewModel::class.java]
     }
 
-    private val replyTarget: Post? by lazy {
-        arguments?.let { BundleCompat.getParcelable(it, BundleKey.ReplyTarget.name, Post::class.java) }
+    private val channelId: String by lazy {
+        arguments?.getString(BundleKey.ChannelId.name).orEmpty()
+    }
+
+    private val replyTarget: Message? by lazy {
+        arguments?.let { BundleCompat.getParcelable(it, BundleKey.ReplyTarget.name, Message::class.java) }
     }
 
     private var _binding: FragmentComposePostBinding? = null
@@ -255,7 +252,7 @@ class ComposePostFragment : BaseFragment(),
     lateinit var uploadFileUseCase: UploadFileUseCase
 
     @Inject
-    lateinit var postUseCase: PostUseCase
+    lateinit var createMessageUseCase: CreateMessageUseCase
 
     @Inject
     lateinit var createPollUseCase: CreatePollUseCase
@@ -323,7 +320,7 @@ class ComposePostFragment : BaseFragment(),
         }
 
     private fun send() {
-        viewModel.sendPost(requireContext(), adapter.getItems(), pollPostBody)
+        viewModel.sendMessage(requireContext(), adapter.getItems(), pollPostBody)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -463,7 +460,7 @@ class ComposePostFragment : BaseFragment(),
             if (replyTarget != null)
                 getString(R.string.compose_reply_title_template, replyTarget?.username)
             else
-                getString(R.string.compose_post)
+                getString(R.string.send_a_message)
         binding.toolbar.setOnMenuItemClickListener(::onMenuItemClick)
         binding.toolbar.setNavigationOnClickListener {
             cancelToCompose()
@@ -478,7 +475,7 @@ class ComposePostFragment : BaseFragment(),
     private fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.home -> cancelToCompose()
-            R.id.menuInsertPhoto -> pickMultipleMediaLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+            R.id.menuInsertPhoto -> pickMultipleMediaLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             R.id.menuNsfw -> toggleNSFW(item)
             R.id.menuPost -> send()
             R.id.menuLongPost -> composeLongPost()
@@ -541,7 +538,7 @@ class ComposePostFragment : BaseFragment(),
         private val items: MutableList<UriInfo> = mutableListOf(),
         private val listener: Callback
     ) :
-        RecyclerView.Adapter<ThumbnailAdapter.ViewHolder>() {
+        androidx.recyclerview.widget.RecyclerView.Adapter<ThumbnailAdapter.ViewHolder>() {
         interface Callback {
             fun onRemove()
             fun onClick(uri: Uri, index: Int)
@@ -576,12 +573,6 @@ class ComposePostFragment : BaseFragment(),
             notifyItemRemoved(index)
         }
 
-        fun addAll(uriList: List<UriInfo>) {
-            items.addAll(uriList)
-            listener.updateList(items)
-            notifyItemRangeInserted(0, uriList.size)
-        }
-
         fun add(uriInfo: UriInfo) {
             val index = items.size
             items.add(index, uriInfo)
@@ -597,7 +588,7 @@ class ComposePostFragment : BaseFragment(),
 
         fun getItems() = items
 
-        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        class ViewHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
             val binding = ComposeThumbnailImageBinding.bind(view)
         }
     }
@@ -609,13 +600,14 @@ class ComposePostFragment : BaseFragment(),
     }
 
 
-    class ComposePostViewModel(
-        replyTargetArg: Post?,
+    class ComposeMessageViewModel(
+        private val channelId: String,
+        replyTargetArg: Message?,
         mentionToMyself: Boolean,
         initialText: String? = null,
         currentUserId: String,
         private val uploadFileUseCase: UploadFileUseCase,
-        private val postUseCase: PostUseCase,
+        private val createMessageUseCase: CreateMessageUseCase,
         private val createPollUseCase: CreatePollUseCase
     ) : ViewModel() {
         val event = SingleLiveEvent<Event>()
@@ -632,13 +624,13 @@ class ComposePostFragment : BaseFragment(),
         var media: List<UriInfo> = emptyList()
         var initialized: Boolean = false
         val nsfw = MutableLiveData<Boolean>().apply { value = false }
-        val replyTarget = MutableLiveData<Post>().apply { value = replyTargetArg }
+        val replyTarget = MutableLiveData<Message>().apply { value = replyTargetArg }
         val replyTargetVisibility: LiveData<Int> = replyTarget.map {
             if (it != null) View.VISIBLE else View.GONE
         }
         var longPost: LongPost? = null
         val text = MutableLiveData<String>().apply { value = "" }
-        val maxLength = Constants.MAX_POST_TEXT_LENGTH
+        val maxLength = Constants.MAX_MESSAGE_TEXT_LENGTH
         val counter: LiveData<Int> = text.map {
             val text = it ?: ""
             maxLength - text.codePointCount(0, text.length)
@@ -664,10 +656,9 @@ class ComposePostFragment : BaseFragment(),
 
         fun showAccountList() = event.emit((Event.ShowAccountList))
 
-        fun sendPost(context: Context, adapterItems: List<UriInfo>, pollPostBody: PollPostBody?) {
+        fun sendMessage(context: Context, adapterItems: List<UriInfo>, pollPostBody: PollPostBody?) {
             val text = text.value ?: return
             val isNsfw = nsfw.value ?: false
-            val currentUserId = currentUserIdLiveData.value ?: return
 
             viewModelScope.launch {
                 loading.value = true
@@ -717,14 +708,12 @@ class ComposePostFragment : BaseFragment(),
                         raw.getOrPut(OEmbed.TYPE) { mutableListOf() }.add(it)
                     }
 
-                    val modifiedPostBody = PostBody(text, replyTarget.value?.id, isNsfw = isNsfw, raw = raw.toMap())
+                    val messageBody = PostBody(text, replyTarget.value?.id, isNsfw = isNsfw, raw = raw.toMap())
                     
-                    status.value = context.getString(R.string.creating_post)
-                    val postOutputData = withContext(Dispatchers.IO) {
-                        postUseCase.run(PostInputData(modifiedPostBody, currentUserId))
+                    status.value = context.getString(R.string.creating_message)
+                    withContext(Dispatchers.IO) {
+                        createMessageUseCase.run(CreateMessageInputData(channelId, messageBody))
                     }
-                    val post = postOutputData.res.data
-                    PostWorker.sendResultBroadcast(context, PostWorker.Actions.SendPost, post)
                     
                     event.emit(Event.Success)
                 } catch (e: Exception) {
@@ -767,24 +756,26 @@ class ComposePostFragment : BaseFragment(),
         }
 
         class Factory(
-            private val replyTarget: Post?,
+            private val channelId: String,
+            private val replyTarget: Message?,
             private val mentionToMyself: Boolean,
             private val initialText: String? = null,
             private val currentUserId: String,
             private val uploadFileUseCase: UploadFileUseCase,
-            private val postUseCase: PostUseCase,
+            private val createMessageUseCase: CreateMessageUseCase,
             private val createPollUseCase: CreatePollUseCase
         ) :
             ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return ComposePostViewModel(
+                return ComposeMessageViewModel(
+                    channelId,
                     replyTarget,
                     mentionToMyself,
                     initialText,
                     currentUserId,
                     uploadFileUseCase,
-                    postUseCase,
+                    createMessageUseCase,
                     createPollUseCase
                 ) as T
             }
@@ -793,11 +784,13 @@ class ComposePostFragment : BaseFragment(),
 
     companion object {
         fun newInstance(
+            channelId: String,
             initialText: String? = null,
             initialPhoto: ArrayList<UriInfo>? = null,
-            replyTarget: Post? = null
-        ) = ComposePostFragment().apply {
+            replyTarget: Message? = null
+        ) = ComposeMessageFragment().apply {
             arguments = Bundle().apply {
+                putString(BundleKey.ChannelId.name, channelId)
                 putString(BundleKey.InitialText.name, initialText)
                 putParcelableArrayList(BundleKey.InitialPhoto.name, initialPhoto)
                 putParcelable(BundleKey.ReplyTarget.name, replyTarget)

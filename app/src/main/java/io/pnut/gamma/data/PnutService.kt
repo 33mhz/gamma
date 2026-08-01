@@ -8,13 +8,12 @@ import io.pnut.gamma.domain.entity.Interaction
 import io.pnut.gamma.domain.entity.InteractionFilter
 import io.pnut.gamma.domain.entity.Marker
 import io.pnut.gamma.domain.entity.Message
+import io.pnut.gamma.domain.entity.PostBody
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.Poll
 import io.pnut.gamma.domain.entity.PollPostBody
 import io.pnut.gamma.domain.entity.Post
-import io.pnut.gamma.domain.entity.PostBody
 import io.pnut.gamma.domain.entity.ProfileBody
-import io.pnut.gamma.domain.entity.ReportReason
 import io.pnut.gamma.domain.entity.Token
 import io.pnut.gamma.domain.entity.User
 import io.pnut.gamma.domain.entity.VoteBody
@@ -135,9 +134,6 @@ interface PnutService {
     @PUT("users/me")
     fun putMyProfile(@Body profileBody: ProfileBody): Call<PnutResponse<User>>
 
-    @PATCH("users/me")
-    fun patchMyProfile(@Body profileBody: ProfileBody): Call<PnutResponse<User>>
-
     @POST("users/me/avatar")
     @Multipart
     fun updateAvatar(@Part avatar: MultipartBody.Part): Call<PnutResponse<User>>
@@ -177,8 +173,18 @@ interface PnutService {
     @GET("channels/{channelId}")
     fun getChannel(@Path("channelId") channelId: String): Call<PnutResponse<Channel>>
 
-    @GET("channels/{channelId}/messages")
+    @GET("channels/{channelId}/messages?include_deleted=0")
     fun getChannelMessages(@Path("channelId") channelId: String, @QueryMap paging: Map<String, String>): Call<PnutResponse<List<Message>>>
+
+    @GET("channels/{channelId}/messages/{messageId}/thread?include_deleted=0")
+    fun getMessageThread(@Path("channelId") channelId: String, @Path("messageId") messageId: String): Call<PnutResponse<List<Message>>>
+
+    @POST("channels/{channelId}/messages?include_message_raw=1&update_marker=1")
+    fun createMessage(@Path("channelId") channelId: String, @Body message: PostBody): Call<PnutResponse<Message>>
+
+    @DELETE("channels/{channelId}/messages/{messageId}")
+    fun deleteMessage(@Path("channelId") channelId: String, @Path("messageId") messageId: String): Call<PnutResponse<Message>>
+
 
 
     @GET("users/me/channels/existing_pm")

@@ -303,6 +303,18 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         return defaultPnutService.getChannelMessages(channelId, paginationParam.toMap()).await()
     }
 
+    override suspend fun deleteMessage(channelId: String, messageId: String): PnutResponse<Message> {
+        return defaultPnutService.deleteMessage(channelId, messageId).await()
+    }
+
+    override suspend fun getMessageThread(channelId: String, messageId: String): PnutResponse<List<Message>> {
+        return defaultPnutService.getMessageThread(channelId, messageId).await()
+    }
+
+    override suspend fun createMessage(channelId: String, message: PostBody): PnutResponse<Message> {
+        return defaultPnutService.createMessage(channelId, message).await()
+    }
+
     override suspend fun getInteractions(getInteractionsParam: GetInteractionsParam): PnutResponse<List<Interaction>> {
         return defaultPnutService.getInteractions(getInteractionsParam.toMap()).await()
     }

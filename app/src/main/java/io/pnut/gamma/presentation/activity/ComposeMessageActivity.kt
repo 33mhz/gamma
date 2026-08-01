@@ -1,6 +1,5 @@
 package io.pnut.gamma.presentation.activity
 
-import io.pnut.gamma.R
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -13,24 +12,25 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.google.android.material.transition.platform.MaterialArcMotion
 import com.google.android.material.transition.platform.MaterialContainerTransform
 import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
-import io.pnut.gamma.presentation.fragment.ComposePostFragment
-import io.pnut.gamma.domain.entity.Post
+import io.pnut.gamma.R
+import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.model.UriInfo
-import io.pnut.gamma.presentation.util.Util
+import io.pnut.gamma.presentation.fragment.ComposeMessageFragment
 import io.pnut.gamma.presentation.util.BackPressedHookable
+import io.pnut.gamma.presentation.util.Util
 import androidx.core.content.IntentCompat
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
-    private val composePostFragment by lazy {
-        ComposePostFragment.newInstance(
+class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback {
+    private val composeMessageFragment by lazy {
+        ComposeMessageFragment.newInstance(
+            channelId = intent.getStringExtra(IntentKey.ChannelId.name).orEmpty(),
             initialText = intent.getStringExtra(IntentKey.InitialText.name),
             initialPhoto = IntentCompat.getParcelableArrayListExtra(intent, IntentKey.InitialPhoto.name, UriInfo::class.java),
-            replyTarget = IntentCompat.getParcelableExtra(intent, IntentKey.ReplyTarget.name, Post::class.java)
+            replyTarget = IntentCompat.getParcelableExtra(intent, IntentKey.ReplyTarget.name, Message::class.java)
         )
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +38,7 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
         setupAnimation()
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.compose_post_placeholder, composePostFragment).commit()
+                .replace(R.id.compose_post_placeholder, composeMessageFragment).commit()
         }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -53,7 +53,7 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
                     return
                 }
 
-                if (composePostFragment.cancelToCompose()) {
+                if (composeMessageFragment.cancelToCompose()) {
                     isEnabled = false
                     onBackPressedDispatcher.onBackPressed()
                 }
@@ -78,7 +78,7 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
             it.addTarget(android.R.id.content)
             it.duration = duration
             it.doOnEnd {
-                composePostFragment.focusToEditText()
+                composeMessageFragment.focusToEditText()
             }
         }
         window.sharedElementReturnTransition = MaterialContainerTransform().also {
@@ -93,16 +93,18 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
     }
 
     private enum class IntentKey {
-        InitialText, InitialPhoto, ReplyTarget
+        ChannelId, InitialText, InitialPhoto, ReplyTarget
     }
 
     companion object {
         fun newIntent(
             context: Context,
+            channelId: String,
             initialText: String? = null,
             initialPhoto: ArrayList<UriInfo>? = null,
-            replyTarget: Post? = null
-        ) = Intent(context, ComposePostActivity::class.java).also {
+            replyTarget: Message? = null
+        ) = Intent(context, ComposeMessageActivity::class.java).also {
+            it.putExtra(IntentKey.ChannelId.name, channelId)
             it.putExtra(IntentKey.InitialText.name, initialText)
             it.putExtra(IntentKey.InitialPhoto.name, initialPhoto)
             it.putExtra(IntentKey.ReplyTarget.name, replyTarget)
@@ -115,10 +117,6 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
             supportFinishAfterTransition()
         }
     }
-
-
-//    private val currentFragment
-//        get() = supportFragmentManager.findFragmentById(R.id.compose_post_placeholder)
 
     override fun addFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()

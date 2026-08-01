@@ -60,10 +60,9 @@ class ShareActivity : AppCompatActivity() {
 
     private val composePostFragment by lazy {
         ComposePostFragment.newInstance(
-            ComposePostFragment.ComposePostFragmentOption(
             initialText = text,
-            intentExtraDataList = intentExtraDataList
-        ))
+            initialPhoto = intentExtraDataList
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

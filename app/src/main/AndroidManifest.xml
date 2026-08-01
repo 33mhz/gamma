@@ -24,6 +24,10 @@
             android:theme="@style/FullScreenDialogStyle"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".presentation.activity.ComposeMessageActivity"
+            android:theme="@style/FullScreenDialogStyle"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".presentation.activity.ShareActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize"

@@ -33,6 +33,7 @@ data class Post(
     @Json(name = "you_bookmarked") var youBookmarked: Boolean? = null,
     @Json(name = "you_reposted") var youReposted: Boolean? = null,
     @Json(name = "pagination_id") override var paginationId: String? = null,
+    @Json(name = "user_id") val rawUserId: String? = null,
     @Json(name = "raw") var raw: Map<String, List<RawValue>>? = null,
     @Json(name = "bookmarked_by") val bookmarkedBy: List<User>? = null,
     @Json(name = "reposted_by") val repostedBy: List<User>? = null
@@ -66,6 +67,17 @@ data class Post(
             spoilerDate.time > Calendar.getInstance().time.time
         } ?: false
     }
+
+    @IgnoredOnParcel
+    val userId: String? get() = user?.id ?: rawUserId
+    @IgnoredOnParcel
+    val username: String? get() = user?.username
+    @IgnoredOnParcel
+    val name: String? get() = user?.name
+    @IgnoredOnParcel
+    val text: String? get() = content?.text
+    @IgnoredOnParcel
+    val avatarUrl: String? get() = user?.content?.avatarImage?.url
 
     @IgnoredOnParcel
     val reactionUsers: List<User> = mutableListOf<User>().let {

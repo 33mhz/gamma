@@ -687,7 +687,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
     }
 
     private fun showReplyCompose(view: View, item: Post) {
-        val intent = ComposePostActivity.newIntent(requireContext(), ComposePostFragment.ComposePostFragmentOption(post = item))
+        val intent = ComposePostActivity.newIntent(requireContext(), replyTarget = item)
         startActivity(intent)
     }
 

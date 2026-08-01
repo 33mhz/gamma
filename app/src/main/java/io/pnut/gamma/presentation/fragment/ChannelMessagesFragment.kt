@@ -12,10 +12,16 @@ import io.pnut.gamma.databinding.ListWithToolbarBinding
 import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.User
+import androidx.lifecycle.lifecycleScope
+import io.pnut.gamma.domain.model.Account
 import io.pnut.gamma.domain.model.PageableItemWrapper
+import io.pnut.gamma.presentation.activity.ComposeMessageActivity
 import io.pnut.gamma.domain.model.io.GetMessagesInputData
 import io.pnut.gamma.domain.model.params.single.PaginationParam
+import io.pnut.gamma.domain.repository.IAccountRepository
+import io.pnut.gamma.domain.usecases.DeleteMessageUseCase
 import io.pnut.gamma.domain.usecases.GetMessagesUseCase
+import io.pnut.gamma.presentation.activity.ComposePostActivity
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
 import io.pnut.gamma.presentation.adapter.MessageViewHolder
 import io.pnut.gamma.presentation.util.BindingUtil
@@ -23,15 +29,18 @@ import io.pnut.gamma.presentation.util.DateUtil
 import io.pnut.gamma.presentation.util.EntityOnTouchListener
 import io.pnut.gamma.presentation.util.FragmentHelper
 import io.pnut.gamma.presentation.util.SmoothScroller
+import io.pnut.gamma.util.LogUtil
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder>(),
-    BaseListRecyclerViewAdapter.IBaseList<Message, MessageViewHolder> {
+open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder>(),
+    BaseListRecyclerViewAdapter.IBaseList<Message, MessageViewHolder>,
+    DeleteMessageDialogFragment.Callback {
 
-    private enum class BundleKey { ChannelId, Title }
+    protected enum class BundleKey { ChannelId, Title }
 
-    private val channelId by lazy {
+    protected val channelId by lazy {
         arguments?.getString(BundleKey.ChannelId.name) ?: throw IllegalArgumentException("channelId is required")
     }
 
@@ -41,6 +50,21 @@ class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder>(),
 
     @Inject
     lateinit var getMessagesUseCase: GetMessagesUseCase
+
+    @Inject
+    lateinit var deleteMessageUseCase: DeleteMessageUseCase
+
+    @Inject
+    lateinit var accountRepository: IAccountRepository
+
+    private var previousViewHolderItem: ViewHolderItem? = null
+
+    data class ViewHolderItem(
+        val viewHolder: MessageViewHolder,
+        val message: Message,
+        val position: Int,
+        val itemWrapper: PageableItemWrapper<Message>
+    )
 
     override val reverse = true
 
@@ -67,7 +91,21 @@ class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder>(),
         item: Message,
         itemWrapper: PageableItemWrapper<Message>
     ) {
-        // Handle click if needed
+        adapter.notifyItemChanged(viewHolder.bindingAdapterPosition)
+        val previousViewHolderItemLocal = previousViewHolderItem
+        previousViewHolderItem = when {
+            previousViewHolderItemLocal != null -> when {
+                previousViewHolderItemLocal.message != item -> {
+                    val position = viewModel.items.indexOf(previousViewHolderItemLocal.itemWrapper)
+                    position.takeIf { it >= 0 }?.let {
+                        adapter.notifyItemChanged(it)
+                    }
+                    ViewHolderItem(viewHolder, item, viewHolder.bindingAdapterPosition, itemWrapper)
+                }
+                else -> null
+            }
+            else -> ViewHolderItem(viewHolder, item, viewHolder.bindingAdapterPosition, itemWrapper)
+        }
     }
 
     override fun onBindViewHolder(
@@ -76,9 +114,11 @@ class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder>(),
         position: Int,
         isMainItem: Boolean
     ) {
+        val context = viewHolder.itemView.context
+
         item.user?.let { user ->
             viewHolder.screenNameTextView.text = user.name
-            viewHolder.handleNameTextView.text = viewHolder.itemView.context.getString(R.string.user_name_format, user.username)
+            viewHolder.handleNameTextView.text = context.getString(R.string.user_name_format, user.username)
             val avatarUrl = User.getAvatarUrl(user, User.AvatarSize.Small)
             BindingUtil.glideAvatarSrc(viewHolder.avatarImageView, avatarUrl)
             viewHolder.avatarImageView.setOnClickListener {
@@ -86,12 +126,61 @@ class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder>(),
                 FragmentHelper.addFragment(requireContext(), fragment, user.id)
             }
         }
-        viewHolder.bodyTextView.text = item.content?.getSpannableStringBuilder(viewHolder.itemView.context)
-        viewHolder.relativeTimeTextView.text = DateUtil.getShortDateStr(viewHolder.itemView.context, item.createdAt)
+        viewHolder.bodyTextView.text = item.content?.getSpannableStringBuilder(context)
+        viewHolder.relativeTimeTextView.text = DateUtil.getShortDateStr(context, item.createdAt)
+
+        val isExpanded = previousViewHolderItem?.message == item
+        viewHolder.foregroundActionsLayout.visibility = if (isExpanded) View.VISIBLE else View.GONE
+        
+        if (isExpanded) {
+            viewHolder.replyButton.setOnClickListener {
+                showReplyCompose(item)
+            }
+            
+            val isMyMessage = item.user?.id == accountRepository.getStoredIds().firstOrNull()
+            viewHolder.deleteButton.visibility = if (isMyMessage) View.VISIBLE else View.GONE
+            viewHolder.deleteButton.setOnClickListener {
+                confirmDeleteMessage(position, item)
+            }
+            
+            viewHolder.threadButton.setOnClickListener {
+                showThread(item)
+            }
+        }
+    }
+
+    private fun showReplyCompose(message: Message) {
+        val intent = ComposeMessageActivity.newIntent(requireContext(), channelId = channelId, replyTarget = message)
+        startActivity(intent)
+    }
+
+    private fun confirmDeleteMessage(position: Int, message: Message) {
+        val fragment = DeleteMessageDialogFragment.newInstance(position, message)
+        fragment.show(childFragmentManager, "DeleteMessage")
+    }
+
+    private fun showThread(message: Message) {
+        val fragment = MessageThreadFragment.newInstance(channelId, message)
+        FragmentHelper.addFragment(requireContext(), fragment, "Thread_${message.id}")
     }
 
     override fun getItemLayout(): Int = R.layout.fragment_message_item
     override val itemNameRes: Int = R.string.messages
+
+    override fun ok(position: Int, message: Message) {
+        lifecycleScope.launch {
+            try {
+                deleteMessageUseCase.run(io.pnut.gamma.domain.model.io.DeleteMessageInputData(channelId, message.id))
+                adapter.removeItem(PageableItemWrapper.Item(message))
+                previousViewHolderItem = null
+            } catch (e: Exception) {
+                // Show error
+            }
+        }
+    }
+
+    override fun cancel() {
+    }
 
     override fun onClickSegmentListener(
         viewHolder: BaseListRecyclerViewAdapter.SegmentViewHolder,
