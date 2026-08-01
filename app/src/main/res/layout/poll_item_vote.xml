@@ -7,6 +7,7 @@
     <com.google.android.material.checkbox.MaterialCheckBox
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/pollViewChoiceItemCheckBox"
         android:paddingTop="@dimen/margin_half"
         android:paddingBottom="@dimen/margin_half"
         tools:text="choice 1" />

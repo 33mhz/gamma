@@ -9,6 +9,7 @@
     <string name="settings">Settings</string>
     <string name="conversations">Conversations</string>
     <string name="messages">Messages</string>
+    <string name="chat_room">Chat Room</string>
     <string name="missed_conversations">Missed Conversations</string>
     <string name="newcomers">Newcomers</string>
     <string name="photos">Photos</string>
@@ -36,6 +37,10 @@
         <item quantity="zero">%d\nFollowers</item>
         <item quantity="other">%d\nFollowers</item>
     </plurals>
+    <plurals name="starred">
+        <item quantity="zero">%d\nStarred</item>
+        <item quantity="other">%d\nStarred</item>
+    </plurals>
     <plurals name="user">
         <item quantity="zero">%d users</item>
         <item quantity="one">%d user</item>
@@ -45,6 +50,8 @@
     <string name="description">Description</string>
     <string name="pref_header_account">Account</string>
     <string name="sign_up">Sign up</string>
+    <string name="gallery">Gallery</string>
+    <string name="markdown_link">[%1$s](%2$s)</string>
     <string name="action_template_text">%1$s by %2$s.</string>
     <string name="action_voted_by">Voted</string>
     <string name="action_followed_by">Followed</string>
@@ -55,6 +62,7 @@
     <string name="fab_transition">fab_transition</string>
     <string name="remove_photo">Remove a photo</string>
     <string name="explore">Explore</string>
+    <string name="profile_transition">profile_transition</string>
     <string name="timezone">Timezone</string>
     <string name="locale">Locale</string>
     <string name="save">Save</string>
@@ -67,12 +75,14 @@
     <string name="posts">Posts</string>
     <string name="favorites">Favorites</string>
     <string name="send_a_message">Send a Message</string>
+    <string name="send">Send</string>
     <string name="block">Block</string>
     <string name="mute">Mute</string>
     <string name="share">Share</string>
     <string name="cannot_get_intent_data">Failed to get intent data</string>
     <string name="show_new_items">Show new items</string>
     <string name="file_date_format_template">yyyy/MM/dd HH:mm:ss</string>
+    <string name="add">Add</string>
     <string name="upload">Upload</string>
     <string name="unfollow">Unfollow</string>
     <string name="unblock">Unblock</string>
@@ -95,6 +105,7 @@
     <string name="deleted_post_user_name">deleted post</string>
     <string name="posted">Posted: %s</string>
     <string name="user_name_format">\@%s</string>
+    <string name="starred">Starred: %s</string>
     <string name="reposted_by_template">reposted by @%s</string>
     <string name="date_short_seconds_template">%ds</string>
     <string name="date_short_minutes_template">%dm</string>
@@ -103,6 +114,8 @@
     <string name="date_short_date_this_year" formatted="false">%te %tb</string>
     <string name="date_short_date_before_last_year" formatted="false">%te %tb %ty</string>
     <string name="compose_reply_title_template">Reply to @%s</string>
+    <string name="camera">Camera</string>
+    <string name="library">Library</string>
     <string name="delete_repost">Delete repost</string>
     <string name="delete_post">Delete post</string>
     <string name="action_result_snackbar_template">%1$s: @%2$s: %3$s</string>
@@ -173,9 +186,12 @@
     <string name="retry">Retry</string>
     <string name="end_of_list">End of list</string>
     <string name="load_more">Load more</string>
+    <string name="enable">Enable</string>
+    <string name="disable">Disable</string>
     <string name="choice_template">Choice %d</string>
     <string name="add_choice">Add a choice</string>
     <string name="poll_prompt">Prompt(Optional)</string>
+    <string name="duration_template">%1$s day %2$s hour %3$s min</string>
     <string name="duration">Duration</string>
     <string name="max_options">Max options</string>
     <string name="anonymous">Anonymous</string>
