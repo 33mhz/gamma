@@ -128,7 +128,7 @@ class PnutCacheRepository(currentUserId: String?, context: Context) : IPnutCache
 //            val cachedList = CachedList(list)
 //            val json = adapter.toJson(cachedList)
             val json = lambda(resizedList)
-//            LogUtil.e("storeed json: $json")
+//            LogUtil.e("stored json: $json")
             file.writer().use {
 
                 it.write(json)

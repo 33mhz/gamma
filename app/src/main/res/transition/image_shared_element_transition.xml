@@ -3,13 +3,12 @@
     android:duration="@android:integer/config_mediumAnimTime"
     android:interpolator="@android:interpolator/fast_out_slow_in"
     android:transitionOrdering="together">
+    <arcMotion
+        android:maximumAngle="90"
+        android:minimumHorizontalAngle="0"
+        android:minimumVerticalAngle="0" />
     <changeImageTransform />
     <changeClipBounds />
     <changeTransform />
-    <changeBounds>
-        <arcMotion
-            android:maximumAngle="90"
-            android:minimumHorizontalAngle="0"
-            android:minimumVerticalAngle="0" />
-    </changeBounds>
+    <changeBounds />
 </transitionSet>

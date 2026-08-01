@@ -407,11 +407,11 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 
         updateStarView(viewHolder, item)
         viewHolder.actionReplyImageView.setOnClickListener {
-            showReplyCompose(viewHolder.avatarView, item)
+            showReplyCompose(item)
         }
         viewHolder.replyButton.isEnabled = !isDeleted
         viewHolder.replyButton.setOnClickListener {
-            showReplyCompose(viewHolder.avatarView, item)
+            showReplyCompose(item)
         }
 
         updateRepostView(viewHolder, item)
@@ -685,7 +685,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         adapter.notifyItemChanged(adapterPosition)
     }
 
-    private fun showReplyCompose(view: View, item: Post) {
+    private fun showReplyCompose(item: Post) {
         val intent = ComposePostActivity.newIntent(requireContext(), replyTarget = item)
         startActivity(intent)
     }

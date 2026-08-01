@@ -7,7 +7,4 @@
         <attr name="metaButtonBarStyle" format="reference" />
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
-    <declare-styleable name="TransitionArcMotion">
-        <attr name="arcRadius" format="integer" />
-    </declare-styleable>
 </resources>

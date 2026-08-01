@@ -15,7 +15,7 @@ import io.pnut.gamma.domain.entity.Poll
 import io.pnut.gamma.domain.entity.PollLikeValue
 import io.pnut.gamma.util.LogUtil
 
-class PollOptionsAdapter(private val pollLikeValue: PollLikeValue, private var poll: Poll? = null) :
+class PollOptionsAdapter(pollLikeValue: PollLikeValue, private var poll: Poll? = null) :
     ListAdapter<Poll.PollOption, PollOptionsAdapter.OptionsViewHolder>(PollOptionDiffCallback()) {
 
     init {

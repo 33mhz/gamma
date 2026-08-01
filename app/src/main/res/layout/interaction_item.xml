@@ -38,7 +38,7 @@
             app:layout_constraintStart_toEndOf="@id/iconView"
             app:layout_constraintTop_toBottomOf="@id/reactionUsersRecyclerView"
             app:layout_goneMarginTop="0dp"
-            tools:text="This post is starred by @testuser" />
+            tools:text="This post is starred by @TestUser" />
 
         <TextView
             android:id="@+id/bodyTextView"
