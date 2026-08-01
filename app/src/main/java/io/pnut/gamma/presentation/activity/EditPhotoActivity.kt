@@ -11,6 +11,9 @@ import io.pnut.gamma.R
 import io.pnut.gamma.databinding.ActivityEditPhotoBinding
 import java.io.File
 import androidx.core.content.IntentCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -37,6 +40,17 @@ class EditPhotoActivity : BaseActivity() {
         }
         binding.cropImageView.setImageUriAsync(uri)
         binding.cropImageView.setOnCropImageCompleteListener { _, result -> cropped(result) }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(
+                left = systemBars.left,
+                top = systemBars.top,
+                right = systemBars.right,
+                bottom = systemBars.bottom
+            )
+            insets
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
