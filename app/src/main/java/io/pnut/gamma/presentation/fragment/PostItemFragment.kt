@@ -46,7 +46,6 @@ import io.pnut.gamma.domain.entity.PollLikeValue
 import io.pnut.gamma.domain.entity.Post
 import io.pnut.gamma.domain.entity.User
 import io.pnut.gamma.domain.repository.IAccountRepository
-import io.pnut.gamma.domain.repository.IPreferenceRepository
 import io.pnut.gamma.domain.entity.raw.LongPost
 import io.pnut.gamma.domain.entity.raw.OEmbed
 import io.pnut.gamma.domain.entity.raw.PollNotice

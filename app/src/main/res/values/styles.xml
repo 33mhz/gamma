@@ -227,8 +227,6 @@
 
     <style name="FullScreenDialogStyle" parent="BaseFullScreenDialogStyle" />
 
-    <style name="AppTheme.FullScreenDialog" parent="FullScreenDialogStyle" />
-
     <style name="NavigationDrawerStyle">
         <item name="android:fontFamily">@font/montserrat</item>
     </style>

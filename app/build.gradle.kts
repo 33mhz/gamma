@@ -166,7 +166,7 @@ dependencies {
   androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
 
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion")
-  implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+  implementation("androidx.constraintlayout:constraintlayout:2.2.2")
   implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
   implementation("com.google.android.material:material:1.14.0")
@@ -210,7 +210,7 @@ dependencies {
 
   implementation("com.google.android.gms:play-services-oss-licenses:17.5.1")
 
-  implementation(platform("com.google.firebase:firebase-bom:34.16.0"))
+  implementation(platform("com.google.firebase:firebase-bom:34.17.0"))
   implementation("com.google.firebase:firebase-crashlytics")
 
   implementation("jp.wasabeef:glide-transformations:4.3.0")

@@ -13,7 +13,6 @@ import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.User
 import androidx.lifecycle.lifecycleScope
-import io.pnut.gamma.domain.model.Account
 import io.pnut.gamma.domain.model.PageableItemWrapper
 import io.pnut.gamma.presentation.activity.ComposeMessageActivity
 import io.pnut.gamma.domain.model.io.GetMessagesInputData
@@ -21,7 +20,6 @@ import io.pnut.gamma.domain.model.params.single.PaginationParam
 import io.pnut.gamma.domain.repository.IAccountRepository
 import io.pnut.gamma.domain.usecases.DeleteMessageUseCase
 import io.pnut.gamma.domain.usecases.GetMessagesUseCase
-import io.pnut.gamma.presentation.activity.ComposePostActivity
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
 import io.pnut.gamma.presentation.adapter.MessageViewHolder
 import io.pnut.gamma.presentation.util.BindingUtil
@@ -29,7 +27,6 @@ import io.pnut.gamma.presentation.util.DateUtil
 import io.pnut.gamma.presentation.util.EntityOnTouchListener
 import io.pnut.gamma.presentation.util.FragmentHelper
 import io.pnut.gamma.presentation.util.SmoothScroller
-import io.pnut.gamma.util.LogUtil
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

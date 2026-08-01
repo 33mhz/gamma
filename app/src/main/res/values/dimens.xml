@@ -13,10 +13,8 @@
     <!--margin-->
     <dimen name="margin_activity_horizontal">16dp</dimen>
     <dimen name="margin_list_item_x">16dp</dimen>
-    <dimen name="margin_list_item_half">8dp</dimen>
     <dimen name="margin_list_bottom">100dp</dimen>
     <dimen name="margin_inset_divider">72dp</dimen>
-    <dimen name="margin_large">24dp</dimen>
     <dimen name="margin_regular">16dp</dimen>
     <dimen name="margin_half">8dp</dimen>
     <dimen name="margin_quoter">4dp</dimen>
@@ -30,7 +28,6 @@
     <dimen name="size_thumbnail_tab_item_dot">10dp</dimen>
     <dimen name="height_thumbnail_tab">20dp</dimen>
     <dimen name="width_thumbnail_tab_item">20dp</dimen>
-    <dimen name="width_avatar_border">2dp</dimen>
     <dimen name="pad_preview_thumbnail">4dp</dimen>
     <dimen name="size_button_loading_indicator">24dp</dimen>
     <dimen name="size_avatar_mini">40dp</dimen>
@@ -41,7 +38,6 @@
     <dimen name="height_foreground_actions_layout">48dp</dimen>
     <dimen name="size_post_item_avatar_mini">36dp</dimen>
     <dimen name="size_color_preview">20dp</dimen>
-    <dimen name="secondary_alpha">0.8</dimen>
     <dimen name="height_segment_item">48dp</dimen>
     <dimen name="size_avatar_rounded">10dp</dimen>
     <dimen name="margin_compose_post_start">60dp</dimen>

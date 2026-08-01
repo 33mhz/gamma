@@ -242,7 +242,7 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
             LogUtil.e(json)
             throw io.pnut.gamma.util.ErrorCollections.CommunicationError.create(json)
         }
-        throw io.pnut.gamma.util.Constants.unknownErrorException()
+        throw Constants.unknownErrorException()
     }
 
     override suspend fun getUserProfile(userId: String): PnutResponse<User> {
