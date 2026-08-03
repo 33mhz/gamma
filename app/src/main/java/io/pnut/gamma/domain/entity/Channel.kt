@@ -48,26 +48,29 @@ data class Channel(
         data class Full(
             override val immutable: Boolean,
             override val you: Boolean,
-            @Json(name = "user_ids") override val userIds: List<String>
+            val users: List<LimitedUser>? = null,
+            @Json(name = "user_ids") override val userIds: List<String>,
         ) : IAuthority, Parcelable
 
         @Parcelize
         @JsonClass(generateAdapter = true)
         data class Write(
+            @Json(name = "any_user") val anyUser: Boolean,
             override val immutable: Boolean,
-            override val you: Boolean,
+            val users: List<LimitedUser>? = null,
             @Json(name = "user_ids") override val userIds: List<String>,
-            @Json(name = "any_user") val anyUser: Boolean
+            override val you: Boolean,
         ) : IAuthority, Parcelable
 
         @Parcelize
         @JsonClass(generateAdapter = true)
         data class Read(
-            override val immutable: Boolean,
-            override val you: Boolean,
-            @Json(name = "user_ids") override val userIds: List<String>,
             @Json(name = "any_user") val anyUser: Boolean,
-            val public: Boolean
+            override val immutable: Boolean,
+            val public: Boolean,
+            val users: List<LimitedUser>? = null,
+            @Json(name = "user_ids") override val userIds: List<String>,
+            override val you: Boolean,
         ) : IAuthority, Parcelable
 
         private interface IAuthority {

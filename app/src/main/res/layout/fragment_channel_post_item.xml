@@ -22,13 +22,19 @@
 
     <TextView
         android:id="@+id/screenNameTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_regular"
         android:layout_marginTop="@dimen/margin_regular"
+        android:ellipsize="end"
+        android:singleLine="true"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+        app:layout_constraintEnd_toStartOf="@+id/relativeTimeTextView"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/avatarImageView"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_default="wrap"
         tools:text="@tools:sample/first_names" />
 
     <TextView

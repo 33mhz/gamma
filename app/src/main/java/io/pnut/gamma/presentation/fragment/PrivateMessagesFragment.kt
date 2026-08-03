@@ -13,11 +13,6 @@ import io.pnut.gamma.presentation.util.FragmentHelper
 import io.pnut.gamma.presentation.util.SmoothScroller
 import io.pnut.gamma.presentation.util.Util
 
-import io.pnut.gamma.domain.entity.Channel
-import io.pnut.gamma.domain.entity.User
-import io.pnut.gamma.presentation.util.BindingUtil
-import io.pnut.gamma.presentation.util.DateUtil
-
 @AndroidEntryPoint
 class PrivateMessagesFragment : ChannelListFragment(), Util.DrawerContentFragment {
     override val menuItemId = R.id.privateMessages
@@ -27,23 +22,6 @@ class PrivateMessagesFragment : ChannelListFragment(), Util.DrawerContentFragmen
     override fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout = ListWithToolbarBinding.bind(view).swipeRefreshLayout
 
     override fun getItemLayout(): Int = R.layout.fragment_channel_post_item
-
-    override fun onBindChannelViewHolder(
-        item: Channel,
-        viewHolder: ChannelViewHolder,
-        position: Int,
-        isMainItem: Boolean
-    ) {
-        val user = item.recentMessage?.user ?: item.user
-        user?.let {
-            viewHolder.binding.screenNameTextView.text = it.name
-            viewHolder.binding.handleNameTextView.text = viewHolder.itemView.context.getString(R.string.user_name_format, it.username)
-            BindingUtil.glideAvatarSrc(viewHolder.binding.avatarImageView, User.getAvatarUrl(it, User.AvatarSize.Small))
-        }
-
-        viewHolder.binding.bodyTextView.text = item.recentMessage?.content?.getSpannableStringBuilder(viewHolder.itemView.context)
-        viewHolder.binding.relativeTimeTextView.text = DateUtil.getShortDateStr(viewHolder.itemView.context, item.recentMessage?.createdAt)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

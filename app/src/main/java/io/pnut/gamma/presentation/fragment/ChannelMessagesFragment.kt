@@ -195,6 +195,10 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
         binding.toolbar.setTitle(title)
         binding.toolbar.setOnClickListener {
             val ctx = context ?: return@setOnClickListener
+            androidx.appcompat.app.AlertDialog.Builder(ctx)
+                .setMessage(title)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
             getRecyclerView(requireView()).layoutManager?.startSmoothScroll(SmoothScroller(ctx))
         }
     }

@@ -18,6 +18,7 @@ import io.pnut.gamma.domain.model.io.UpdateMarkerInputData
 import io.pnut.gamma.domain.model.params.composed.GetChannelsParam
 import io.pnut.gamma.domain.model.params.single.GeneralChannelParam
 import io.pnut.gamma.domain.model.params.single.PaginationParam
+import io.pnut.gamma.domain.repository.IAccountRepository
 import io.pnut.gamma.domain.usecases.GetChannelsUseCase
 import io.pnut.gamma.domain.usecases.UpdateMarkerUseCase
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
@@ -45,6 +46,9 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
     @Inject
     lateinit var updateMarkerUseCase: UpdateMarkerUseCase
 
+    @Inject
+    lateinit var accountRepository: IAccountRepository
+
     override fun getFragmentLayout(): Int = R.layout.fragment_base_list
     override fun getRecyclerView(view: View): RecyclerView = view.findViewById(R.id.baseList)
     override fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
@@ -70,8 +74,7 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
                 updateMarkerUseCase.run(UpdateMarkerInputData(item.id, item.recentMessageId))
             }
         }
-        val chatSettings = ChatSettings.getChatSettings(item.raw)
-        val title = chatSettings?.name ?: (item.user?.username ?: "Channel ${item.id}")
+        val title = getChannelTitle(item)
         val fragment = ChannelMessagesFragment.newInstance(item.id, title)
         FragmentHelper.addFragment(requireContext(), fragment, item.id)
     }
@@ -91,12 +94,12 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
         position: Int,
         isMainItem: Boolean
     ) {
-        val chatSettings = ChatSettings.getChatSettings(item.raw)
-        viewHolder.binding.screenNameTextView.text = chatSettings?.name ?: (item.user?.username ?: "Channel ${item.id}")
-        
+        val title = getChannelTitle(item)
+        viewHolder.binding.screenNameTextView.text = title
+        viewHolder.binding.handleNameTextView.visibility = View.GONE
+
         val user = item.recentMessage?.user ?: item.user
         user?.let { u ->
-            viewHolder.binding.handleNameTextView.text = viewHolder.itemView.context.getString(R.string.user_name_format, u.username)
             val avatarUrl = User.getAvatarUrl(u, User.AvatarSize.Small)
             BindingUtil.glideAvatarSrc(viewHolder.binding.avatarImageView, avatarUrl)
             viewHolder.binding.avatarImageView.setOnClickListener {
@@ -122,6 +125,19 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
 
     open class ChannelViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
         val binding: FragmentChannelPostItemBinding by lazy { FragmentChannelPostItemBinding.bind(mView) }
+    }
+
+    protected fun getChannelTitle(channel: Channel): String {
+        val chatSettings = ChatSettings.getChatSettings(channel.raw)
+        if (chatSettings != null) return chatSettings.name!!
+
+        val myId = accountRepository.getStoredIds().firstOrNull()
+        val users = channel.acl.write.users?.filter { it.id != myId }
+        if (!users.isNullOrEmpty()) {
+            return '@' + users.joinToString(", @") { it.username }
+        }
+
+        return channel.user?.username ?: "Channel ${channel.id}"
     }
 
     protected enum class BundleKey { ChannelType }
