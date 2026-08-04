@@ -88,21 +88,24 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
         item: Message,
         itemWrapper: PageableItemWrapper<Message>
     ) {
-        adapter.notifyItemChanged(viewHolder.bindingAdapterPosition)
+        val clickedItemPosition = viewHolder.bindingAdapterPosition
+        if (clickedItemPosition == RecyclerView.NO_POSITION) return
+
         val previousViewHolderItemLocal = previousViewHolderItem
         previousViewHolderItem = when {
             previousViewHolderItemLocal != null -> when {
                 previousViewHolderItemLocal.message != item -> {
                     val position = viewModel.items.indexOf(previousViewHolderItemLocal.itemWrapper)
-                    position.takeIf { it >= 0 }?.let {
-                        adapter.notifyItemChanged(it)
+                    if (position >= 0 && position != clickedItemPosition) {
+                        adapter.notifyItemChanged(position)
                     }
-                    ViewHolderItem(viewHolder, item, viewHolder.bindingAdapterPosition, itemWrapper)
+                    ViewHolderItem(viewHolder, item, clickedItemPosition, itemWrapper)
                 }
                 else -> null
             }
-            else -> ViewHolderItem(viewHolder, item, viewHolder.bindingAdapterPosition, itemWrapper)
+            else -> ViewHolderItem(viewHolder, item, clickedItemPosition, itemWrapper)
         }
+        adapter.notifyItemChanged(clickedItemPosition)
     }
 
     override fun onBindViewHolder(
@@ -158,7 +161,7 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
 
     private fun showThread(message: Message) {
         val fragment = MessageThreadFragment.newInstance(channelId, message)
-        FragmentHelper.addFragment(requireContext(), fragment, "Thread_${message.id}")
+        addFragment(fragment, "MessageThread_${message.threadId}")
     }
 
     override fun getItemLayout(): Int = R.layout.fragment_message_item

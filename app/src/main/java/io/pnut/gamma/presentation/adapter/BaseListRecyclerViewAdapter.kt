@@ -42,7 +42,7 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
         val itemList: ArrayList<PageableItemWrapper<TT>>,
         var listener: IBaseList<TT, VV>,
         val reverse: Boolean = false,
-        val mainItemId: String = ""
+        var mainItemId: String = ""
     )
 
     init {
@@ -229,6 +229,11 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
             options.itemList[pagerIndex] = pager.copy(state = PageableItemWrapper.Pager.State.Error)
             submitList(ArrayList(options.itemList))
         }
+    }
+
+    fun updateMainItemId(id: String) {
+        options.mainItemId = id
+        notifyDataSetChanged()
     }
 
     fun removeSegmentIfNeed(requestPager: PageableItemWrapper<T>?): Int {

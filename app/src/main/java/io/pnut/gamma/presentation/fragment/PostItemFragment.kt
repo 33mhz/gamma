@@ -235,13 +235,21 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         val itemWrapper: PageableItemWrapper<Post>
     )
 
+    protected var currentMainPostId: String = ""
+
     private val mainPostId by lazy {
         arguments?.getString(BundleKey.MainPostId.name, "") ?: ""
     }
 
     override fun overrideOptions(options: BaseListRecyclerViewAdapter.BaseListRecyclerViewAdapterOptions<Post, PostViewHolder>): BaseListRecyclerViewAdapter.BaseListRecyclerViewAdapterOptions<Post, PostViewHolder> {
         val defaultOptions = super.overrideOptions(options)
-        return defaultOptions.copy(mainItemId = mainPostId)
+        if (currentMainPostId.isEmpty()) currentMainPostId = mainPostId
+        return defaultOptions.copy(mainItemId = currentMainPostId)
+    }
+
+    open fun updateMainPostId(id: String) {
+        currentMainPostId = id
+        adapter.updateMainItemId(id)
     }
 
     override fun ok(position: Int, post: Post) {
@@ -344,35 +352,27 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         item: Post,
         itemWrapper: PageableItemWrapper<Post>
     ) {
-        val clickedItemPosition = calcPosition(viewHolder.bindingAdapterPosition)
-        LogUtil.e(
-            "clickedItemPosition: $clickedItemPosition, expandedViewHolderPos: ${
-                previousViewHolderItem?.viewHolder?.oldPosition
-                    ?: -1
-            }"
-        )
-        adapter.notifyItemChanged(clickedItemPosition)
+        val clickedItemPosition = viewHolder.bindingAdapterPosition
+        if (clickedItemPosition == RecyclerView.NO_POSITION) return
+
         val previousViewHolderItemLocal = previousViewHolderItem
         previousViewHolderItem = when {
             previousViewHolderItemLocal != null -> when {
                 previousViewHolderItemLocal.post != item -> {
                     // click another item when already expanded
                     val position = viewModel.items.indexOf(previousViewHolderItemLocal.itemWrapper)
-                    LogUtil.e("position $position")
-                    position.takeIf { it >= 0 }?.let {
-                        adapter.notifyItemChanged(calcPosition(it))
+                    if (position >= 0 && position != clickedItemPosition) {
+                        adapter.notifyItemChanged(position)
                     }
-                    ViewHolderItem(viewHolder, item, viewHolder.bindingAdapterPosition, itemWrapper)
+                    ViewHolderItem(viewHolder, item, clickedItemPosition, itemWrapper)
                 }
                 else -> // click same item
                     null
             }
-            else -> ViewHolderItem(viewHolder, item, viewHolder.bindingAdapterPosition, itemWrapper)
+            else -> ViewHolderItem(viewHolder, item, clickedItemPosition, itemWrapper)
         }
-    }
 
-    private fun calcPosition(position: Int): Int {
-        return if (reverse) position - -1 else position
+        adapter.notifyItemChanged(clickedItemPosition)
     }
 
     private var selectedPost: Post? = null
@@ -532,16 +532,16 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             Util.openCustomTabUrl(context, item.mainPost.source.url)
         }
         viewHolder.foregroundActionsLayout.visibility =
-            getVisibility(mainPostId == item.id || (previousViewHolderItem?.post == item))
+            getVisibility(isMainItem || (previousViewHolderItem?.post == item))
         viewHolder.threadButton.let {
             it.setOnClickListener { showThread(item) }
-            it.visibility = getVisibility(item.mainPost.id != mainPostId)
+            it.visibility = getVisibility(item.mainPost.id != currentMainPostId)
         }
         viewHolder.actionThreadImageView.let {
             it.setOnClickListener { showThread(item) }
-//            it.visibility = getVisibility(post.mainPost.id != mainPostId)
+//            it.visibility = getVisibility(post.mainPost.id != currentMainPostId)
         }
-        viewHolder.isMainItem = item.id == mainPostId
+        viewHolder.isMainItem = isMainItem
         viewHolder.moreButton.setOnClickListener { showMoreMenu(item) }
         viewHolder.actionMoreImageView.setOnClickListener { showMoreMenu(item) }
 
@@ -701,8 +701,18 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 
     private fun showThread(item: Post): Boolean {
         val mainPost = item.mainPost
+        val tag = "PostThread_${mainPost.threadId}"
+        val fm = parentFragmentManager
+        val currentFragment = fm.findFragmentById(R.id.fragmentPlaceholder)
+        if (currentFragment != null && currentFragment.tag == tag) {
+            if (currentFragment is PostItemFragment) {
+                currentFragment.updateMainPostId(item.id)
+                return true
+            }
+        }
+
         val fragment = getThreadInstance(mainPost, mainPost.id)
-        return addFragment(fragment, mainPost.id) == null
+        return addFragment(fragment, tag) == null
     }
 
     private val reactionUsersAdapterListener by lazy {

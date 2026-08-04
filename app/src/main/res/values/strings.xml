@@ -123,6 +123,7 @@
     <string name="users">users</string>
     <string name="closed_poll">Closed poll: %s</string>
     <string name="thread">Thread</string>
+    <string name="thread_with_id">Thread %s</string>
     <string name="set_as_nsfw">Set as NSFW</string>
     <string name="add_an_account">Add an account</string>
     <string name="edit_image">Edit image</string>
@@ -281,7 +282,7 @@
     <string name="pref_shape_of_avatar_key">shape_of_avatar</string>
     <string name="pref_shape_of_avatar_key_default_value">0</string>
     <string name="cache">Cache</string>
-    <string name="pref_cache_title">Enable cache(Experimental)</string>
+    <string name="pref_cache_title">Enable cache (Experimental)</string>
     <string name="pref_cache_key">cache</string>
     <string name="pref_cache_summary">Store list data every time fetch, and restore and show  next time.</string>
     <string name="pref_cache_size_key">cache_size</string>

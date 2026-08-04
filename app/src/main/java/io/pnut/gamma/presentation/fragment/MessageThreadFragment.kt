@@ -36,7 +36,7 @@ class MessageThreadFragment : ChannelMessagesFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = ListWithToolbarBinding.bind(view)
-        binding.toolbar.setTitle(R.string.thread)
+        binding.toolbar.title = getString(R.string.thread_with_id, message.threadId)
     }
 
     class MessageThreadViewModel(
