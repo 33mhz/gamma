@@ -15,8 +15,6 @@ import io.pnut.gamma.domain.repository.IPreferenceRepository
 import io.pnut.gamma.domain.usecases.SetupTokenUseCase
 import io.pnut.gamma.testutil.IntentUtil
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.Matchers
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -24,6 +22,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito
 import javax.inject.Inject
 import androidx.hilt.work.HiltWorkerFactory
+import com.google.common.truth.Truth.assertThat
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -90,6 +89,6 @@ class EntryActivityTest {
           Thread.sleep(100)
           count++
       }
-      Assert.assertThat(scenario.state, Matchers.`is`(Lifecycle.State.DESTROYED))
+      assertThat(scenario.state).isEqualTo(Lifecycle.State.DESTROYED)
   }
 }

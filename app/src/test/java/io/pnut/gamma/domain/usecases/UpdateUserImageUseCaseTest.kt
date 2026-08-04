@@ -9,31 +9,15 @@ import io.pnut.gamma.mock.PnutRepositoryMock
 import io.pnut.gamma.util.Response
 import io.pnut.gamma.util.TestException
 import io.pnut.gamma.sample.Users
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
+import org.robolectric.RobolectricTestRunner
+import com.google.common.truth.Truth.assertThat
 
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(Uri::class)
+@RunWith(RobolectricTestRunner::class)
 class UpdateUserImageUseCaseTest {
     private val me = Users.me
-    private val dummyUri by lazy { Uri.parse("dummy") }
-
-    @Before
-    fun setup() {
-        PowerMockito.mockStatic(Uri::class.java)
-        val uri = Mockito.mock(Uri::class.java)
-        PowerMockito.`when`<Uri>(Uri::class.java, "parse", ArgumentMatchers.anyString())
-            .thenReturn(uri)
-    }
-
+    private val dummyUri = Uri.parse("dummy")
 
     @Test
     fun succeedUpdateAvatar() {
@@ -53,7 +37,7 @@ class UpdateUserImageUseCaseTest {
                 )
             )
         }
-        Assert.assertThat(res.res.data.content.avatarImage.url, `is`("updated"))
+        assertThat(res.res.data.content.avatarImage.url).isEqualTo("updated")
     }
 
     @Test(expected = TestException::class)
@@ -92,7 +76,7 @@ class UpdateUserImageUseCaseTest {
                 )
             )
         }
-        Assert.assertThat(res.res.data.content.coverImage.url, `is`("updated"))
+        assertThat(res.res.data.content.coverImage.url).isEqualTo("updated")
     }
 
     @Test(expected = TestException::class)
@@ -138,7 +122,7 @@ class UpdateUserImageUseCaseTest {
                 )
             )
         }
-        Assert.assertThat(res.res.data.content.avatarImage.isDefault, `is`(true))
+        assertThat(res.res.data.content.avatarImage.isDefault).isTrue()
     }
 
     @Test
@@ -166,7 +150,7 @@ class UpdateUserImageUseCaseTest {
                 )
             )
         }
-        Assert.assertThat(res.res.data.content.coverImage.isDefault, `is`(true))
+        assertThat(res.res.data.content.coverImage.isDefault).isTrue()
     }
 
 }

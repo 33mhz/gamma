@@ -7,9 +7,8 @@ import io.pnut.gamma.domain.model.io.UpdateRelationshipInputData
 import io.pnut.gamma.mock.PnutRepositoryMock
 import io.pnut.gamma.util.TestException
 import io.pnut.gamma.sample.Users
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 class UpdateRelationshipUseCaseTest {
     private fun getFollowUseCase(vararg users: User): UpdateRelationshipUseCase {
@@ -24,7 +23,7 @@ class UpdateRelationshipUseCaseTest {
         val followUseCase = getFollowUseCase(others)
         val input = UpdateRelationshipInputData(others.id, Relationship.Follow)
         val output = runBlocking { followUseCase.run(input) }
-        Assert.assertThat(output.res.data.youFollow, `is`(true))
+        assertThat(output.res.data.youFollow).isTrue()
     }
 
     @Test(expected = TestException::class)
@@ -41,7 +40,7 @@ class UpdateRelationshipUseCaseTest {
         val followUseCase = getFollowUseCase(alreadyFollowingUser)
         val input = UpdateRelationshipInputData(alreadyFollowingUser.id, Relationship.UnFollow)
         val output = runBlocking { followUseCase.run(input) }
-        Assert.assertThat(output.res.data.youFollow, `is`(false))
+        assertThat(output.res.data.youFollow).isFalse()
     }
 
     @Test(expected = TestException::class)
@@ -58,8 +57,8 @@ class UpdateRelationshipUseCaseTest {
         val followUseCase = getFollowUseCase(others)
         val input = UpdateRelationshipInputData(others.id, Relationship.Block)
         val output = runBlocking { followUseCase.run(input) }
-        Assert.assertThat(output.res.data.youBlocked, `is`(true))
-        Assert.assertThat(output.res.data.youFollow, `is`(false))
+        assertThat(output.res.data.youBlocked).isTrue()
+        assertThat(output.res.data.youFollow).isFalse()
     }
 
     @Test(expected = TestException::class)
@@ -76,7 +75,7 @@ class UpdateRelationshipUseCaseTest {
         val followUseCase = getFollowUseCase(alreadyBlockedUser)
         val input = UpdateRelationshipInputData(alreadyBlockedUser.id, Relationship.UnBlock)
         val output = runBlocking { followUseCase.run(input) }
-        Assert.assertThat(output.res.data.youFollow, `is`(false))
+        assertThat(output.res.data.youFollow).isFalse()
     }
 
     @Test(expected = TestException::class)

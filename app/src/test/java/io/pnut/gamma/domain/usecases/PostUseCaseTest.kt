@@ -8,9 +8,8 @@ import io.pnut.gamma.mock.PnutRepositoryMock
 import io.pnut.gamma.util.ErrorCollections
 import io.pnut.gamma.util.TestException
 import io.pnut.gamma.util.RandomID
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 class PostUseCaseTest {
     private val pnutRepositoryMockData = PnutRepositoryMock.PnutMockData()
@@ -24,7 +23,7 @@ class PostUseCaseTest {
         val postBody = PostBody("body")
         val input = PostInputData(postBody, me.id)
         val output = postUseCase.run(input)
-        Assert.assertThat(output.res.data.content?.text, `is`("body"))
+        assertThat(output.res.data.content?.text).isEqualTo("body")
     }
 
     @Test(expected = TestException::class)

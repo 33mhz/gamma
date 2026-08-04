@@ -116,6 +116,7 @@ android {
     unitTests.isIncludeAndroidResources = false
     unitTests.isReturnDefaultValues = true
   }
+
   packaging {
     resources {
       // https://github.com/mockito/mockito/issues/1376#issuecomment-391192483
@@ -222,16 +223,14 @@ dependencies {
   androidTestImplementation("org.mockito:mockito-android:5.23.0")
   testImplementation("org.robolectric:robolectric:4.16.1")
   val espressoVersion = "3.7.0"
+  testImplementation("com.google.truth:truth:1.4.5")
   androidTestImplementation("androidx.test.espresso:espresso-core:$espressoVersion")
   androidTestImplementation("androidx.test.espresso:espresso-intents:$espressoVersion")
   val testVersion = "1.7.0"
+  testImplementation("androidx.test.ext:truth:$testVersion")
   androidTestImplementation("androidx.test:core:$testVersion")
   androidTestImplementation("androidx.test:rules:$testVersion")
   androidTestImplementation("androidx.test.ext:junit:1.3.0")
-  androidTestImplementation("androidx.test.ext:truth:1.7.0")
-  androidTestImplementation("com.google.truth:truth:1.4.5")
-  testImplementation("org.powermock:powermock-module-junit4:2.0.9")
-  testImplementation("org.powermock:powermock-api-mockito2:2.0.9")
   implementation("com.github.Chrisvin:EasyReveal:1.2") {
     exclude(group = "org.jetbrains.kotlin", module = "kotlin-android-extensions-runtime")
   }

@@ -11,9 +11,8 @@ import io.pnut.gamma.mock.PnutRepositoryMock
 import io.pnut.gamma.util.TestException
 import io.pnut.gamma.sample.Users
 import io.pnut.gamma.util.RandomID
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 class VerifyTokenUseCaseTest {
     private val me = Users.me
@@ -42,7 +41,7 @@ class VerifyTokenUseCaseTest {
     fun succeed() {
         val input = VerifyTokenInputData(validToken)
         val output = runBlocking { verifyTokenUseCase.run(input) }
-        Assert.assertThat(output.userData.user, `is`(me))
+        assertThat(output.userData.user).isEqualTo(me)
     }
 
     @Test(expected = Exception::class)

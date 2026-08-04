@@ -4,9 +4,8 @@ import kotlinx.coroutines.runBlocking
 import io.pnut.gamma.domain.model.io.UpdateProfileInputData
 import io.pnut.gamma.mock.PnutRepositoryMock
 import io.pnut.gamma.sample.Users
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 class UpdateProfileUseCaseTest {
     private val me = Users.me
@@ -19,10 +18,10 @@ class UpdateProfileUseCaseTest {
         val input = UpdateProfileInputData("foo", "bar", "Asia/Tokyo", "ja_JP")
         val output = runBlocking { updateProfileUseCase.run(input) }
         val user = output.user
-        Assert.assertThat(user.name, `is`("foo"))
-        Assert.assertThat(user.content.text, `is`("bar"))
-        Assert.assertThat(user.timezone, `is`("Asia/Tokyo"))
-        Assert.assertThat(user.locale, `is`("ja_JP"))
+        assertThat(user.name).isEqualTo("foo")
+        assertThat(user.content.text).isEqualTo("bar")
+        assertThat(user.timezone).isEqualTo("Asia/Tokyo")
+        assertThat(user.locale).isEqualTo("ja_JP")
     }
 
     @Test
@@ -30,9 +29,9 @@ class UpdateProfileUseCaseTest {
         val input = UpdateProfileInputData("", "", "", "")
         val output = runBlocking { updateProfileUseCase.run(input) }
         val user = output.user
-        Assert.assertThat(user.name, `is`(""))
-        Assert.assertThat(user.content.text, `is`(""))
-        Assert.assertThat(user.timezone, `is`(""))
-        Assert.assertThat(user.locale, `is`(""))
+        assertThat(user.name).isEmpty()
+        assertThat(user.content.text).isEmpty()
+        assertThat(user.timezone).isEmpty()
+        assertThat(user.locale).isEmpty()
     }
 }

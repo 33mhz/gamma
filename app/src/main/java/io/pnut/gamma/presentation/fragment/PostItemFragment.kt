@@ -911,7 +911,11 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
                     val index =
                         items.indexOfFirst { it is PageableItemWrapper.Item && it.item.id == reloadedPost.id }
                     if (index >= 0) {
-                        items[index] = PageableItemWrapper.Item(reloadedPost)
+                        if (reloadedPost.isDeleted == true) {
+                            items.removeAt(index)
+                        } else {
+                            items[index] = PageableItemWrapper.Item(reloadedPost)
+                        }
                     }
                 }
             }

@@ -3,8 +3,9 @@ package io.pnut.gamma.domain.usecases
 import io.pnut.gamma.domain.model.io.GetMessageThreadInputData
 import io.pnut.gamma.domain.model.io.GetMessageThreadOutputData
 import io.pnut.gamma.domain.repository.IPnutRepository
+import javax.inject.Inject
 
-class GetMessageThreadUseCase(private val pnutRepository: IPnutRepository) :
+class GetMessageThreadUseCase @Inject constructor(private val pnutRepository: IPnutRepository) :
     AsyncUseCase<GetMessageThreadOutputData, GetMessageThreadInputData>() {
     override suspend fun run(params: GetMessageThreadInputData): GetMessageThreadOutputData {
         val res = pnutRepository.getMessageThread(params.channelId, params.messageId)

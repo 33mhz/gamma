@@ -7,10 +7,8 @@ import io.pnut.gamma.mock.PnutRepositoryMock
 import io.pnut.gamma.util.Response
 import io.pnut.gamma.util.TestException
 import io.pnut.gamma.sample.Posts
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.core.IsNull
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 
 class RepostUseCaseTest {
@@ -26,8 +24,8 @@ class RepostUseCaseTest {
         }
         val repostUseCase = RepostUseCase(pnutRepositoryMock)
         val res = repostUseCase.run(RepostInputData("1", true))
-        Assert.assertThat(res.res.data.youReposted, `is`(true))
-        Assert.assertThat(res.res.data.repostOf?.id, `is`("1"))
+        assertThat(res.res.data.youReposted).isTrue()
+        assertThat(res.res.data.repostOf?.id).isEqualTo("1")
     }
 
     @Test(expected = TestException::class)
@@ -51,8 +49,8 @@ class RepostUseCaseTest {
         }
         val repostUseCase = RepostUseCase(pnutRepositoryMock)
         val res = repostUseCase.run(RepostInputData("1", false))
-        Assert.assertThat(res.res.data.youReposted, `is`(false))
-        Assert.assertThat(res.res.data.repostOf, IsNull<Post>())
+        assertThat(res.res.data.youReposted).isFalse()
+        assertThat(res.res.data.repostOf).isNull()
     }
 
     @Test(expected = TestException::class)

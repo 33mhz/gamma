@@ -2,9 +2,8 @@ package io.pnut.gamma.domain.usecases
 
 import io.pnut.gamma.domain.model.Account
 import io.pnut.gamma.mock.AccountRepositoryMock
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 class GetCurrentAccountUseCaseTest {
   @Test
@@ -16,9 +15,8 @@ class GetCurrentAccountUseCaseTest {
       }
     })
     val res = useCase.run(Unit)
-    Assert.assertThat(res.account?.id, `is`(account.id))
-    Assert.assertThat(res.account?.name, `is`(account.name))
-    Assert.assertThat(res.account?.screenName, `is`(account.screenName))
-    Assert.assertThat(res.account?.screenName, `is`(account.screenName))
+    assertThat(res.account?.id).isEqualTo(account.id)
+    assertThat(res.account?.name).isEqualTo(account.name)
+    assertThat(res.account?.screenName).isEqualTo(account.screenName)
   }
 }

@@ -5,9 +5,8 @@ import io.pnut.gamma.domain.model.io.GetProfileInputData
 import io.pnut.gamma.mock.PnutRepositoryMock
 import io.pnut.gamma.sample.Users
 import io.pnut.gamma.util.ErrorCollections
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 class GetProfileUseCaseTest {
     private val me = Users.me
@@ -19,7 +18,7 @@ class GetProfileUseCaseTest {
     fun succeed() {
         val input = GetProfileInputData(me.id)
         val output = runBlocking { getProfileUseCase.run(input) }
-        Assert.assertThat(output.res.data, `is`(me))
+        assertThat(output.res.data).isEqualTo(me)
     }
 
     @Test(expected = ErrorCollections.CommunicationError::class)

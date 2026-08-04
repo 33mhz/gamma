@@ -6,9 +6,8 @@ import io.pnut.gamma.domain.model.io.StarInputData
 import io.pnut.gamma.mock.PnutRepositoryMock
 import io.pnut.gamma.util.TestException
 import io.pnut.gamma.sample.Posts
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 
 class StarUseCaseTest {
@@ -26,7 +25,7 @@ class StarUseCaseTest {
             }
         })
         val starOutputData = starUseCase.run(StarInputData(unStarredPost.id, true))
-        Assert.assertThat(starOutputData.res.data, `is`(unStarredPost.copy(youBookmarked = true)))
+        assertThat(starOutputData.res.data).isEqualTo(unStarredPost.copy(youBookmarked = true))
     }
 
     @Test(expected = TestException::class)
@@ -47,7 +46,7 @@ class StarUseCaseTest {
             }
         })
         val starOutputData = starUseCase.run(StarInputData(starredPost.id, false))
-        Assert.assertThat(starOutputData.res.data, `is`(starredPost.copy(youBookmarked = false)))
+        assertThat(starOutputData.res.data).isEqualTo(starredPost.copy(youBookmarked = false))
     }
 
     @Test(expected = TestException::class)

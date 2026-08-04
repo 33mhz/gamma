@@ -8,9 +8,8 @@ import io.pnut.gamma.domain.model.io.GetUsersInputData
 import io.pnut.gamma.domain.model.params.composed.GetUsersParam
 import io.pnut.gamma.mock.PnutRepositoryMock
 import io.pnut.gamma.sample.Users
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 
 class GetUsersUseCaseTest {
@@ -33,10 +32,10 @@ class GetUsersUseCaseTest {
     val res = runBlocking {
       useCase.run(GetUsersInputData(UserListType.Followers("me"), GetUsersParam()))
     }
-    Assert.assertThat(res.res.meta.code, `is`(200))
-    Assert.assertThat(res.res.data.size, `is`(2))
-    Assert.assertThat(res.res.data[0].id, `is`(me.id))
-    Assert.assertThat(res.res.data[1].id, `is`(others.id))
+    assertThat(res.res.meta.code).isEqualTo(200)
+    assertThat(res.res.data).hasSize(2)
+    assertThat(res.res.data[0].id).isEqualTo(me.id)
+    assertThat(res.res.data[1].id).isEqualTo(others.id)
   }
 
   @Test
@@ -57,10 +56,10 @@ class GetUsersUseCaseTest {
     val res = runBlocking {
       useCase.run(GetUsersInputData(UserListType.Following("me"), GetUsersParam()))
     }
-    Assert.assertThat(res.res.meta.code, `is`(200))
-    Assert.assertThat(res.res.data.size, `is`(2))
-    Assert.assertThat(res.res.data[0].id, `is`(me.id))
-    Assert.assertThat(res.res.data[1].id, `is`(others.id))
+    assertThat(res.res.meta.code).isEqualTo(200)
+    assertThat(res.res.data).hasSize(2)
+    assertThat(res.res.data[0].id).isEqualTo(me.id)
+    assertThat(res.res.data[1].id).isEqualTo(others.id)
   }
 
   @Test
@@ -78,10 +77,10 @@ class GetUsersUseCaseTest {
     val res = runBlocking {
       useCase.run(GetUsersInputData(UserListType.Search("foo"), GetUsersParam()))
     }
-    Assert.assertThat(res.res.meta.code, `is`(200))
-    Assert.assertThat(res.res.data.size, `is`(2))
-    Assert.assertThat(res.res.data[0].id, `is`(me.id))
-    Assert.assertThat(res.res.data[1].id, `is`(others.id))
+    assertThat(res.res.meta.code).isEqualTo(200)
+    assertThat(res.res.data).hasSize(2)
+    assertThat(res.res.data[0].id).isEqualTo(me.id)
+    assertThat(res.res.data[1].id).isEqualTo(others.id)
   }
 
   @Test
@@ -99,10 +98,10 @@ class GetUsersUseCaseTest {
     val res = runBlocking {
       useCase.run(GetUsersInputData(UserListType.Blocked, GetUsersParam()))
     }
-    Assert.assertThat(res.res.meta.code, `is`(200))
-    Assert.assertThat(res.res.data.size, `is`(2))
-    Assert.assertThat(res.res.data[0].id, `is`(me.id))
-    Assert.assertThat(res.res.data[1].id, `is`(others.id))
+    assertThat(res.res.meta.code).isEqualTo(200)
+    assertThat(res.res.data).hasSize(2)
+    assertThat(res.res.data[0].id).isEqualTo(me.id)
+    assertThat(res.res.data[1].id).isEqualTo(others.id)
   }
 
   @Test
@@ -120,9 +119,9 @@ class GetUsersUseCaseTest {
     val res = runBlocking {
       useCase.run(GetUsersInputData(UserListType.Muted, GetUsersParam()))
     }
-    Assert.assertThat(res.res.meta.code, `is`(200))
-    Assert.assertThat(res.res.data.size, `is`(2))
-    Assert.assertThat(res.res.data[0].id, `is`(me.id))
-    Assert.assertThat(res.res.data[1].id, `is`(others.id))
+    assertThat(res.res.meta.code).isEqualTo(200)
+    assertThat(res.res.data).hasSize(2)
+    assertThat(res.res.data[0].id).isEqualTo(me.id)
+    assertThat(res.res.data[1].id).isEqualTo(others.id)
   }
 }

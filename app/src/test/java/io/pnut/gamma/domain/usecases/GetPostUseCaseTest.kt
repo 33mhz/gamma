@@ -10,9 +10,8 @@ import io.pnut.gamma.domain.model.params.composed.GetPostsParam
 import io.pnut.gamma.mock.PnutRepositoryMock
 import io.pnut.gamma.mock.PreferenceRepositoryMock
 import io.pnut.gamma.sample.Posts
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 class GetPostUseCaseTest {
 
@@ -34,9 +33,9 @@ class GetPostUseCaseTest {
       }
     }, PreferenceRepositoryMock())
     val res = runBlocking { useCase.run(GetPostInputData(StreamType.Home, GetPostsParam())) }
-    Assert.assertThat(res.res.data[0].content?.text, `is`("home1"))
-    Assert.assertThat(res.res.data[1].content?.text, `is`("home2"))
-    Assert.assertThat(res.res.data[2].content?.text, `is`("home3"))
+    assertThat(res.res.data[0].content?.text).isEqualTo("home1")
+    assertThat(res.res.data[1].content?.text).isEqualTo("home2")
+    assertThat(res.res.data[2].content?.text).isEqualTo("home3")
   }
 
   @Test
@@ -51,9 +50,9 @@ class GetPostUseCaseTest {
       override val unifiedStream: Boolean = true
     })
     val res = runBlocking { useCase.run(GetPostInputData(StreamType.Home, GetPostsParam())) }
-    Assert.assertThat(res.res.data[0].content?.text, `is`("unified1"))
-    Assert.assertThat(res.res.data[1].content?.text, `is`("unified2"))
-    Assert.assertThat(res.res.data[2].content?.text, `is`("unified3"))
+    assertThat(res.res.data[0].content?.text).isEqualTo("unified1")
+    assertThat(res.res.data[1].content?.text).isEqualTo("unified2")
+    assertThat(res.res.data[2].content?.text).isEqualTo("unified3")
   }
 
   @Test
@@ -66,9 +65,9 @@ class GetPostUseCaseTest {
       }
     }, PreferenceRepositoryMock())
     val res = runBlocking { useCase.run(GetPostInputData(StreamType.Mentions, GetPostsParam())) }
-    Assert.assertThat(res.res.data[0].content?.text, `is`("mention1"))
-    Assert.assertThat(res.res.data[1].content?.text, `is`("mention2"))
-    Assert.assertThat(res.res.data[2].content?.text, `is`("mention3"))
+    assertThat(res.res.data[0].content?.text).isEqualTo("mention1")
+    assertThat(res.res.data[1].content?.text).isEqualTo("mention2")
+    assertThat(res.res.data[2].content?.text).isEqualTo("mention3")
   }
 
   @Test
@@ -84,9 +83,9 @@ class GetPostUseCaseTest {
       }
     }, PreferenceRepositoryMock())
     val res = runBlocking { useCase.run(GetPostInputData(StreamType.Stars("me"), GetPostsParam())) }
-    Assert.assertThat(res.res.data[0].content?.text, `is`("stars1"))
-    Assert.assertThat(res.res.data[1].content?.text, `is`("stars2"))
-    Assert.assertThat(res.res.data[2].content?.text, `is`("stars3"))
+    assertThat(res.res.data[0].content?.text).isEqualTo("stars1")
+    assertThat(res.res.data[1].content?.text).isEqualTo("stars2")
+    assertThat(res.res.data[2].content?.text).isEqualTo("stars3")
   }
 
   @Test
@@ -102,9 +101,9 @@ class GetPostUseCaseTest {
       }
     }, PreferenceRepositoryMock())
     val res = runBlocking { useCase.run(GetPostInputData(StreamType.Tag("tag"), GetPostsParam())) }
-    Assert.assertThat(res.res.data[0].content?.text, `is`("tag1"))
-    Assert.assertThat(res.res.data[1].content?.text, `is`("tag2"))
-    Assert.assertThat(res.res.data[2].content?.text, `is`("tag3"))
+    assertThat(res.res.data[0].content?.text).isEqualTo("tag1")
+    assertThat(res.res.data[1].content?.text).isEqualTo("tag2")
+    assertThat(res.res.data[2].content?.text).isEqualTo("tag3")
   }
 
 
@@ -121,9 +120,9 @@ class GetPostUseCaseTest {
       }
     }, PreferenceRepositoryMock())
     val res = runBlocking { useCase.run(GetPostInputData(StreamType.User("me"), GetPostsParam())) }
-    Assert.assertThat(res.res.data[0].content?.text, `is`("user1"))
-    Assert.assertThat(res.res.data[1].content?.text, `is`("user2"))
-    Assert.assertThat(res.res.data[2].content?.text, `is`("user3"))
+    assertThat(res.res.data[0].content?.text).isEqualTo("user1")
+    assertThat(res.res.data[1].content?.text).isEqualTo("user2")
+    assertThat(res.res.data[2].content?.text).isEqualTo("user3")
   }
 
   @Test
@@ -139,8 +138,24 @@ class GetPostUseCaseTest {
       }
     }, PreferenceRepositoryMock())
     val res = runBlocking { useCase.run(GetPostInputData(StreamType.Thread("1"), GetPostsParam())) }
-    Assert.assertThat(res.res.data[0].content?.text, `is`("thread1"))
-    Assert.assertThat(res.res.data[1].content?.text, `is`("thread2"))
-    Assert.assertThat(res.res.data[2].content?.text, `is`("thread3"))
+    assertThat(res.res.data[0].content?.text).isEqualTo("thread1")
+    assertThat(res.res.data[1].content?.text).isEqualTo("thread2")
+    assertThat(res.res.data[2].content?.text).isEqualTo("thread3")
+  }
+
+  @Test
+  fun getPostsByIds() {
+    val ids = listOf("1", "2", "3")
+    val useCase = GetPostUseCase(object : PnutRepositoryMock() {
+      override suspend fun getPosts(ids: io.pnut.gamma.domain.entity.IDs): PnutResponse<List<Post>> {
+        return PnutResponse(
+          PnutResponse.Meta(200), generatePosts("posts")
+        )
+      }
+    }, PreferenceRepositoryMock())
+    val res = runBlocking { useCase.run(GetPostInputData(StreamType.Posts(ids), GetPostsParam())) }
+    assertThat(res.res.data[0].content?.text).isEqualTo("posts1")
+    assertThat(res.res.data[1].content?.text).isEqualTo("posts2")
+    assertThat(res.res.data[2].content?.text).isEqualTo("posts3")
   }
 }

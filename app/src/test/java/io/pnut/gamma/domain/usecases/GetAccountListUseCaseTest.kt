@@ -2,9 +2,8 @@ package io.pnut.gamma.domain.usecases
 
 import io.pnut.gamma.domain.model.Account
 import io.pnut.gamma.mock.AccountRepositoryMock
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 class GetAccountListUseCaseTest {
   @Test
@@ -20,7 +19,7 @@ class GetAccountListUseCaseTest {
         return Account(id, "", "", "")
       }
     })
-    Assert.assertThat(useCase.run(Unit).accounts, `is`(listOf(account123, account456)))
+    assertThat(useCase.run(Unit).accounts).isEqualTo(listOf(account123, account456))
   }
 
   @Test
@@ -34,6 +33,6 @@ class GetAccountListUseCaseTest {
         return null
       }
     })
-    Assert.assertThat(useCase.run(Unit).accounts, `is`(emptyList()))
+    assertThat(useCase.run(Unit).accounts).isEmpty()
   }
 }

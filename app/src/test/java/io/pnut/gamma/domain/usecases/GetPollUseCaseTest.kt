@@ -7,9 +7,8 @@ import io.pnut.gamma.domain.model.io.GetPollInputData
 import io.pnut.gamma.mock.PnutRepositoryMock
 import io.pnut.gamma.util.Response
 import io.pnut.gamma.sample.Polls
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 class GetPollUseCaseTest {
   @Test
@@ -21,6 +20,6 @@ class GetPollUseCaseTest {
       }
     })
     val res = runBlocking { useCase.run(GetPollInputData("1", "pollToken")) }
-    Assert.assertThat(res.poll, `is`(poll))
+    assertThat(res.poll).isEqualTo(poll)
   }
 }

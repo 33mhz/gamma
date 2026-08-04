@@ -3,10 +3,8 @@ package io.pnut.gamma.domain.usecases
 import io.pnut.gamma.domain.model.Account
 import io.pnut.gamma.mock.AccountRepositoryMock
 import io.pnut.gamma.mock.PnutRepositoryMock
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.CoreMatchers.nullValue
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 class LogoutUseCaseTest {
   private val pnutRepository = PnutRepositoryMock()
@@ -23,7 +21,7 @@ class LogoutUseCaseTest {
       }
 
       override fun deleteAccount(id: String) {
-        Assert.assertThat(id, `is`(willBeDeletedAccount.id))
+        assertThat(id).isEqualTo(willBeDeletedAccount.id)
       }
 
       override fun getStoredIds(): List<String> {
@@ -35,7 +33,7 @@ class LogoutUseCaseTest {
       }
     }, pnutRepository)
     val res = useCase.run(Unit)
-    Assert.assertThat(res.anotherAccountId, `is`(anotherAccount.id))
+    assertThat(res.anotherAccountId).isEqualTo(anotherAccount.id)
   }
 
   @Test
@@ -48,7 +46,7 @@ class LogoutUseCaseTest {
       }
 
       override fun deleteAccount(id: String) {
-        Assert.assertThat(id, `is`(willBeDeletedAccount.id))
+        assertThat(id).isEqualTo(willBeDeletedAccount.id)
       }
 
       override fun getStoredIds(): List<String> {
@@ -60,7 +58,7 @@ class LogoutUseCaseTest {
       }
     }, pnutRepository)
     val res = useCase.run(Unit)
-    Assert.assertThat(res.anotherAccountId, `is`(nullValue()))
+    assertThat(res.anotherAccountId).isNull()
   }
 
   @Test
@@ -71,6 +69,6 @@ class LogoutUseCaseTest {
       }
     }, pnutRepository)
     val res = useCase.run(Unit)
-    Assert.assertThat(res.anotherAccountId, `is`(nullValue()))
+    assertThat(res.anotherAccountId).isNull()
   }
 }

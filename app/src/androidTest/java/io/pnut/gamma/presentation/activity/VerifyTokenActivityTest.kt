@@ -22,14 +22,13 @@ import io.pnut.gamma.domain.usecases.VerifyTokenUseCase
 import io.pnut.gamma.testutil.IntentUtil
 import io.pnut.gamma.sample.Tokens
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.Matchers
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import javax.inject.Inject
+import com.google.common.truth.Truth.assertThat
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -102,6 +101,6 @@ class VerifyTokenActivityTest {
       Thread.sleep(100)
       count++
     }
-    Assert.assertThat(scenario.state, Matchers.`is`(Lifecycle.State.DESTROYED))
+    assertThat(scenario.state).isEqualTo(Lifecycle.State.DESTROYED)
   }
 }

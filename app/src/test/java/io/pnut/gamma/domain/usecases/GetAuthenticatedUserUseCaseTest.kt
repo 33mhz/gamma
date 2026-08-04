@@ -10,11 +10,9 @@ import io.pnut.gamma.domain.model.io.GetAuthenticatedUserInputData
 import io.pnut.gamma.mock.PnutCacheRepositoryMock
 import io.pnut.gamma.mock.PnutRepositoryMock
 import io.pnut.gamma.sample.Users
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
 import org.junit.Test
 import org.mockito.Mockito
-
+import com.google.common.truth.Truth.assertThat
 
 class GetAuthenticatedUserUseCaseTest {
   @Test
@@ -33,7 +31,7 @@ class GetAuthenticatedUserUseCaseTest {
       }
 
       override suspend fun storeToken(token: Token) {
-        Assert.assertThat(token, `is`(latestToken))
+        assertThat(token).isEqualTo(latestToken)
       }
     }
     val liveData = Mockito.mock(MutableLiveData<Token>()::class.java)

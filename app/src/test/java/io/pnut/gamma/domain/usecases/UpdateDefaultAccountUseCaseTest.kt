@@ -4,9 +4,8 @@ import io.pnut.gamma.domain.model.io.UpdateDefaultAccountInputData
 import io.pnut.gamma.mock.AccountRepositoryMock
 import io.pnut.gamma.mock.PnutRepositoryMock
 import io.pnut.gamma.sample.Accounts
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 class UpdateDefaultAccountUseCaseTest {
   @Test
@@ -14,7 +13,7 @@ class UpdateDefaultAccountUseCaseTest {
     val account = Accounts.account
     val useCase = UpdateDefaultAccountUseCase(object : AccountRepositoryMock() {
       override fun updateDefaultAccount(id: String) {
-        Assert.assertThat(id, `is`(account.id))
+        assertThat(id).isEqualTo(account.id)
       }
 
       override fun getToken(id: String): String {
@@ -22,11 +21,11 @@ class UpdateDefaultAccountUseCaseTest {
       }
     }, object : PnutRepositoryMock() {
       override fun updateDefaultPnutService(token: String) {
-        Assert.assertThat(token, `is`(account.token))
+        assertThat(token).isEqualTo(account.token)
       }
     })
     val res = useCase.run(UpdateDefaultAccountInputData(account.id))
-    Assert.assertThat(res.result, `is`(true))
+    assertThat(res.result).isTrue()
   }
 
   @Test
@@ -34,7 +33,7 @@ class UpdateDefaultAccountUseCaseTest {
     val account = Accounts.account
     val useCase = UpdateDefaultAccountUseCase(object : AccountRepositoryMock() {
       override fun updateDefaultAccount(id: String) {
-        Assert.assertThat(id, `is`(account.id))
+        assertThat(id).isEqualTo(account.id)
       }
 
       override fun getToken(id: String): String? {
@@ -42,10 +41,10 @@ class UpdateDefaultAccountUseCaseTest {
       }
     }, object : PnutRepositoryMock() {
       override fun updateDefaultPnutService(token: String) {
-        Assert.assertThat(token, `is`(account.token))
+        assertThat(token).isEqualTo(account.token)
       }
     })
     val res = useCase.run(UpdateDefaultAccountInputData(account.id))
-    Assert.assertThat(res.result, `is`(false))
+    assertThat(res.result).isFalse()
   }
 }

@@ -5,8 +5,9 @@ import io.pnut.gamma.domain.model.io.ReportPostOutputData
 import io.pnut.gamma.domain.repository.IAccountRepository
 import io.pnut.gamma.domain.repository.IPnutRepository
 import io.pnut.gamma.util.ErrorCollections
+import javax.inject.Inject
 
-class ReportPostUseCase(
+class ReportPostUseCase @Inject constructor(
     private val pnutRepository: IPnutRepository,
     private val accountRepository: IAccountRepository
 ) : UseCase<ReportPostOutputData, ReportPostInputData>() {

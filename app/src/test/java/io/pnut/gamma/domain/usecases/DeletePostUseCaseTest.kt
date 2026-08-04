@@ -6,10 +6,8 @@ import io.pnut.gamma.domain.entity.Post
 import io.pnut.gamma.domain.model.io.DeletePostInputData
 import io.pnut.gamma.mock.PnutRepositoryMock
 import io.pnut.gamma.sample.Posts
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.CoreMatchers.nullValue
-import org.junit.Assert
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 class DeletePostUseCaseTest {
   @Test
@@ -27,7 +25,7 @@ class DeletePostUseCaseTest {
     val res = runBlocking {
       useCase.run(DeletePostInputData(post.id))
     }
-    Assert.assertThat(res.res.data.isDeleted, `is`(true))
-    Assert.assertThat(res.res.data.content, `is`(nullValue()))
+    assertThat(res.res.data.isDeleted).isTrue()
+    assertThat(res.res.data.content).isNull()
   }
 }

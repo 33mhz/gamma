@@ -152,6 +152,12 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override suspend fun getPosts(ids: io.pnut.gamma.domain.entity.IDs): PnutResponse<List<Post>> {
+        return success {
+            ids.ids.mapNotNull { pnutMemoryDb.posts[it] }
+        }
+    }
+
     override suspend fun createPost(postBody: PostBody): PnutResponse<Post> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -179,6 +185,10 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
 
     override fun deletePost(postId: String): PnutResponse<Post> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun reportPost(postId: String, reason: io.pnut.gamma.domain.entity.ReportReason): PnutResponse<Unit> {
+        TODO("not implemented")
     }
 
     override fun createStarPostSync(postId: String): PnutResponse<Post> {
@@ -310,6 +320,18 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         paginationParam: PaginationParam
     ): PnutResponse<List<Message>> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun deleteMessage(channelId: String, messageId: String): PnutResponse<Message> {
+        TODO("not implemented")
+    }
+
+    override suspend fun getMessageThread(channelId: String, messageId: String): PnutResponse<List<Message>> {
+        TODO("not implemented")
+    }
+
+    override suspend fun createMessage(channelId: String, message: PostBody): PnutResponse<Message> {
+        TODO("not implemented")
     }
 
     override suspend fun getInteractions(getInteractionsParam: GetInteractionsParam): PnutResponse<List<Interaction>> {
