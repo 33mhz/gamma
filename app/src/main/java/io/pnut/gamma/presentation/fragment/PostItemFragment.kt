@@ -886,6 +886,37 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             return getPostUseCase.run(GetPostInputData(streamType, getPostParam)).res
         }
 
+        override suspend fun onReceiveNewItems(response: PnutResponse<List<Post>>) {
+            val idsToReload = mutableListOf<String>()
+            response.meta.revisedIds?.let { idsToReload.addAll(it) }
+            response.meta.deletedIds?.let { idsToReload.addAll(it) }
+
+            if (idsToReload.isEmpty()) return
+
+            val existingIds =
+                items.filterIsInstance<PageableItemWrapper.Item<Post>>().map { it.item.id }.toSet()
+            val filteredIdsToReload = idsToReload.filter { existingIds.contains(it) }
+
+            if (filteredIdsToReload.isEmpty()) return
+
+            runCatching {
+                getPostUseCase.run(
+                    GetPostInputData(
+                        StreamType.Posts(filteredIdsToReload),
+                        GetPostsParam()
+                    )
+                ).res
+            }.onSuccess { reloadedResponse ->
+                reloadedResponse.data.forEach { reloadedPost ->
+                    val index =
+                        items.indexOfFirst { it is PageableItemWrapper.Item && it.item.id == reloadedPost.id }
+                    if (index >= 0) {
+                        items[index] = PageableItemWrapper.Item(reloadedPost)
+                    }
+                }
+            }
+        }
+
         override fun loadCache() {
             viewModelScope.launch {
                 runCatching {

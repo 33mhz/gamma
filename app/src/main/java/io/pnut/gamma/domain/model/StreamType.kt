@@ -20,4 +20,5 @@ sealed class StreamType {
     }
 
     data class Search(val keyword: String) : StreamType()
+    data class Posts(val ids: List<String>) : StreamType()
 }

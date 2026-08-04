@@ -41,6 +41,7 @@ interface IPnutRepository {
     suspend fun getTagStream(tag: String, getPostsParam: GetPostsParam): PnutResponse<List<Post>>
     suspend fun searchPosts(params: GetPostsParam): PnutResponse<List<Post>>
     suspend fun getThread(postId: String, params: GetPostsParam): PnutResponse<List<Post>>
+    suspend fun getPosts(ids: io.pnut.gamma.domain.entity.IDs): PnutResponse<List<Post>>
 
     suspend fun createPost(postBody: PostBody): PnutResponse<Post>
     fun createPostSync(postBody: PostBody, token: String): PnutResponse<Post>

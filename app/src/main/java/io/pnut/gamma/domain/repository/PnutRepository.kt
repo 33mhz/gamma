@@ -7,6 +7,7 @@ import android.provider.OpenableColumns
 import io.pnut.gamma.data.PnutService
 import io.pnut.gamma.domain.entity.Channel
 import io.pnut.gamma.domain.entity.FileBody
+import io.pnut.gamma.domain.entity.IDs
 import io.pnut.gamma.domain.entity.Interaction
 import io.pnut.gamma.domain.entity.Marker
 import io.pnut.gamma.domain.entity.Message
@@ -111,6 +112,10 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         params: GetPostsParam
     ): PnutResponse<List<Post>> {
         return defaultPnutService.getThread(postId, params.toMap()).await()
+    }
+
+    override suspend fun getPosts(ids: IDs): PnutResponse<List<Post>> {
+        return defaultPnutService.getPosts(ids).await()
     }
 
     override fun createRepostSync(postId: String): PnutResponse<Post> {

@@ -52,6 +52,7 @@ open class GetPostUseCase(
             is StreamType.Search -> pnutRepository.searchPosts(params.params.apply {
                 add(SearchPostParam(streamType.keyword))
             })
+            is StreamType.Posts -> pnutRepository.getPosts(io.pnut.gamma.domain.entity.IDs(streamType.ids))
         }
         return GetPostOutputData(res)
     }

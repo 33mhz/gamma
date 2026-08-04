@@ -41,6 +41,7 @@ class PnutCacheRepository(currentUserId: String?, context: Context) : IPnutCache
                 is StreamType.Tag -> "${streamType::class.java.simpleName}/${streamType.tag}"
                 is StreamType.Thread -> "${streamType::class.java.simpleName}/${streamType.postId}"
                 is StreamType.Search -> "${streamType::class.java.simpleName}/${streamType.keyword}"
+                is StreamType.Posts -> "${streamType::class.java.simpleName}/${streamType.ids.hashCode()}"
             }
         }
 

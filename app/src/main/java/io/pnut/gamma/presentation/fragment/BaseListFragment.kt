@@ -219,6 +219,9 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
         }
 
         abstract suspend fun getItems(requestPager: PageableItemWrapper.Pager<T>?): PnutResponse<List<T>>
+
+        open suspend fun onReceiveNewItems(response: PnutResponse<List<T>>) {}
+
         fun loadSegmentItems(requestPager: PageableItemWrapper.Pager<T>) {
             loadItems(requestPager)
         }
@@ -232,6 +235,7 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
                 runCatching {
                     getItems(requestPager)
                 }.onSuccess {
+                    onReceiveNewItems(it)
                     listEvent.postValue(ListEvent.ReceiveNewItems(it, requestPager))
                 }.onFailure {
                     LogUtil.e(it.message ?: "no message")
