@@ -96,7 +96,7 @@ object Util {
         }
     }
 
-    fun openCustomTabUrl(context: Context, link: String) {
+    fun openCustomTabUrl(context: Context, link: String, isEphemeral: Boolean = false) {
         try {
             val color = context.getColor(R.color.colorWindowBackground)
             val colorSchemeParams = CustomTabColorSchemeParams.Builder()
@@ -110,10 +110,11 @@ object Util {
                 .setDefaultColorSchemeParams(colorSchemeParams)
                 .setStartAnimations(context, R.anim.slide_in_left, R.anim.slide_out_left)
                 .setExitAnimations(context, R.anim.slide_in_right, R.anim.slide_out_right)
+                .setEphemeralBrowsingEnabled(isEphemeral)
                 .build()
                 .launchUrl(context, link.toUri())
         } catch (e: Exception) {
-            // TODO: to improve error handling
+            // TODO: improve error handling
             Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
         }
     }

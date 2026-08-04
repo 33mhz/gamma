@@ -48,8 +48,7 @@ class LoginActivity : BaseActivity() {
 
 
     private fun launchLoginBrowserActivity() {
-        val intent = LoginUtil.getLoginIntent(this)
-        startActivity(intent)
+        LoginUtil.launchLogin(this)
         finish()
     }
 

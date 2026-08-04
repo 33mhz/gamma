@@ -30,4 +30,9 @@ object LoginUtil {
         val url = createLoginURL(context)
         return Intent(Intent.ACTION_VIEW, url.toUri())
     }
+
+    fun launchLogin(context: Context, isEphemeral: Boolean = false) {
+        val url = createLoginURL(context)
+        Util.openCustomTabUrl(context, url, isEphemeral)
+    }
 }

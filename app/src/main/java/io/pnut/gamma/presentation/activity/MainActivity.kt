@@ -91,8 +91,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
     override fun onAddAccount() {
         closeDrawer()
-        val newIntent = LoginUtil.getLoginIntent(this)
-        startActivity(newIntent)
+        LoginUtil.launchLogin(this, isEphemeral = true)
     }
 
     override fun onRepostReceive(post: Post) {
