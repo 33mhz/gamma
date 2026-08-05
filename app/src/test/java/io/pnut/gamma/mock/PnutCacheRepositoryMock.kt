@@ -53,4 +53,8 @@ open class PnutCacheRepositoryMock : IPnutCacheRepository {
   ) {
     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
   }
+
+  override suspend fun clearAll() {
+    TODO("not implemented")
+  }
 }

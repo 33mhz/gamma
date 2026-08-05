@@ -39,18 +39,12 @@
             app:seekBarIncrement="@integer/pref_auto_pager_step" />
     </PreferenceCategory>
     <PreferenceCategory app:title="@string/cache">
-        <SwitchPreferenceCompat
-            app:title="@string/pref_cache_title"
-            app:defaultValue="@bool/pref_cache_default_value"
-            app:summary="@string/pref_cache_summary"
-            app:key="@string/pref_cache_key" />
         <io.pnut.gamma.presentation.view.SeekBarPreferenceMod
             app:title="@string/pref_cache_size_title"
             app:key="@string/pref_cache_size_key"
-            android:dependency="@string/pref_cache_key"
             app:defaultValue="@integer/pref_cache_size_default_value"
             app:min="0"
-            android:max="200"
+            android:max="500"
             app:adjustable="true"
             app:showSeekBarValue="true"
             app:summary="@string/pref_cache_size_desc"

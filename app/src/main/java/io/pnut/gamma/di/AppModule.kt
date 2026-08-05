@@ -6,6 +6,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import androidx.room.Room
+import io.pnut.gamma.data.db.AppDatabase
+import io.pnut.gamma.data.db.dao.CacheDao
 import io.pnut.gamma.domain.repository.AccountRepository
 import io.pnut.gamma.domain.repository.IAccountRepository
 import io.pnut.gamma.domain.repository.IPnutCacheRepository
@@ -36,6 +39,20 @@ object AppModule {
         PreferenceRepository(context)
 
     @Provides
-    fun providePnutCacheRepository(@ApplicationContext context: Context, accountRepository: IAccountRepository): IPnutCacheRepository =
-        PnutCacheRepository(accountRepository.getDefaultAccount()?.id, context)
+    fun providePnutCacheRepository(
+        @ApplicationContext context: Context,
+        accountRepository: IAccountRepository,
+        cacheDao: CacheDao
+    ): IPnutCacheRepository =
+        PnutCacheRepository(accountRepository.getDefaultAccount()?.id, context, cacheDao)
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(context, AppDatabase::class.java, "gamma-db")
+            .fallbackToDestructiveMigration(false)
+            .build()
+
+    @Provides
+    fun provideCacheDao(database: AppDatabase): CacheDao = database.cacheDao()
 }

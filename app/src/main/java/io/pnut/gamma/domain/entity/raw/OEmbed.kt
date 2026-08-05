@@ -10,6 +10,20 @@ open class OEmbed(
     open val version: String
 ) : RawValue, Parcelable {
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is OEmbed) return false
+        if (type != other.type) return false
+        if (version != other.version) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = type.hashCode()
+        result = 31 * result + version.hashCode()
+        return result
+    }
+
     companion object {
         const val TYPE = "io.pnut.core.oembed"
         fun getOEmbeds(raw: Map<String, List<RawValue>>?): List<OEmbed> {

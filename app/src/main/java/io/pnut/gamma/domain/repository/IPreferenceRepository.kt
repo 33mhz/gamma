@@ -17,7 +17,6 @@ interface IPreferenceRepository {
     val thresholdOfAutoPager: Int
     val unifiedStream: Boolean
     val shapeOfAvatar: ShapeOfAvatar
-    val cache: Boolean
     val cacheSize: Int
     val includeDirectedPosts: Boolean
 }

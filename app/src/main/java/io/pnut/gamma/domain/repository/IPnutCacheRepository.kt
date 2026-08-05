@@ -29,5 +29,6 @@ interface IPnutCacheRepository {
         userListType: UserListType,
         cacheSize: Int
     )
+    suspend fun clearAll()
 
 }

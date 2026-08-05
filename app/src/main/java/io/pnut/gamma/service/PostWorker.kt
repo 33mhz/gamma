@@ -59,7 +59,7 @@ class PostWorker @AssistedInject constructor(
             fun getAction(actionName: String): Actions? {
                 return try {
                     valueOf(actionName.split(".").last())
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     null
                 }
             }

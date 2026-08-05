@@ -21,4 +21,17 @@ sealed class StreamType {
 
     data class Search(val keyword: String) : StreamType()
     data class Posts(val ids: List<String>) : StreamType()
+
+    val categoryName: String
+        get() = when (this) {
+            is Explore -> this::class.java.simpleName
+            is Home -> this::class.java.simpleName
+            is Mentions -> this::class.java.simpleName
+            is Stars -> "${this::class.java.simpleName}/$userId"
+            is User -> "${this::class.java.simpleName}/$userId"
+            is Tag -> "${this::class.java.simpleName}/$tag"
+            is Thread -> "${this::class.java.simpleName}/$postId"
+            is Search -> "${this::class.java.simpleName}/$keyword"
+            is Posts -> "${this::class.java.simpleName}/${ids.hashCode()}"
+        }
 }

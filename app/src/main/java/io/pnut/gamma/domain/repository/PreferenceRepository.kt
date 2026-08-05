@@ -43,7 +43,7 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
                     "0"
                 ) ?: "0"
                 ThemeColorUtil.DarkMode.entries[strInt.toInt()]
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 ThemeColorUtil.DarkMode.FollowSystem
             }
         }
@@ -90,15 +90,10 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
                 context.getString(R.string.pref_shape_of_avatar_key_default_value)
             ) ?: "0"
             ShapeOfAvatar.entries[strInt.toInt()]
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ShapeOfAvatar.Circle
         }
 
-    override val cache: Boolean
-        get() = sharedPreferences.getBoolean(
-            context.getString(R.string.pref_cache_key),
-            res.getBoolean(R.bool.pref_cache_default_value)
-        )
     override val cacheSize: Int
         get() = sharedPreferences.getInt(
             context.getString(R.string.pref_cache_size_key),

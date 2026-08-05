@@ -29,7 +29,6 @@ class ThreadFragment : PostItemFragment() {
     override fun getRecyclerView(view: View): RecyclerView = ListWithToolbarBinding.bind(view).itemList
     override fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout = ListWithToolbarBinding.bind(view).swipeRefreshLayout
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = ListWithToolbarBinding.bind(view)
@@ -37,11 +36,6 @@ class ThreadFragment : PostItemFragment() {
             backToPrevFragment()
         }
         binding.toolbar.title = getString(R.string.thread_with_id, post.threadId)
-//        getRecyclerView(view).let {
-//            it.layoutManager = LinearLayoutManager(view.context, RecyclerView.VERTICAL, true).apply {
-//                stackFromEnd = true
-//            }
-//        }
     }
 
     companion object {

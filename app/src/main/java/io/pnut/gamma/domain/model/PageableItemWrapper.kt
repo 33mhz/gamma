@@ -5,10 +5,10 @@ import io.pnut.gamma.domain.entity.UniquePageable
 
 
 sealed class PageableItemWrapper<DD : UniquePageable> {
-    val uniqueKey: String?
+    val uniqueKey: String
         get() = when (this) {
             is Item -> item.uniqueKey
-            else -> null
+            is Pager -> "pager_${maxId}_${minId}_${virtual}"
         }
     abstract val type: Type
 

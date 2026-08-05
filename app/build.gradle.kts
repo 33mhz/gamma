@@ -223,11 +223,11 @@ dependencies {
   androidTestImplementation("org.mockito:mockito-android:5.23.0")
   testImplementation("org.robolectric:robolectric:4.16.1")
   val espressoVersion = "3.7.0"
-  testImplementation("com.google.truth:truth:1.4.5")
+  androidTestImplementation("com.google.truth:truth:1.4.5")
   androidTestImplementation("androidx.test.espresso:espresso-core:$espressoVersion")
   androidTestImplementation("androidx.test.espresso:espresso-intents:$espressoVersion")
   val testVersion = "1.7.0"
-  testImplementation("androidx.test.ext:truth:$testVersion")
+  androidTestImplementation("androidx.test.ext:truth:$testVersion")
   androidTestImplementation("androidx.test:core:$testVersion")
   androidTestImplementation("androidx.test:rules:$testVersion")
   androidTestImplementation("androidx.test.ext:junit:1.3.0")
@@ -238,6 +238,11 @@ dependencies {
   val navVersion = "2.9.8"
   implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
   implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
+
+  val roomVersion = "2.8.4"
+  implementation("androidx.room:room-runtime:$roomVersion")
+  implementation("androidx.room:room-ktx:$roomVersion")
+  ksp("androidx.room:room-compiler:$roomVersion")
 
   val workVersion = "2.11.2"
   implementation("androidx.work:work-runtime-ktx:$workVersion")

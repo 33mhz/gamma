@@ -51,7 +51,6 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
     private fun initialized() {
         viewModel.initialized = true
         adapter.submitList(ArrayList(viewModel.items))
-        view?.let { getRecyclerView(it).requestLayout() }
         viewModel.loadNewItems()
         viewModel.loadMoreItems()
     }
@@ -73,7 +72,6 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
 
     open fun onReceiveNewItemsAfter() {}
 
-    @Synchronized
     private fun receiveNewItems(
         response: PnutResponse<List<T>>,
         requestPager: PageableItemWrapper<T>?
@@ -81,11 +79,7 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
         LogUtil.e("receiveNewItems ${response.data.size}")
         adapter.updateItems(requestPager, response)
         viewModel.loading.value = false
-        view?.let {
-            val recyclerView = getRecyclerView(it)
-            recyclerView.requestLayout()
-        }
-        if (preferenceRepository.cache) viewModel.storeItems()
+        viewModel.storeItems()
         onReceiveNewItemsAfter()
     }
 
@@ -120,7 +114,7 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.listEvent.observe(this, listEventObserver)
-        val load = if (savedInstanceState == null && preferenceRepository.cache) {
+        val load = if (savedInstanceState == null) {
             viewModel.loadCache()
             true
         } else {
@@ -147,9 +141,15 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
         val recyclerView = getRecyclerView(view)
         setupRecyclerView(recyclerView)
         val swipeRefreshLayout = getSwipeRefreshLayout(view)
+        val loadingIndicator = view.findViewById<View>(R.id.loadingIndicator)
         swipeRefreshLayout.setOnRefreshListener(this)
-        viewModel.loading.observe(viewLifecycleOwner) {
-            swipeRefreshLayout.isRefreshing = it
+        viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
+            if (!isLoading) {
+                swipeRefreshLayout.isRefreshing = false
+                loadingIndicator?.visibility = View.GONE
+            } else if (!swipeRefreshLayout.isRefreshing) {
+                loadingIndicator?.visibility = View.VISIBLE
+            }
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, insets ->
@@ -226,7 +226,7 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
             loadItems(requestPager)
         }
 
-        private fun loadItems(requestPager: PageableItemWrapper.Pager<T>?) {
+        protected fun loadItems(requestPager: PageableItemWrapper.Pager<T>?) {
             // prevent to send same request multi time
             if (loading.value == true) return
             loading.value = true

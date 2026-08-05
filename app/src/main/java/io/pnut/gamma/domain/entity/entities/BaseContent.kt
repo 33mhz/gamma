@@ -9,7 +9,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @JsonClass(generateAdapter = true)
-open class BaseContent(
+data class BaseContent(
     override var text: String? = null,
     override var html: String? = null,
     override var entities: Entities? = null,

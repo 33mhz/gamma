@@ -938,6 +938,9 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
                 }.onSuccess {
                     items.addAll(it.posts.data)
                 }
+                if (streamType is StreamType.Thread) {
+                    loadItems(null)
+                }
                 super.loadCache()
             }
         }

@@ -8,14 +8,28 @@ import androidx.work.CoroutineWorker
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import io.pnut.gamma.domain.repository.PnutCacheRepository
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+import io.pnut.gamma.domain.repository.IPnutCacheRepository
 
 class ClearStreamCacheWorker(context: Context, params: WorkerParameters) :
     CoroutineWorker(context, params) {
 
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface ClearStreamCacheWorkerEntryPoint {
+        fun pnutCacheRepository(): IPnutCacheRepository
+    }
+
     override suspend fun doWork(): Result {
-        val cacheDir = PnutCacheRepository.getUserCacheDir(applicationContext)
-        cacheDir.deleteRecursively()
+        val entryPoint = EntryPointAccessors.fromApplication(
+            applicationContext,
+            ClearStreamCacheWorkerEntryPoint::class.java
+        )
+        entryPoint.pnutCacheRepository().clearAll()
+
         val broadcast = Intent(ACTION)
         applicationContext.sendBroadcast(broadcast)
         return Result.success()

@@ -6,4 +6,4 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @JsonClass(generateAdapter = true)
-class RawImpl : RawValue, Parcelable
+data class RawImpl(val unused: String? = null) : RawValue, Parcelable

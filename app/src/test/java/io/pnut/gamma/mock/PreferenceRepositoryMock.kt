@@ -38,8 +38,6 @@ open class PreferenceRepositoryMock : IPreferenceRepository {
     get() = false
   override val shapeOfAvatar: ShapeOfAvatar
     get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-  override val cache: Boolean
-    get() = true
   override val cacheSize: Int
     get() = 100
   override val includeDirectedPosts: Boolean

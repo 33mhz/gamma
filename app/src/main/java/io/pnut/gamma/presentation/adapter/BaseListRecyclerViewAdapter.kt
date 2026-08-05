@@ -276,13 +276,30 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
     fun insertItems(
         requestPager: PageableItemWrapper<T>?,
         response: PnutResponse<List<T>>,
-        insertIndex: Int
+        startIndex: Int
     ) {
+        var insertIndex = startIndex
         val items = response.data
+        val newKeys = items.map { it.uniqueKey }.toSet()
+
+        val iterator = options.itemList.iterator()
+        var i = 0
+        while (iterator.hasNext()) {
+            val item = iterator.next()
+            if (item.uniqueKey in newKeys) {
+                iterator.remove()
+                if (i < insertIndex) {
+                    insertIndex--
+                }
+            } else {
+                i++
+            }
+        }
+
         val pageableItemWrapperItems = items.map { PageableItemWrapper.Item(it) }
 
         options.itemList.addAll(insertIndex, pageableItemWrapperItems)
-        addSegmentIfNeed(insertIndex + items.size, requestPager, response)
+        addSegmentIfNeed(insertIndex + pageableItemWrapperItems.size, requestPager, response)
         submitList(ArrayList(options.itemList))
     }
 
@@ -290,12 +307,28 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
         requestPager: PageableItemWrapper<T>?,
         response: PnutResponse<List<T>>
     ) {
-        val insertIndex = removeSegmentIfNeed(requestPager)
+        var insertIndex = removeSegmentIfNeed(requestPager)
         val items = response.data
+        val newKeys = items.map { it.uniqueKey }.toSet()
+
+        val iterator = options.itemList.iterator()
+        var i = 0
+        while (iterator.hasNext()) {
+            val item = iterator.next()
+            if (item.uniqueKey in newKeys) {
+                iterator.remove()
+                if (i < insertIndex) {
+                    insertIndex--
+                }
+            } else {
+                i++
+            }
+        }
+
         val pageableItemWrapperItems = items.map { PageableItemWrapper.Item(it) }
 
         options.itemList.addAll(insertIndex, pageableItemWrapperItems)
-        addSegmentIfNeed(insertIndex + items.size, requestPager, response)
+        addSegmentIfNeed(insertIndex + pageableItemWrapperItems.size, requestPager, response)
         submitList(ArrayList(options.itemList))
     }
 
