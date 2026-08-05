@@ -65,7 +65,7 @@ android {
     minSdk = 30
     targetSdk = 37
     versionCode = nextVersionCode
-    versionName = "0.5.0"
+    versionName = "0.6.0"
     testInstrumentationRunner = "io.pnut.gamma.HiltTestRunner"
     renderscriptTargetApi = 30
     renderscriptSupportModeEnabled = true
