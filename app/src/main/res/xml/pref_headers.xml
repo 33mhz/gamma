@@ -19,7 +19,7 @@
             android:title="@string/pref_stream_title" />
         <Preference
             android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$BehaviorPreferenceFragment"
-            android:icon="@drawable/ic_settings_black_24dp"
+            android:icon="@drawable/ic_reply_black_24dp"
             android:key="@string/pref_behavior_key"
             android:title="@string/behavior" />
         <Preference

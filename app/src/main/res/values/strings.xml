@@ -273,7 +273,6 @@
     <string name="pref_auto_pager_key">auto_pager</string>
     <string name="pref_auto_pager_desc">It will autoload when the count from last
         viewing item below the configured number. Disable when set to 0.</string>
-    <string name="your_stream">Your stream</string>
     <string name="pref_use_unified_stream_key">use_unified_stream</string>
     <string name="pref_use_unified_stream_summary_on">Include your recent mentions in the stream.</string>
     <string name="pref_use_unified_stream_summary_off">Do not nclude your recent mentions in the
