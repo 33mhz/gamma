@@ -71,6 +71,7 @@ import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
 import io.pnut.gamma.presentation.adapter.PollOptionsAdapter
 import io.pnut.gamma.presentation.adapter.ReactionUsersAdapter
 import io.pnut.gamma.presentation.adapter.ThumbnailViewPagerAdapter
+import io.pnut.gamma.presentation.util.BindingUtil
 import io.pnut.gamma.presentation.util.DateUtil
 import io.pnut.gamma.presentation.util.EntityOnTouchListener
 import io.pnut.gamma.presentation.util.FragmentHelper
@@ -431,10 +432,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
                 ?: getString(R.string.this_post_has_deleted)
 
         val url = item.mainPost.user?.getAvatarUrl(User.AvatarSize.Large).orEmpty()
-        glideRequest.load(url)
-            .apply(RequestOptions.circleCropTransform())
-            .apply(RequestOptions.circleCropTransform())
-            .into(viewHolder.avatarView)
+        BindingUtil.glideAvatarSrc(viewHolder.avatarView, url)
         viewHolder.avatarView.clipToOutline = true
         val iconTransition = getString(R.string.icon_transition)
         val iconTransitionName =

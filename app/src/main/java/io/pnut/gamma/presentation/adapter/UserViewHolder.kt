@@ -13,7 +13,7 @@ import io.pnut.gamma.domain.entity.User
 import io.pnut.gamma.presentation.util.ColorResource
 import io.pnut.gamma.presentation.view.LinkableTextView
 import io.pnut.gamma.presentation.util.EntityOnTouchListener
-import com.bumptech.glide.Glide
+import io.pnut.gamma.presentation.util.BindingUtil
 import io.pnut.gamma.presentation.util.Util
 
 
@@ -34,10 +34,7 @@ class UserViewHolder(mView: View) :
     }
 
     fun bind(user: User, listener: Callback) {
-        Glide.with(itemView.context)
-            .load(user.content.avatarImage.url)
-            .apply(RequestOptions.circleCropTransform())
-            .into(avatarView)
+        BindingUtil.glideAvatarSrc(avatarView, user.content.avatarImage.url)
         screenNameTextView.text = user.username
         handleNameTextView.text = user.name
         bodyTextView.apply {

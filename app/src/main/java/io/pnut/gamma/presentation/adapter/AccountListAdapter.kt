@@ -11,7 +11,7 @@ import io.pnut.gamma.R
 import io.pnut.gamma.databinding.AccountListFooterItemBinding
 import io.pnut.gamma.databinding.AccountListItemBinding
 import io.pnut.gamma.domain.model.Account
-import com.bumptech.glide.Glide
+import io.pnut.gamma.presentation.util.BindingUtil
 
 class AccountListAdapter(
     private val accounts: List<Account>,
@@ -78,9 +78,7 @@ class AccountListAdapter(
         private val usernameView: TextView = binding.accountListItemScreenNameTextView
         private val nameView: TextView = binding.accountListItemNameTextView
         fun bindTo(account: Account) {
-            Glide.with(itemView.context).load(account.getAvatarUrl())
-                .apply(RequestOptions.circleCropTransform())
-                .into(avatarView)
+            BindingUtil.glideAvatarSrc(avatarView, account.getAvatarUrl())
             usernameView.text = account.usernameWithAt
             nameView.text = account.name
         }

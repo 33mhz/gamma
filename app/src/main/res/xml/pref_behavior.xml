@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:key="@string/pref_behavior_key"
+    android:title="@string/behavior">
+    <PreferenceCategory android:title="@string/posts">
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:summary="@string/avatar_swipe_desc"
+            app:key="@string/avatar_swipe_key"
+            app:title="@string/avatar_swipe" />
+    </PreferenceCategory>
+</PreferenceScreen>

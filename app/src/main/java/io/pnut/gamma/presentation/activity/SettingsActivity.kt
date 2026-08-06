@@ -174,14 +174,14 @@ class SettingsActivity : BaseActivity(),
     }
 
     @AndroidEntryPoint
-    class BehaviorAppearancePreferenceFragment : BasePreferenceFragment(),
+    class DisplayPreferenceFragment : BasePreferenceFragment(),
         ChoosePrimaryColorDialogFragment.Callback {
         override fun updateColor(themeColor: ThemeColorUtil.ThemeColor?) {
             themeColorPreference?.themeColor = themeColor
             recreateActivity()
         }
 
-        override val rootKey: Int = R.string.pref_behavior_appearance_key
+        override val rootKey: Int = R.string.pref_display_key
 
         override fun setAsDefault() {
             themeColorPreference?.themeColor = null
@@ -208,8 +208,8 @@ class SettingsActivity : BaseActivity(),
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(
-                R.xml.pref_behavior_appearance,
-                getString(R.string.pref_behavior_appearance_key)
+                R.xml.pref_display,
+                getString(R.string.pref_display_key)
             )
             themeColorPreference?.let {
                 context?.let { ctx -> it.summaryProvider = ColorSummaryProvider(ctx) }
@@ -230,6 +230,18 @@ class SettingsActivity : BaseActivity(),
                     true
                 }
             }
+        }
+    }
+
+    @AndroidEntryPoint
+    class BehaviorPreferenceFragment : BasePreferenceFragment() {
+        override val rootKey: Int = R.string.pref_behavior_key
+
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            setPreferencesFromResource(
+                R.xml.pref_behavior,
+                getString(R.string.pref_behavior_key)
+            )
         }
     }
 

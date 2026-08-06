@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:key="@string/pref_behavior_appearance_key"
-    android:title="@string/behavior_and_appearances">
-    <PreferenceCategory android:title="@string/appearances">
+    android:key="@string/pref_display_key"
+    android:title="@string/display">
+    <PreferenceCategory android:title="@string/pref_header_general">
         <DropDownPreference
             android:defaultValue="0"
             android:entries="@array/dark_mode"
@@ -20,15 +20,7 @@
             app:entries="@array/shape_of_avatar"
             app:entryValues="@array/shape_of_avatar_values"
             app:key="@string/pref_shape_of_avatar_key"
-            app:isPreferenceVisible="false"
             app:title="@string/pref_shape_of_avatar_title"
             app:useSimpleSummaryProvider="true" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/behavior">
-        <SwitchPreferenceCompat
-            app:defaultValue="true"
-            app:summary="@string/avatar_swipe_desc"
-            app:key="@string/avatar_swipe_key"
-            app:title="@string/avatar_swipe" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -136,13 +136,22 @@
     </style>
 
     <style name="Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="shapeAppearance">@style/RoundedShape</item>
+        <item name="shapeAppearance">@style/CircleShape</item>
         <item name="strokeColor">?attr/colorPrimary</item>
     </style>
 
     <style name="RoundedShape">
+        <item name="cornerSize">@dimen/size_avatar_rounded</item>
+        <item name="cornerFamily">rounded</item>
+    </style>
+
+    <style name="CircleShape">
         <item name="cornerSize">50%</item>
         <item name="cornerFamily">rounded</item>
+    </style>
+
+    <style name="SquareShape">
+        <item name="cornerSize">0dp</item>
     </style>
 
     <style name="BaseSplashTheme" parent="BaseTheme">

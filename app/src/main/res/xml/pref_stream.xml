@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:key="@string/pref_stream_key"
     android:title="@string/pref_stream_title">
-    <PreferenceCategory android:title="@string/each_stream">
+    <PreferenceCategory android:title="@string/your_stream">
         <SwitchPreference
             app:key="@string/pref_use_unified_stream_key"
             app:defaultValue="@bool/pref_use_unified_stream_default_value"

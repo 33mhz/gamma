@@ -13,15 +13,20 @@
         android:key="@string/pref_general_header_title_key"
         android:title="@string/pref_header_general">
         <Preference
-            android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$BehaviorAppearancePreferenceFragment"
-            android:icon="@drawable/ic_palette_black_24dp"
-            android:key="@string/pref_behavior_appearance_key"
-            android:title="@string/behavior_and_appearances" />
-        <Preference
             android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$StreamPreferenceFragment"
             android:icon="@drawable/ic_list_black_24dp"
             android:key="@string/pref_stream_key"
             android:title="@string/pref_stream_title" />
+        <Preference
+            android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$BehaviorPreferenceFragment"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:key="@string/pref_behavior_key"
+            android:title="@string/behavior" />
+        <Preference
+            android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$DisplayPreferenceFragment"
+            android:icon="@drawable/ic_palette_black_24dp"
+            android:key="@string/pref_display_key"
+            android:title="@string/display" />
     </PreferenceCategory>
     <PreferenceCategory>
         <Preference

@@ -244,8 +244,8 @@
 
     <!-- Settings -->
     <string name="pref_account_header_title_key">pref_account_header_title_key</string>
-    <string name="appearances">Appearances</string>
     <string name="behavior">Behavior</string>
+    <string name="display">Display</string>
     <string name="avatar_swipe">Avatar swipe</string>
     <string name="avatar_swipe_desc">Control the post by swiping the post\'s avatar.</string>
     <string name="avatar_swipe_key">avatar_swipe</string>
@@ -273,10 +273,11 @@
     <string name="pref_auto_pager_key">auto_pager</string>
     <string name="pref_auto_pager_desc">It will autoload when the count from last
         viewing item below the configured number. Disable when set to 0.</string>
-    <string name="each_stream">Each stream and other lists</string>
+    <string name="your_stream">Your stream</string>
     <string name="pref_use_unified_stream_key">use_unified_stream</string>
-    <string name="pref_use_unified_stream_summary_on">Include mentions in personal stream.</string>
-    <string name="pref_use_unified_stream_summary_off">Do not include mentions in personal stream.</string>
+    <string name="pref_use_unified_stream_summary_on">Include your recent mentions in the stream.</string>
+    <string name="pref_use_unified_stream_summary_off">Do not nclude your recent mentions in the
+        stream.</string>
     <string name="pref_use_unified_stream_title">Use unified stream</string>
     <string name="pref_shape_of_avatar_title">Avatar shape</string>
     <string name="pref_shape_of_avatar_key">shape_of_avatar</string>
@@ -294,14 +295,13 @@
     <string name="pref_clear_glide_cache_title">Clear image cache</string>
     <string name="pref_include_directed_posts_key">include_directed_posts</string>
     <string name="pref_include_directed_posts_title">Include directed posts</string>
-    <string name="pref_include_directed_posts_summary">Works only in personal(unified) stream.</string>
+    <string name="pref_include_directed_posts_summary">Posts are directed at a user if they start with a mention.</string>
     <string name="pref_stream_key">pref_stream</string>
     <string name="pref_stream_title">Stream</string>
     <string name="pref_general_header_title_key">pref_general_header_title_key</string>
     <string name="pref_license_key">pref_license_key</string>
     <string name="pref_header_general">General</string>
     <string name="pref_version_key">pref_version_key</string>
-    <string name="behavior_and_appearances">Behavior &amp; Appearances</string>
     <string name="gamma_version">Gamma version</string>
     <string name="license">License</string>
     <string name="child_safety_standards">Child Safety Standards</string>

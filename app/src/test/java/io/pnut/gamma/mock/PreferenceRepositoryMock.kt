@@ -37,7 +37,7 @@ open class PreferenceRepositoryMock : IPreferenceRepository {
   override val unifiedStream: Boolean
     get() = false
   override val shapeOfAvatar: ShapeOfAvatar
-    get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    get() = ShapeOfAvatar.Circle
   override val cacheSize: Int
     get() = 100
   override val includeDirectedPosts: Boolean

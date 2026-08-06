@@ -9,8 +9,7 @@ import com.bumptech.glide.request.RequestOptions
 import io.pnut.gamma.R
 import io.pnut.gamma.databinding.ReactionUserItemBinding
 import io.pnut.gamma.domain.entity.User
-//import io.pnut.gamma.domain.model.preference.ShapeOfAvatar
-import com.bumptech.glide.Glide
+import io.pnut.gamma.presentation.util.BindingUtil
 
 class ReactionUsersAdapter(
     private val reactionUsers: List<User>,
@@ -35,9 +34,7 @@ class ReactionUsersAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val user = reactionUsers[position]
-        Glide.with(holder.itemView).load(user.getAvatarUrl(User.AvatarSize.Normal))
-            .apply(RequestOptions.circleCropTransform())
-            .into(holder.avatarView)
+        BindingUtil.glideAvatarSrc(holder.avatarView, user.getAvatarUrl(User.AvatarSize.Normal))
         holder.avatarView.setOnClickListener {
             listener.onUserClick(user)
         }
