@@ -5,6 +5,7 @@ import io.pnut.gamma.domain.model.io.GetPostInputData
 import io.pnut.gamma.domain.model.io.GetPostOutputData
 import io.pnut.gamma.domain.model.params.composed.GetPostsParam
 import io.pnut.gamma.domain.model.params.single.GeneralPostParam
+import io.pnut.gamma.domain.model.params.single.MentionParam
 import io.pnut.gamma.domain.model.params.single.PaginationParam
 import io.pnut.gamma.domain.model.params.single.SearchPostParam
 import io.pnut.gamma.domain.repository.IPnutRepository
@@ -21,6 +22,9 @@ open class GetPostUseCase(
         val param =
             GetPostsParam(baseParam.toMap()).also {
                 it.add(PaginationParam(count = preferenceRepository.loadingSize))
+                if (streamType is StreamType.Mentions && preferenceRepository.hideCopyMentions) {
+                    it.add(MentionParam(includeCopyMentions = false))
+                }
             }
         val res = when (streamType) {
             is StreamType.Home -> {

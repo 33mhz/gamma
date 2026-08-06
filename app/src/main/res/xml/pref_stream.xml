@@ -16,6 +16,13 @@
             app:title="@string/pref_include_directed_posts_title"
             app:summary="@string/pref_include_directed_posts_summary" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/mentions">
+        <SwitchPreference
+            app:key="@string/pref_hide_copy_mentions_key"
+            app:defaultValue="@bool/pref_hide_copy_mentions_default_value"
+            app:title="@string/pref_hide_copy_mentions_title"
+            app:summary="@string/pref_hide_copy_mentions_summary" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_loading">
         <io.pnut.gamma.presentation.view.SeekBarPreferenceMod
             app:title="@string/pref_loading_size"
