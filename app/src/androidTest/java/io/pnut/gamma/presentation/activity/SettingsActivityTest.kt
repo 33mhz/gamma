@@ -73,8 +73,9 @@ class SettingsActivityTest {
       verifyText("@screenName")
       verifyText("Account")
       verifyText("General")
-      verifyText("Behavior & Appearances")
       verifyText("Stream")
+      verifyText("Behavior")
+      verifyText("Display")
       verifyText("License")
       verifyText("Gamma version")
     }

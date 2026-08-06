@@ -19,7 +19,7 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:key="@string/pref_general_header_title_key"
-        android:title="@string/pref_header_app">
+        android:title="@string/pref_header_general">
         <Preference
             android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$StreamPreferenceFragment"
             android:icon="@drawable/ic_list_black_24dp"

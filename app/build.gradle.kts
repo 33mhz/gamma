@@ -218,12 +218,12 @@ dependencies {
   implementation("me.zhanghai.android.materialprogressbar:library:1.6.1")
 
   testImplementation("junit:junit:4.13.2")
+  testImplementation("com.google.truth:truth:1.4.5")
   testImplementation("org.mockito:mockito-core:5.23.0")
   testImplementation("org.mockito.kotlin:mockito-kotlin:6.3.0")
   androidTestImplementation("org.mockito:mockito-android:5.23.0")
   testImplementation("org.robolectric:robolectric:4.16.1")
   val espressoVersion = "3.7.0"
-  androidTestImplementation("com.google.truth:truth:1.4.5")
   androidTestImplementation("androidx.test.espresso:espresso-core:$espressoVersion")
   androidTestImplementation("androidx.test.espresso:espresso-intents:$espressoVersion")
   val testVersion = "1.7.0"
