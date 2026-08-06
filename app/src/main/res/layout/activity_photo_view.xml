@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.thefuntasty.hauler.HaulerView xmlns:android="http://schemas.android.com/apk/res/android"
+<io.pnut.gamma.presentation.view.hauler.HaulerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/haulerView"
     android:layout_width="match_parent"
@@ -41,4 +41,4 @@
                 app:tabIndicatorHeight="2dp" />
         </FrameLayout>
     </androidx.core.widget.NestedScrollView>
-</com.thefuntasty.hauler.HaulerView>
+</io.pnut.gamma.presentation.view.hauler.HaulerView>

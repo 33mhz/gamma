@@ -207,7 +207,6 @@ dependencies {
   androidTestImplementation("com.google.dagger:hilt-android-testing:$daggerVersion")
 
   implementation("com.github.CanHub:Android-Image-Cropper:4.5.0")
-  implementation("com.github.thefuntasty.hauler:library:2.0.0")
 
   implementation("com.google.android.gms:play-services-oss-licenses:17.5.1")
 

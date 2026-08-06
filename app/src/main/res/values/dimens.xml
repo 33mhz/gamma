@@ -45,4 +45,6 @@
     <dimen name="height_segment_item">48dp</dimen>
     <dimen name="size_avatar_rounded">10dp</dimen>
     <dimen name="margin_compose_post_start">60dp</dimen>
+
+    <dimen name="default_drag_dismiss_distance">112dp</dimen>
 </resources>

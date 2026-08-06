@@ -7,4 +7,12 @@
         <attr name="metaButtonBarStyle" format="reference" />
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
+
+    <declare-styleable name="HaulerView">
+        <attr name="dragDismissDistance" format="dimension" />
+        <attr name="dragDismissFraction" format="float" />
+        <attr name="dragDismissScale" format="float" />
+        <attr name="dragUpEnabled" format="boolean" />
+        <attr name="dragElasticity" format="float" />
+    </declare-styleable>
 </resources>
