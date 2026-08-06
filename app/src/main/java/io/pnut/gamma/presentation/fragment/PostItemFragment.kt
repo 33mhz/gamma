@@ -1013,7 +1013,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         override val generalPostParam: GeneralPostParam by lazy {
             GeneralPostParam(
                 includeDeleted = false,
-                includeDirectedPosts = preferenceRepository.includeDirectedPosts
+                includeDirectedPosts = !preferenceRepository.hideDirectedPosts
             )
         }
     }

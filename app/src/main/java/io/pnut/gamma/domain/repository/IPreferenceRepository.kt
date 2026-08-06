@@ -18,6 +18,6 @@ interface IPreferenceRepository {
     val unifiedStream: Boolean
     val shapeOfAvatar: ShapeOfAvatar
     val cacheSize: Int
-    val includeDirectedPosts: Boolean
+    val hideDirectedPosts: Boolean
     val hideCopyMentions: Boolean
 }

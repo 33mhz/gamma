@@ -40,6 +40,8 @@ open class PreferenceRepositoryMock : IPreferenceRepository {
     get() = ShapeOfAvatar.Circle
   override val cacheSize: Int
     get() = 100
-  override val includeDirectedPosts: Boolean
+  override val hideDirectedPosts: Boolean
+    get() = false
+  override val hideCopyMentions: Boolean
     get() = false
 }

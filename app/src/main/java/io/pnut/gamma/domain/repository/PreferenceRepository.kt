@@ -100,10 +100,10 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
             res.getInteger(R.integer.pref_cache_size_default_value)
         )
 
-    override val includeDirectedPosts: Boolean
+    override val hideDirectedPosts: Boolean
         get() = sharedPreferences.getBoolean(
-            context.getString(R.string.pref_include_directed_posts_key),
-            res.getBoolean(R.bool.pref_include_directed_posts_default_value)
+            context.getString(R.string.pref_hide_directed_posts_key),
+            res.getBoolean(R.bool.pref_hide_directed_posts_default_value)
         )
 
     override val hideCopyMentions: Boolean
