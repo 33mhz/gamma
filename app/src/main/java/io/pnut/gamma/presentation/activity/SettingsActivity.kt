@@ -111,7 +111,7 @@ class SettingsActivity : BaseActivity(),
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.pref_headers, rootKey)
-            findPreference<Preference>(getString(R.string.pref_account_header_title_key))?.let {
+            findPreference<Preference>(getString(R.string.pref_user_header_title_key))?.let {
                 it.title = username
             }
             findPreference<Preference>(getString(R.string.pref_license_key))?.let {
@@ -353,20 +353,20 @@ class SettingsActivity : BaseActivity(),
     }
 
     @AndroidEntryPoint
-    class AccountPreferenceFragment : BasePreferenceFragment() {
-        override val rootKey: Int = R.string.pref_account_key
+    class UserPreferenceFragment : BasePreferenceFragment() {
+        override val rootKey: Int = R.string.pref_user_key
         @Inject
         lateinit var logoutUseCase: LogoutUseCase
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-            findPreference(R.string.pref_logout_account_key)?.apply {
+            findPreference(R.string.pref_logout_user_key)?.apply {
                 setOnPreferenceClickListener { logout() }
             }
         }
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            setPreferencesFromResource(R.xml.pref_account, rootKey)
+            setPreferencesFromResource(R.xml.pref_user, rootKey)
         }
 
         private fun logout(): Boolean {

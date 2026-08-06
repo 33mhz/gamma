@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pref_logout_account_key">Account:RemoveAccount</string>
-    <string name="pref_logout_account_title">Logout</string>
+    <string name="pref_logout_user_key">User:RemoveUser</string>
+    <string name="pref_logout_user_title">Logout</string>
     <string name="pref_change_primary_color_key">primary_color</string>
     <string name="pref_behavior_key">pref_behavior_key</string>
     <string name="pref_display_key">pref_display_key</string>
-    <string name="pref_account_key">pref_account_key</string>
+    <string name="pref_user_key">pref_user_key</string>
     <string name="pref_settings_root_key">pref_settings_root_key</string>
 </resources>

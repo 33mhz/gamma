@@ -19,5 +19,5 @@
         android:gravity="start|center_vertical"
         android:paddingStart="@dimen/margin_regular"
         android:paddingEnd="@dimen/margin_regular"
-        android:text="@string/add_an_account" />
+        android:text="@string/add_a_user" />
 </LinearLayout>

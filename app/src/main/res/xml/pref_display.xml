@@ -5,6 +5,13 @@
     android:title="@string/display">
     <PreferenceCategory android:title="@string/pref_header_general">
         <DropDownPreference
+            app:defaultValue="@string/pref_shape_of_avatar_key_default_value"
+            app:entries="@array/shape_of_avatar"
+            app:entryValues="@array/shape_of_avatar_values"
+            app:key="@string/pref_shape_of_avatar_key"
+            app:title="@string/pref_shape_of_avatar_title"
+            app:useSimpleSummaryProvider="true" />
+        <DropDownPreference
             android:defaultValue="0"
             android:entries="@array/dark_mode"
             android:entryValues="@array/dark_mode_values"
@@ -15,12 +22,5 @@
             android:key="@string/pref_change_primary_color_key"
             android:title="@string/change_theme_color"
             app:widgetLayout="@layout/primary_color_preview" />
-        <DropDownPreference
-            app:defaultValue="@string/pref_shape_of_avatar_key_default_value"
-            app:entries="@array/shape_of_avatar"
-            app:entryValues="@array/shape_of_avatar_values"
-            app:key="@string/pref_shape_of_avatar_key"
-            app:title="@string/pref_shape_of_avatar_title"
-            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -2,16 +2,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:key="@string/pref_settings_root_key"
     android:title="@string/settings">
-    <PreferenceCategory android:key="@string/pref_account_header_title_key">
+    <PreferenceCategory android:key="@string/pref_user_header_title_key">
         <Preference
-            android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$AccountPreferenceFragment"
+            android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$UserPreferenceFragment"
             android:icon="@drawable/ic_person_black_24dp"
-            app:key="@string/pref_account_key"
-            android:title="@string/pref_header_account" />
+            app:key="@string/pref_user_key"
+            android:title="@string/pref_header_user" />
+        <Preference
+            android:icon="@drawable/ic_public_black_24dp"
+            android:title="@string/pref_header_account"
+            app:widgetLayout="@layout/preference_widget_open_in_new">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://pnut.io/account" />
+        </Preference>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="@string/pref_general_header_title_key"
-        android:title="@string/pref_header_general">
+        android:title="@string/pref_header_app">
         <Preference
             android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$StreamPreferenceFragment"
             android:icon="@drawable/ic_list_black_24dp"
@@ -31,15 +39,18 @@
     <PreferenceCategory>
         <Preference
             android:key="@string/pref_version_key"
-            android:title="@string/gamma_version" />
+            android:title="@string/gamma_version"
+            app:widgetLayout="@layout/preference_widget_open_in_new" />
         <Preference
             android:key="@string/pref_license_key"
             android:title="@string/license" />
         <Preference
             android:key="pref_privacy_policy_key"
-            android:title="@string/privacy_policy" />
+            android:title="@string/privacy_policy"
+            app:widgetLayout="@layout/preference_widget_open_in_new" />
         <Preference
             android:key="pref_child_safety_key"
-            android:title="@string/child_safety_standards" />
+            android:title="@string/child_safety_standards"
+            app:widgetLayout="@layout/preference_widget_open_in_new" />
     </PreferenceCategory>
 </PreferenceScreen>

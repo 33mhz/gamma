@@ -48,6 +48,7 @@
     </plurals>
     <string name="name">Name</string>
     <string name="description">Description</string>
+    <string name="pref_header_user">User</string>
     <string name="pref_header_account">Account</string>
     <string name="sign_up">Sign up</string>
     <string name="gallery">Gallery</string>
@@ -125,7 +126,7 @@
     <string name="thread">Thread</string>
     <string name="thread_with_id">Thread %s</string>
     <string name="set_as_nsfw">Set as NSFW</string>
-    <string name="add_an_account">Add an account</string>
+    <string name="add_a_user">Add a user</string>
     <string name="edit_image">Edit image</string>
     <string name="rotate_right">Rotate right</string>
     <string name="crop">Crop</string>
@@ -175,8 +176,8 @@
     <string name="revised">Revised</string>
     <string name="format_time">%1$tH:%1$tM:%1$tS</string>
     <string name="cannot_load_file">Cannot load file</string>
-    <string name="accounts">Accounts</string>
-    <string name="account_not_found">Account not found</string>
+    <string name="accounts">Users</string>
+    <string name="account_not_found">User not found</string>
     <string name="cannot_open_url">Cannot open URL.</string>
     <string name="communication_error">Communication error</string>
     <string name="post_not_bookmarked">Post not bookmarked.</string>
@@ -243,7 +244,7 @@
     <string name="copy_url">Copy URL</string>
 
     <!-- Settings -->
-    <string name="pref_account_header_title_key">pref_account_header_title_key</string>
+    <string name="pref_user_header_title_key">pref_user_header_title_key</string>
     <string name="behavior">Behavior</string>
     <string name="display">Display</string>
     <string name="avatar_swipe">Avatar swipe</string>
@@ -302,6 +303,7 @@
     <string name="pref_stream_title">Stream</string>
     <string name="pref_general_header_title_key">pref_general_header_title_key</string>
     <string name="pref_license_key">pref_license_key</string>
+    <string name="pref_header_app">App</string>
     <string name="pref_header_general">General</string>
     <string name="pref_version_key">pref_version_key</string>
     <string name="gamma_version">Gamma version</string>
