@@ -41,11 +41,11 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
 
     protected enum class BundleKey { ChannelId, Title, ChannelType, Usernames }
 
-    public val channelId by lazy {
+    val channelId by lazy {
         arguments?.getString(BundleKey.ChannelId.name) ?: throw IllegalArgumentException("channelId is required")
     }
 
-    public val title by lazy {
+    val title by lazy {
         arguments?.getString(BundleKey.Title.name) ?: ""
     }
 
