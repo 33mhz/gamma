@@ -89,6 +89,7 @@
     <string name="unblock">Unblock</string>
     <string name="tag_stream_fragment_title_template">#%s</string>
     <string name="reply">Reply</string>
+    <string name="go_to">Go to</string>
     <string name="star">Star</string>
     <string name="repost">Repost</string>
     <string name="unstar">Unstar</string>

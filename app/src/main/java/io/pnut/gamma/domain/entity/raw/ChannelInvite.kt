@@ -6,7 +6,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ChannelInvite(
-    @Json(name = "channel_id") val channelId: String
+    @Json(name = "channel_id") val channelId: String,
+    val name: String?,
 ) : RawValue, Parcelable {
 
     companion object {

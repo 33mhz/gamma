@@ -7,12 +7,16 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Typeface
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import androidx.core.os.BundleCompat
 import android.transition.Transition
 import android.transition.TransitionInflater
 import android.transition.TransitionSet
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.view.*
 import android.widget.*
 import androidx.annotation.DrawableRes
@@ -45,6 +49,7 @@ import io.pnut.gamma.domain.entity.PollLikeValue
 import io.pnut.gamma.domain.entity.Post
 import io.pnut.gamma.domain.entity.User
 import io.pnut.gamma.domain.repository.IAccountRepository
+import io.pnut.gamma.domain.entity.raw.ChannelInvite
 import io.pnut.gamma.domain.entity.raw.LongPost
 import io.pnut.gamma.domain.entity.raw.OEmbed
 import io.pnut.gamma.domain.entity.raw.PollNotice
@@ -550,6 +555,27 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
                 fragment.show(childFragmentManager, DialogKey.LongPost.name)
             }
         }
+
+        val invite = ChannelInvite.getChannelInvite(raw)
+        viewHolder.goToChannelButton.visibility = getVisibility(invite != null)
+        if (invite != null) {
+            val channelLabel = invite.name ?: invite.channelId
+            val prefix = if (invite.name != null) { getString(R.string.go_to) } else { getString(R.string.channel) + " " + getString(R.string.go_to) }
+            val text = "$prefix $channelLabel"
+            val spannable = SpannableString(text)
+            spannable.setSpan(
+                StyleSpan(Typeface.ITALIC),
+                prefix.length + 1,
+                text.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            viewHolder.goToChannelButton.text = spannable
+            viewHolder.goToChannelButton.setOnClickListener {
+                val fragment =
+                    ChannelMessagesFragment.newInstance(invite.channelId, channelLabel, null, null)
+                FragmentHelper.addFragment(requireContext(), fragment, invite.channelId)
+            }
+        }
         val revisionType = when {
             item.mainPost.revision != null -> RevisionType.Original
             item.mainPost.isRevised == true -> RevisionType.Revised
@@ -842,6 +868,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         val moreButton: ImageButton = itemView.findViewById(R.id.moreButton)
         var isMainItem: Boolean = false
         val showLongPostButton: MaterialButton = itemView.findViewById(R.id.showLongPostButton)
+        val goToChannelButton: MaterialButton = itemView.findViewById(R.id.goToChannelButton)
         val revisedIconImageView: ImageView = itemView.findViewById(R.id.revisedIconImageView)
         val swipeActionsLayout: FrameLayout = itemView.findViewById(R.id.swipeActionsLayout)
         val absoluteDateTextView: TextView = itemView.findViewById(R.id.absoluteDateTextView)
