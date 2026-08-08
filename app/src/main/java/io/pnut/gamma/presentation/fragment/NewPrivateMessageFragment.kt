@@ -174,6 +174,13 @@ class NewPrivateMessageFragment : BaseFragment(),
             updateNsfwMenuItem()
         }
 
+        val prepopulatedUsernames = arguments?.getStringArrayList("usernames")
+        if (prepopulatedUsernames != null) {
+            val usernamesText = prepopulatedUsernames.joinToString(", ") { "@$it" }
+            binding.usernamesEditText.setText(usernamesText)
+            binding.lookupButton.visibility = View.GONE
+        }
+
         viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
             binding.loadingLayout.isVisible = isLoading
             binding.lookupButton.isEnabled = !isLoading
@@ -388,6 +395,10 @@ class NewPrivateMessageFragment : BaseFragment(),
     }
 
     companion object {
-        fun newInstance() = NewPrivateMessageFragment()
+        fun newInstance(usernames: ArrayList<String>? = null) = NewPrivateMessageFragment().apply {
+            arguments = Bundle().apply {
+                putStringArrayList("usernames", usernames)
+            }
+        }
     }
 }

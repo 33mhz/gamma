@@ -33,7 +33,8 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, 
             channelId = intent.getStringExtra(IntentKey.ChannelId.name).orEmpty(),
             initialText = intent.getStringExtra(IntentKey.InitialText.name),
             initialPhoto = IntentCompat.getParcelableArrayListExtra(intent, IntentKey.InitialPhoto.name, UriInfo::class.java),
-            replyTarget = IntentCompat.getParcelableExtra(intent, IntentKey.ReplyTarget.name, Message::class.java)
+            replyTarget = IntentCompat.getParcelableExtra(intent, IntentKey.ReplyTarget.name, Message::class.java),
+            channelTitle = intent.getStringExtra(IntentKey.ChannelTitle.name)
         )
     }
 
@@ -42,7 +43,12 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, 
         setContentView(R.layout.activity_compose_post)
         setupAnimation()
         if (savedInstanceState == null) {
-            val fragment = if (isNewPm) NewPrivateMessageFragment.newInstance() else composeMessageFragment
+            val fragment = if (isNewPm) {
+                val usernames = intent.getStringArrayListExtra(IntentKey.Usernames.name)
+                NewPrivateMessageFragment.newInstance(usernames)
+            } else {
+                composeMessageFragment
+            }
             supportFragmentManager.beginTransaction()
                 .replace(R.id.compose_post_placeholder, fragment).commit()
         }
@@ -110,7 +116,7 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, 
     }
 
     private enum class IntentKey {
-        ChannelId, InitialText, InitialPhoto, ReplyTarget, IsNewPm
+        ChannelId, InitialText, InitialPhoto, ReplyTarget, IsNewPm, Usernames, ChannelTitle
     }
 
     companion object {
@@ -119,16 +125,19 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, 
             channelId: String,
             initialText: String? = null,
             initialPhoto: ArrayList<UriInfo>? = null,
-            replyTarget: Message? = null
+            replyTarget: Message? = null,
+            channelTitle: String? = null
         ) = Intent(context, ComposeMessageActivity::class.java).also {
             it.putExtra(IntentKey.ChannelId.name, channelId)
             it.putExtra(IntentKey.InitialText.name, initialText)
             it.putExtra(IntentKey.InitialPhoto.name, initialPhoto)
             it.putExtra(IntentKey.ReplyTarget.name, replyTarget)
+            it.putExtra(IntentKey.ChannelTitle.name, channelTitle)
         }
 
-        fun newIntentForNewPm(context: Context) = Intent(context, ComposeMessageActivity::class.java).also {
+        fun newIntentForNewPm(context: Context, usernames: ArrayList<String>? = null) = Intent(context, ComposeMessageActivity::class.java).also {
             it.putExtra(IntentKey.IsNewPm.name, true)
+            it.putStringArrayListExtra(IntentKey.Usernames.name, usernames)
         }
     }
 

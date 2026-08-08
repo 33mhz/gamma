@@ -75,7 +75,8 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
             }
         }
         val title = getChannelTitle(item)
-        val fragment = ChannelMessagesFragment.newInstance(item.id, title)
+        val usernames = getChannelUsernames(item)
+        val fragment = ChannelMessagesFragment.newInstance(item.id, title, item.type, usernames)
         FragmentHelper.addFragment(requireContext(), fragment, item.id)
     }
 
@@ -138,6 +139,16 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
         }
 
         return channel.user?.username ?: "Channel ${channel.id}"
+    }
+
+    protected fun getChannelUsernames(channel: Channel): ArrayList<String> {
+        val myId = accountRepository.getStoredIds().firstOrNull()
+        val users = channel.acl.write.users?.filter { it.id != myId }
+        return if (!users.isNullOrEmpty()) {
+            ArrayList(users.map { it.username })
+        } else {
+            ArrayList()
+        }
     }
 
     protected enum class BundleKey { ChannelType }

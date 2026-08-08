@@ -27,22 +27,37 @@ import io.pnut.gamma.presentation.util.DateUtil
 import io.pnut.gamma.presentation.util.EntityOnTouchListener
 import io.pnut.gamma.presentation.util.FragmentHelper
 import io.pnut.gamma.presentation.util.SmoothScroller
+import io.pnut.gamma.presentation.util.Util
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder>(),
     BaseListRecyclerViewAdapter.IBaseList<Message, MessageViewHolder>,
-    DeleteMessageDialogFragment.Callback {
+    DeleteMessageDialogFragment.Callback, Util.DrawerContentFragment {
 
-    protected enum class BundleKey { ChannelId, Title }
+    override val menuItemId: Int
+        get() = if (isPm) R.id.privateMessages else R.id.channels
 
-    protected val channelId by lazy {
+    protected enum class BundleKey { ChannelId, Title, ChannelType, Usernames }
+
+    public val channelId by lazy {
         arguments?.getString(BundleKey.ChannelId.name) ?: throw IllegalArgumentException("channelId is required")
     }
 
-    private val title by lazy {
+    public val title by lazy {
         arguments?.getString(BundleKey.Title.name) ?: ""
+    }
+
+    private val channelType by lazy {
+        arguments?.getString(BundleKey.ChannelType.name)
+    }
+
+    val isPm: Boolean
+        get() = channelType == io.pnut.gamma.domain.model.ChannelType.PM.value
+
+    fun getUsernames(): ArrayList<String>? {
+        return arguments?.getStringArrayList(BundleKey.Usernames.name)
     }
 
     @Inject
@@ -227,10 +242,12 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
     }
 
     companion object {
-        fun newInstance(channelId: String, title: String) = ChannelMessagesFragment().apply {
+        fun newInstance(channelId: String, title: String, channelType: String? = null, usernames: ArrayList<String>? = null) = ChannelMessagesFragment().apply {
             arguments = Bundle().apply {
                 putString(BundleKey.ChannelId.name, channelId)
                 putString(BundleKey.Title.name, title)
+                putString(BundleKey.ChannelType.name, channelType)
+                putStringArrayList(BundleKey.Usernames.name, usernames)
             }
         }
     }

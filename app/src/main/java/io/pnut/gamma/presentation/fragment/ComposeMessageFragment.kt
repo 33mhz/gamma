@@ -115,7 +115,7 @@ class ComposeMessageFragment : BaseFragment(),
     }
 
     private enum class BundleKey {
-        ChannelId, ReplyTarget, InitialText, InitialPhoto
+        ChannelId, ReplyTarget, InitialText, InitialPhoto, ChannelTitle
     }
 
     private enum class DialogKey {
@@ -307,6 +307,9 @@ class ComposeMessageFragment : BaseFragment(),
     private val initialText by lazy {
         arguments?.getString(BundleKey.InitialText.name)
     }
+    private val channelTitle by lazy {
+        arguments?.getString(BundleKey.ChannelTitle.name)
+    }
     private val uriInfo by lazy {
         arguments?.let { BundleCompat.getParcelableArrayList(it, BundleKey.InitialPhoto.name, UriInfo::class.java) }
     }
@@ -450,11 +453,11 @@ class ComposeMessageFragment : BaseFragment(),
     }
 
     private fun setupToolbar() {
-        binding.toolbar.title =
-            if (replyTarget != null)
-                getString(R.string.compose_reply_title_template, replyTarget?.username)
-            else
-                getString(R.string.send_a_message)
+        binding.toolbar.title = when {
+            replyTarget != null -> getString(R.string.compose_reply_title_template, replyTarget?.username)
+            !channelTitle.isNullOrEmpty() -> channelTitle
+            else -> getString(R.string.send_a_message)
+        }
         binding.toolbar.setOnMenuItemClickListener(::onMenuItemClick)
         binding.toolbar.setNavigationOnClickListener {
             cancelToCompose()
@@ -781,13 +784,15 @@ class ComposeMessageFragment : BaseFragment(),
             channelId: String,
             initialText: String? = null,
             initialPhoto: ArrayList<UriInfo>? = null,
-            replyTarget: Message? = null
+            replyTarget: Message? = null,
+            channelTitle: String? = null
         ) = ComposeMessageFragment().apply {
             arguments = Bundle().apply {
                 putString(BundleKey.ChannelId.name, channelId)
                 putString(BundleKey.InitialText.name, initialText)
                 putParcelableArrayList(BundleKey.InitialPhoto.name, initialPhoto)
                 putParcelable(BundleKey.ReplyTarget.name, replyTarget)
+                putString(BundleKey.ChannelTitle.name, channelTitle)
             }
         }
     }

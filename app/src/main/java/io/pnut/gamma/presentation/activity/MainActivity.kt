@@ -199,12 +199,17 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     }
 
     private fun setMenuItemVisibilities(visible: Boolean) {
-        binding.navigationView.menu.let {
-            for (i in 0 until it.size) {
-                it[i].isVisible = visible
+        setMenuItemVisibilities(binding.navigationView.menu, visible)
+    }
+
+    private fun setMenuItemVisibilities(menu: Menu, visible: Boolean) {
+        for (i in 0 until menu.size) {
+            val item = menu[i]
+            item.isVisible = visible
+            if (item.hasSubMenu()) {
+                item.subMenu?.let { setMenuItemVisibilities(it, visible) }
             }
         }
-
     }
 
     private val drawerToggle: ActionBarDrawerToggle by lazy {
@@ -336,7 +341,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         val channelId = intent.getStringExtra("CHANNEL_ID")
         val channelTitle = intent.getStringExtra("CHANNEL_TITLE") ?: "PM"
         if (channelId != null) {
-            val fragment = ChannelMessagesFragment.newInstance(channelId, channelTitle)
+            val fragment = ChannelMessagesFragment.newInstance(channelId, channelTitle, io.pnut.gamma.domain.model.ChannelType.PM.value)
             FragmentHelper.addFragment(supportFragmentManager, fragment, channelId)
         }
     }
@@ -383,7 +388,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         uncheckMenuItem(binding.navigationView.menu)
         val fragment = supportFragmentManager.findFragmentById(R.id.fragmentPlaceholder)
         
-        val fabIcon = if (fragment is PrivateMessagesFragment) {
+        val fabIcon = if (fragment is PrivateMessagesFragment || fragment is ChannelMessagesFragment) {
             R.drawable.ic_mail_black_24dp
         } else {
             R.drawable.ic_create_black_24dp
@@ -391,7 +396,10 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         binding.fab.setImageResource(fabIcon)
 
         val drawerFragment = fragment as? Util.DrawerContentFragment ?: return
-        binding.navigationView.menu.findItem(drawerFragment.menuItemId)?.isChecked = true
+        binding.navigationView.menu.findItem(drawerFragment.menuItemId)?.let {
+            it.isVisible = true
+            it.isChecked = true
+        }
     }
 
     private fun uncheckMenuItem(menu: Menu) {
@@ -408,8 +416,16 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
     private fun openComposePostDialog() {
         val fragment = supportFragmentManager.findFragmentById(R.id.fragmentPlaceholder)
-        if (fragment is PrivateMessagesFragment) {
-            val intent = ComposeMessageActivity.newIntentForNewPm(this)
+        if (fragment is PrivateMessagesFragment || fragment is ChannelMessagesFragment && fragment.isPm) {
+            val usernames = (fragment as? ChannelMessagesFragment)?.getUsernames()
+            val intent = ComposeMessageActivity.newIntentForNewPm(this, usernames)
+            val options = ActivityOptions.makeSceneTransitionAnimation(this, binding.fab, getString((R.string.shared_element_compose)))
+            startActivity(intent, options.toBundle())
+            return
+        }
+
+        if (fragment is ChannelMessagesFragment) {
+            val intent = ComposeMessageActivity.newIntent(this, channelId = fragment.channelId, channelTitle = fragment.title)
             val options = ActivityOptions.makeSceneTransitionAnimation(this, binding.fab, getString((R.string.shared_element_compose)))
             startActivity(intent, options.toBundle())
             return
