@@ -46,14 +46,9 @@ val versionPropsFile = file("version.properties")
 val versionProps = Properties()
 if (versionPropsFile.exists()) {
   versionProps.load(FileInputStream(versionPropsFile))
-} else {
-  versionProps["versionCode"] = "1"
-  versionProps.store(versionPropsFile.writer(), null)
 }
 
-val isReleaseBuild = gradle.startParameter.taskNames.any { it.contains("Release", ignoreCase = true) }
-val currentVersionCode = versionProps.getProperty("versionCode").toInt()
-val nextVersionCode = if (isReleaseBuild) currentVersionCode + 1 else currentVersionCode
+val currentVersionCode = versionProps.getProperty("versionCode", "1").toInt()
 
 android {
   namespace = "io.pnut.gamma"
@@ -64,8 +59,8 @@ android {
     applicationId = "io.pnut.gamma"
     minSdk = 30
     targetSdk = 37
-    versionCode = nextVersionCode
-    versionName = "0.6.0"
+    versionCode = currentVersionCode
+    versionName = "0.7.0"
     testInstrumentationRunner = "io.pnut.gamma.HiltTestRunner"
     renderscriptTargetApi = 30
     renderscriptSupportModeEnabled = true
@@ -119,7 +114,6 @@ android {
 
   packaging {
     resources {
-      // https://github.com/mockito/mockito/issues/1376#issuecomment-391192483
       pickFirsts.add("mockito-extensions/org.mockito.plugins.MockMaker")
     }
   }
@@ -133,26 +127,6 @@ tasks.withType<KotlinCompile>().configureEach {
   }
 }
 
-tasks.register("incrementVersionCode") {
-  group = "versioning"
-  description = "Increments the version code in version.properties"
-  doLast {
-    val props = Properties()
-    val file = file("version.properties")
-    props.load(FileInputStream(file))
-    val current = props.getProperty("versionCode").toInt()
-    val next = current + 1
-    props.setProperty("versionCode", next.toString())
-    props.store(file.writer(), "Automatically incremented by build")
-    println("Incremented versionCode in version.properties to $next")
-  }
-}
-
-tasks.configureEach {
-  if (name.contains("assembleRelease", ignoreCase = true) || name.contains("bundleRelease", ignoreCase = true)) {
-    dependsOn("incrementVersionCode")
-  }
-}
 
 val kotlinVersion = extra["kotlinVersion"] as String
 
