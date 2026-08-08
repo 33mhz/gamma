@@ -173,7 +173,7 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
                 deleteMessageUseCase.run(io.pnut.gamma.domain.model.io.DeleteMessageInputData(channelId, message.id))
                 adapter.removeItem(PageableItemWrapper.Item(message))
                 previousViewHolderItem = null
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Show error
             }
         }

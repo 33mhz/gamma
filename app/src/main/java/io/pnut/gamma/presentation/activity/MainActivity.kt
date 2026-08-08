@@ -39,6 +39,7 @@ import io.pnut.gamma.presentation.adapter.AccountListAdapter
 import io.pnut.gamma.presentation.fragment.BaseListFragment
 import io.pnut.gamma.presentation.fragment.ChannelsFragment
 import io.pnut.gamma.presentation.fragment.PrivateMessagesFragment
+import io.pnut.gamma.presentation.fragment.ChannelMessagesFragment
 import io.pnut.gamma.presentation.fragment.ExploreFragment
 import io.pnut.gamma.presentation.fragment.HomeFragment
 import io.pnut.gamma.presentation.fragment.ProfileFragment
@@ -286,6 +287,8 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
                 }
             }
         })
+
+        syncMenu()
     }
 
     private fun setupBottomAppBar() {
@@ -325,6 +328,17 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         super.onStop()
         receiverManager.unregisterReceiver(postReceiver)
         receiverManager.unregisterReceiver(errorReceiver)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        val channelId = intent.getStringExtra("CHANNEL_ID")
+        val channelTitle = intent.getStringExtra("CHANNEL_TITLE") ?: "PM"
+        if (channelId != null) {
+            val fragment = ChannelMessagesFragment.newInstance(channelId, channelTitle)
+            FragmentHelper.addFragment(supportFragmentManager, fragment, channelId)
+        }
     }
 
     private fun setupFragment(firstStart: Boolean) {
@@ -367,10 +381,17 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
     private fun syncMenu() {
         uncheckMenuItem(binding.navigationView.menu)
-        val fragment =
-            supportFragmentManager.findFragmentById(R.id.fragmentPlaceholder) as? Util.DrawerContentFragment
-                ?: return
-        binding.navigationView.menu.findItem(fragment.menuItemId)?.isChecked = true
+        val fragment = supportFragmentManager.findFragmentById(R.id.fragmentPlaceholder)
+        
+        val fabIcon = if (fragment is PrivateMessagesFragment) {
+            R.drawable.ic_mail_black_24dp
+        } else {
+            R.drawable.ic_create_black_24dp
+        }
+        binding.fab.setImageResource(fabIcon)
+
+        val drawerFragment = fragment as? Util.DrawerContentFragment ?: return
+        binding.navigationView.menu.findItem(drawerFragment.menuItemId)?.isChecked = true
     }
 
     private fun uncheckMenuItem(menu: Menu) {
@@ -386,6 +407,14 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     }
 
     private fun openComposePostDialog() {
+        val fragment = supportFragmentManager.findFragmentById(R.id.fragmentPlaceholder)
+        if (fragment is PrivateMessagesFragment) {
+            val intent = ComposeMessageActivity.newIntentForNewPm(this)
+            val options = ActivityOptions.makeSceneTransitionAnimation(this, binding.fab, getString((R.string.shared_element_compose)))
+            startActivity(intent, options.toBundle())
+            return
+        }
+
         val intent = ComposePostActivity.newIntent(this)
         val options = ActivityOptions.makeSceneTransitionAnimation(this, binding.fab, getString((R.string.shared_element_compose)))
         startActivity(intent, options.toBundle())

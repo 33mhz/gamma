@@ -16,6 +16,7 @@ import io.pnut.gamma.domain.entity.Poll
 import io.pnut.gamma.domain.entity.PollPostBody
 import io.pnut.gamma.domain.entity.Post
 import io.pnut.gamma.domain.entity.PostBody
+import io.pnut.gamma.domain.entity.PmPostBody
 import io.pnut.gamma.domain.entity.ProfileBody
 import io.pnut.gamma.domain.entity.Token
 import io.pnut.gamma.domain.entity.User
@@ -318,6 +319,14 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
 
     override suspend fun createMessage(channelId: String, message: PostBody): PnutResponse<Message> {
         return defaultPnutService.createMessage(channelId, message).await()
+    }
+
+    override suspend fun createPmMessage(message: PmPostBody): PnutResponse<Message> {
+        return defaultPnutService.createPmMessage(message).await()
+    }
+
+    override suspend fun getExistingPm(ids: IDs): PnutResponse<Channel> {
+        return defaultPnutService.getExistingPm(ids).await()
     }
 
     override suspend fun getInteractions(getInteractionsParam: GetInteractionsParam): PnutResponse<List<Interaction>> {

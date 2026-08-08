@@ -1,128 +1,156 @@
 package io.pnut.gamma.presentation.fragment
 
-
+import android.app.Dialog
+import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
+import android.view.WindowManager
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.BundleCompat
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.core.widget.doAfterTextChanged
-import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import io.pnut.gamma.domain.entity.raw.LongPost
-import io.pnut.gamma.presentation.util.BackPressedHookable
-import io.pnut.gamma.presentation.util.Util
-import io.pnut.gamma.util.SingleLiveEvent
-import io.pnut.gamma.util.observeOnce
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import io.pnut.gamma.R
 import io.pnut.gamma.databinding.FragmentComposeLongPostBinding
+import io.pnut.gamma.domain.entity.raw.LongPost
+import io.pnut.gamma.presentation.util.Util
+import io.pnut.gamma.util.observeOnce
 
-class ComposeLongPostFragment : Fragment(), BackPressedHookable {
-    override fun onBackPressed() {
-        viewModel.back()
-    }
-
-    private val eventObserver = Observer<Event> {
-        when (it) {
-            is Event.Back -> updateLongPost(it)
+class ComposeLongPostFragment : DialogFragment(), DialogInterface.OnClickListener {
+    override fun onClick(dialog: DialogInterface?, which: Int) {
+        when (which) {
+            DialogInterface.BUTTON_POSITIVE -> ok()
+            DialogInterface.BUTTON_NEUTRAL -> remove()
+            DialogInterface.BUTTON_NEGATIVE -> cancel()
         }
     }
 
-    private fun updateLongPost(it: Event.Back) {
-        val longPost = if (!it.body.isNullOrEmpty()) {
-            LongPost(
-                it.body, it.title, 0L
-            )
+    private fun ok() {
+        val body = viewModel.body.value ?: ""
+        val title = viewModel.title.value?.takeIf { it.isNotEmpty() }
+        val longPost = if (body.isNotEmpty()) {
+            LongPost(body, title, 0L)
         } else {
             null
         }
-        setFragmentResult(
-            RequestKey.UpdateLongPost.name,
-            bundleOf(ResponseKey.LongPost.name to longPost)
-        )
-        parentFragmentManager.popBackStack()
+        listener?.onUpdateLongPost(longPost)
     }
 
-    private var _binding: FragmentComposeLongPostBinding? = null
-    private val binding get() = _binding!!
-    private val viewModel by lazy {
-        ViewModelProvider(this)[ComposeLongPostViewModel::class.java]
+    private fun remove() {
+        listener?.onUpdateLongPost(null)
     }
+
+    private fun cancel() {
+        dismiss()
+    }
+
+    private val bodyObserver = Observer<String> {
+        updateOkButtonEnabled(alertDialog, it.isNotEmpty())
+    }
+
+    private fun updateOkButtonEnabled(dialog: AlertDialog?, b: Boolean) {
+        dialog?.getButton(DialogInterface.BUTTON_POSITIVE)?.isEnabled = b
+    }
+
+    private val alertDialog: AlertDialog?
+        get() = (dialog as? AlertDialog)
+
+    private fun updateRemoveButtonEnabled(dialog: AlertDialog?, b: Boolean) {
+        dialog?.getButton(DialogInterface.BUTTON_NEUTRAL)?.isEnabled = b
+    }
+
+    private var listener: Callback? = null
     private val longPost by lazy {
         arguments?.let { BundleCompat.getParcelable(it, BundleKey.LongPost.name, LongPost::class.java) }
     }
 
-    private enum class BundleKey { LongPost }
-
-    enum class RequestKey { UpdateLongPost }
-    enum class ResponseKey { LongPost }
+    private lateinit var binding: FragmentComposeLongPostBinding
+    private val viewModel by lazy {
+        ViewModelProvider(this, ComposeLongPostViewModel.Factory(longPost))[ComposeLongPostViewModel::class.java]
+    }
 
     interface Callback {
         fun onUpdateLongPost(longPost: LongPost?)
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = parentFragment as? Callback
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.event.observe(this, eventObserver)
-        longPost?.let {
-            viewModel.body.value = it.body
-            viewModel.title.value = it.title
-        }
+        viewModel.body.observe(this, bodyObserver)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentComposeLongPostBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        binding = DataBindingUtil.inflate(
+            layoutInflater,
+            R.layout.fragment_compose_long_post,
+            null,
+            false
+        )
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.longPostToolbar.setNavigationOnClickListener {
-            viewModel.back()
-        }
-        binding.titleEditText.setText(viewModel.title.value)
-        binding.titleEditText.doAfterTextChanged { 
-            viewModel.title.value = it?.toString()
-        }
-        binding.bodyEditText.setText(viewModel.body.value)
-        binding.bodyEditText.doAfterTextChanged { 
-            viewModel.body.value = it?.toString()
-        }
+        val builder = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.long_post)
+            .setView(binding.root)
+            .setNegativeButton(R.string.cancel, this)
+            .setPositiveButton(R.string.ok, this)
 
+        if (longPost != null) {
+            builder.setNeutralButton(R.string.remove, this)
+        }
+        val dialog = builder.show()
+        updateRemoveButtonEnabled(dialog, longPost != null)
+        updateOkButtonEnabled(dialog, longPost != null)
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         binding.bodyEditText.requestFocus()
-        viewModel.body.observeOnce(viewLifecycleOwner) {
-            binding.bodyEditText.also { view ->
-                view.requestFocus()
-                view.setSelection(it.length)
+        viewModel.body.observeOnce(this) { text ->
+            text?.let {
+                binding.bodyEditText.also { view ->
+                    view.requestFocus()
+                    view.setSelection(it.length)
+                }
             }
         }
         Util.showKeyboard(binding.bodyEditText)
+        return dialog
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    class ComposeLongPostViewModel(private val longPost: LongPost?) : ViewModel() {
+        val title = MutableLiveData<String>().also { liveData ->
+            liveData.value = longPost?.title ?: ""
+        }
+        val body = MutableLiveData<String>().also { liveData ->
+            liveData.value = longPost?.body ?: ""
+        }
+
+        class Factory(private val longPost: LongPost?) :
+            ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return ComposeLongPostViewModel(longPost) as T
+            }
+        }
     }
 
-    sealed class Event {
-        data class Back(val title: String?, val body: String?) : Event()
-    }
-
-    class ComposeLongPostViewModel : ViewModel() {
-        val title = MutableLiveData<String>()
-        val body = MutableLiveData<String>()
-        val event = SingleLiveEvent<Event>()
-        fun back() = event.emit(Event.Back(title.value, body.value))
-    }
+    private enum class BundleKey { LongPost }
 
     companion object {
-        fun newInstance(longPost: LongPost?) = ComposeLongPostFragment().apply {
-            arguments = Bundle().apply {
-                putParcelable(BundleKey.LongPost.name, longPost)
+        fun newInstance(longPost: LongPost?) = ComposeLongPostFragment().also {
+            it.arguments = Bundle().also { bundle ->
+                bundle.putParcelable(BundleKey.LongPost.name, longPost)
             }
         }
     }

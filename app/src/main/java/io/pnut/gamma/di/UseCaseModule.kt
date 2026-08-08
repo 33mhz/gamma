@@ -12,6 +12,8 @@ import io.pnut.gamma.domain.usecases.CacheInteractionUseCase
 import io.pnut.gamma.domain.usecases.CachePostUseCase
 import io.pnut.gamma.domain.usecases.CacheUserUseCase
 import io.pnut.gamma.domain.usecases.CreateMessageUseCase
+import io.pnut.gamma.domain.usecases.CreatePmMessageUseCase
+import io.pnut.gamma.domain.usecases.GetExistingPmUseCase
 import io.pnut.gamma.domain.usecases.CreatePollUseCase
 import io.pnut.gamma.domain.usecases.DeleteMessageUseCase
 import io.pnut.gamma.domain.usecases.DeletePostUseCase
@@ -240,4 +242,14 @@ object UseCaseModule {
     fun provideGetMessageThreadUseCase(
         pnutRepository: IPnutRepository
     ): GetMessageThreadUseCase = GetMessageThreadUseCase(pnutRepository)
+
+    @Provides
+    fun provideCreatePmMessageUseCase(
+        pnutRepository: IPnutRepository
+    ): CreatePmMessageUseCase = CreatePmMessageUseCase(pnutRepository)
+
+    @Provides
+    fun provideGetExistingPmUseCase(
+        pnutRepository: IPnutRepository
+    ): GetExistingPmUseCase = GetExistingPmUseCase(pnutRepository)
 }

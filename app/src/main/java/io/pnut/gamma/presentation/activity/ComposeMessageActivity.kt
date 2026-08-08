@@ -16,13 +16,18 @@ import io.pnut.gamma.R
 import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.model.UriInfo
 import io.pnut.gamma.presentation.fragment.ComposeMessageFragment
+import io.pnut.gamma.presentation.fragment.NewPrivateMessageFragment
 import io.pnut.gamma.presentation.util.BackPressedHookable
 import io.pnut.gamma.presentation.util.Util
 import androidx.core.content.IntentCompat
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback {
+class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, NewPrivateMessageFragment.Callback {
+    private val isNewPm: Boolean by lazy {
+        intent.getBooleanExtra(IntentKey.IsNewPm.name, false)
+    }
+
     private val composeMessageFragment by lazy {
         ComposeMessageFragment.newInstance(
             channelId = intent.getStringExtra(IntentKey.ChannelId.name).orEmpty(),
@@ -37,8 +42,9 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback {
         setContentView(R.layout.activity_compose_post)
         setupAnimation()
         if (savedInstanceState == null) {
+            val fragment = if (isNewPm) NewPrivateMessageFragment.newInstance() else composeMessageFragment
             supportFragmentManager.beginTransaction()
-                .replace(R.id.compose_post_placeholder, composeMessageFragment).commit()
+                .replace(R.id.compose_post_placeholder, fragment).commit()
         }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -50,6 +56,12 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback {
                     } else {
                         supportFragmentManager.popBackStack()
                     }
+                    return
+                }
+
+                if (isNewPm) {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
                     return
                 }
 
@@ -78,7 +90,12 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback {
             it.addTarget(android.R.id.content)
             it.duration = duration
             it.doOnEnd {
-                composeMessageFragment.focusToEditText()
+                val fragment = supportFragmentManager.findFragmentById(R.id.compose_post_placeholder)
+                if (fragment is ComposeMessageFragment) {
+                    fragment.focusToEditText()
+                } else if (fragment is NewPrivateMessageFragment) {
+                    fragment.focusToEditText()
+                }
             }
         }
         window.sharedElementReturnTransition = MaterialContainerTransform().also {
@@ -93,7 +110,7 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback {
     }
 
     private enum class IntentKey {
-        ChannelId, InitialText, InitialPhoto, ReplyTarget
+        ChannelId, InitialText, InitialPhoto, ReplyTarget, IsNewPm
     }
 
     companion object {
@@ -108,6 +125,10 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback {
             it.putExtra(IntentKey.InitialText.name, initialText)
             it.putExtra(IntentKey.InitialPhoto.name, initialPhoto)
             it.putExtra(IntentKey.ReplyTarget.name, replyTarget)
+        }
+
+        fun newIntentForNewPm(context: Context) = Intent(context, ComposeMessageActivity::class.java).also {
+            it.putExtra(IntentKey.IsNewPm.name, true)
         }
     }
 

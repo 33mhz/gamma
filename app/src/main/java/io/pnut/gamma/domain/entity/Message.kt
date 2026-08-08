@@ -18,6 +18,7 @@ data class Message(
     @Json(name = "is_sticky") val isSticky: Boolean,
     val source: Client,
     @Json(name = "reply_to") val replyTo: String? = null,
+    @Json(name = "channel_id") val channelId: String,
     @Json(name = "thread_id") val threadId: String,
     val user: User?,
     @Json(name = "user_id") val rawUserId: String? = null,

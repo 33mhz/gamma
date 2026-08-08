@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.request.RequestOptions
 import io.pnut.gamma.R
 import io.pnut.gamma.databinding.ReactionUserItemBinding
 import io.pnut.gamma.domain.entity.User

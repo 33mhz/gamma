@@ -159,7 +159,7 @@
         <item quantity="one">%d\nstar</item>
         <item quantity="other">%d\nstars</item>
     </plurals>
-    <string name="long_post_title_hint">Title(Optional)</string>
+    <string name="long_post_title_hint">Title (Optional)</string>
     <string name="long_post_body_hint">Body</string>
     <string name="remove">Remove</string>
     <string name="add_long_post">Add long post</string>
@@ -185,6 +185,7 @@
     <string name="avatar_over_size">Avatar must be less than 2MiB, with Content-Length specified.</string>
     <string name="denied_app_access">Resource owner denied your app access.</string>
     <string name="access_token_required">Access token required.</string>
+    <string name="error_no_existing_pm">No private messages exist for the given users.</string>
     <string name="retry">Retry</string>
     <string name="end_of_list">End of list</string>
     <string name="load_more">Load more</string>
@@ -192,7 +193,7 @@
     <string name="disable">Disable</string>
     <string name="choice_template">Choice %d</string>
     <string name="add_choice">Add a choice</string>
-    <string name="poll_prompt">Prompt(Optional)</string>
+    <string name="poll_prompt">Prompt (Optional)</string>
     <string name="duration_template">%1$s day %2$s hour %3$s min</string>
     <string name="duration">Duration</string>
     <string name="max_options">Max options</string>
@@ -239,6 +240,11 @@
     <string name="creating_poll">Creating poll…</string>
     <string name="creating_post">Creating post…</string>
     <string name="creating_message">Creating message…</string>
+
+    <string name="new_private_message">New Private Message</string>
+    <string name="usernames_hint">Usernames</string>
+    <string name="message_hint">Message</string>
+    <string name="lookup">Lookup</string>
 
     <string name="open_in_browser">Open in browser</string>
     <string name="copy_url">Copy URL</string>

@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.request.RequestOptions
 import io.pnut.gamma.R
 import io.pnut.gamma.databinding.AccountListFooterItemBinding
 import io.pnut.gamma.databinding.AccountListItemBinding

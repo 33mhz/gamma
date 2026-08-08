@@ -37,7 +37,8 @@ object BindingUtil {
                 ShapeOfAvatar.Rounded -> R.style.RoundedShape
                 ShapeOfAvatar.Square -> R.style.SquareShape
             }
-            view.setShapeAppearanceModel(ShapeAppearanceModel.builder(view.context, shapeAppearanceRes, 0).build())
+            view.shapeAppearanceModel =
+                ShapeAppearanceModel.builder(view.context, shapeAppearanceRes, 0).build()
         }
 
         Glide.with(view)

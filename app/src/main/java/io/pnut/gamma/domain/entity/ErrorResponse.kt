@@ -25,7 +25,8 @@ data class ErrorResponse(
             "No repost found to delete." to R.string.no_repost_found_to_delete,
             "Avatar must be less than 2MiB, with Content-Length specified." to R.string.avatar_over_size,
             "resource owner denied your app access" to R.string.denied_app_access,
-            "Access token required." to R.string.access_token_required
+            "Access token required." to R.string.access_token_required,
+            "No private message channel exists for the given user combination" to R.string.error_no_existing_pm
         )
 
         fun getResource(message: String): Int? {

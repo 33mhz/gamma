@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.setFragmentResultListener
 import androidx.core.os.BundleCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -120,7 +119,7 @@ class ComposeMessageFragment : BaseFragment(),
     }
 
     private enum class DialogKey {
-        Discard, Spoiler, Accounts
+        Discard, Spoiler, Accounts, LongPost
     }
 
     private enum class RequestCode { Discard }
@@ -330,11 +329,6 @@ class ComposeMessageFragment : BaseFragment(),
         viewModel.enablePoll.observe(this, enablePollObserver)
         uriInfo?.let { viewModel.media = it }
 
-        setFragmentResultListener(ComposeLongPostFragment.RequestKey.UpdateLongPost.name) { _, bundle ->
-            val longPost = BundleCompat.getParcelable(bundle, ComposeLongPostFragment.ResponseKey.LongPost.name, LongPost::class.java)
-            onUpdateLongPost(longPost)
-        }
-
         childFragmentManager.setFragmentResultListener(RequestCode.Discard.name, this) { _, bundle ->
             if (bundle.getInt(BasicDialogFragment.ResponseKey.ResultCode.name) == Activity.RESULT_OK) {
                 cancelToCompose(true)
@@ -498,7 +492,7 @@ class ComposeMessageFragment : BaseFragment(),
 
     private fun composeLongPost() {
         val fragment = ComposeLongPostFragment.newInstance(viewModel.longPost)
-        listener?.addFragment(fragment)
+        fragment.show(childFragmentManager, DialogKey.LongPost.name)
     }
 
     private fun toggleNSFW(item: MenuItem) {

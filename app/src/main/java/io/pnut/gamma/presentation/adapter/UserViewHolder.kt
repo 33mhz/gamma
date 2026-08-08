@@ -4,7 +4,6 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.button.MaterialButton
 import io.pnut.gamma.R
 import io.pnut.gamma.databinding.FragmentUserItemBinding

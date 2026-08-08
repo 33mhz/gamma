@@ -9,6 +9,7 @@ import io.pnut.gamma.domain.entity.InteractionFilter
 import io.pnut.gamma.domain.entity.Marker
 import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.entity.PostBody
+import io.pnut.gamma.domain.entity.PmPostBody
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.Poll
 import io.pnut.gamma.domain.entity.PollPostBody
@@ -181,6 +182,9 @@ interface PnutService {
 
     @POST("channels/{channelId}/messages?include_message_raw=1&update_marker=1")
     fun createMessage(@Path("channelId") channelId: String, @Body message: PostBody): Call<PnutResponse<Message>>
+
+    @POST("channels/pm/messages?include_message_raw=1&update_marker=1")
+    fun createPmMessage(@Body message: PmPostBody): Call<PnutResponse<Message>>
 
     @DELETE("channels/{channelId}/messages/{messageId}")
     fun deleteMessage(@Path("channelId") channelId: String, @Path("messageId") messageId: String): Call<PnutResponse<Message>>

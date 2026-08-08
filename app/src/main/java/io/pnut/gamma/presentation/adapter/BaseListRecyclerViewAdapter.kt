@@ -232,8 +232,16 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
     }
 
     fun updateMainItemId(id: String) {
+        if (options.mainItemId == id) return
+
+        val oldId = options.mainItemId
         options.mainItemId = id
-        notifyDataSetChanged()
+
+        options.itemList.forEachIndexed { index, wrapper ->
+            if (wrapper.uniqueKey == oldId || wrapper.uniqueKey == id) {
+                notifyItemChanged(index)
+            }
+        }
     }
 
     fun removeSegmentIfNeed(requestPager: PageableItemWrapper<T>?): Int {
@@ -271,36 +279,6 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
 
             else -> {}
         }
-    }
-
-    fun insertItems(
-        requestPager: PageableItemWrapper<T>?,
-        response: PnutResponse<List<T>>,
-        startIndex: Int
-    ) {
-        var insertIndex = startIndex
-        val items = response.data
-        val newKeys = items.map { it.uniqueKey }.toSet()
-
-        val iterator = options.itemList.iterator()
-        var i = 0
-        while (iterator.hasNext()) {
-            val item = iterator.next()
-            if (item.uniqueKey in newKeys) {
-                iterator.remove()
-                if (i < insertIndex) {
-                    insertIndex--
-                }
-            } else {
-                i++
-            }
-        }
-
-        val pageableItemWrapperItems = items.map { PageableItemWrapper.Item(it) }
-
-        options.itemList.addAll(insertIndex, pageableItemWrapperItems)
-        addSegmentIfNeed(insertIndex + pageableItemWrapperItems.size, requestPager, response)
-        submitList(ArrayList(options.itemList))
     }
 
     fun updateItems(

@@ -84,6 +84,8 @@ interface IPnutRepository {
     suspend fun deleteMessage(channelId: String, messageId: String): PnutResponse<Message>
     suspend fun getMessageThread(channelId: String, messageId: String): PnutResponse<List<Message>>
     suspend fun createMessage(channelId: String, message: PostBody): PnutResponse<Message>
+    suspend fun createPmMessage(message: io.pnut.gamma.domain.entity.PmPostBody): PnutResponse<Message>
+    suspend fun getExistingPm(ids: io.pnut.gamma.domain.entity.IDs): PnutResponse<Channel>
 
     // others
     suspend fun getInteractions(getInteractionsParam: GetInteractionsParam): PnutResponse<List<Interaction>>
