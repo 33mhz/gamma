@@ -386,6 +386,10 @@ class ComposePostFragment : BaseFragment(),
         }
         binding.thumbnailRecyclerView.adapter = adapter
 
+        if (viewModel.media.isNotEmpty()) {
+            viewModel.previewAttachmentsVisibility.value = View.VISIBLE
+        }
+
         Util.setTintForToolbarIcons(
             binding.viewLeftActionMenuView.context,
             binding.viewLeftActionMenuView.menu

@@ -11,9 +11,13 @@ import androidx.core.content.IntentCompat
 import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.presentation.util.ThemeColorUtil
 import android.os.Build
+import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.Fragment
+import io.pnut.gamma.presentation.util.Util
+import io.pnut.gamma.presentation.util.BackPressedHookable
 
 @AndroidEntryPoint
-class ShareActivity : AppCompatActivity() {
+class ShareActivity : AppCompatActivity(), ComposePostFragment.Callback {
     override fun finish() {
         super.finish()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -74,5 +78,43 @@ class ShareActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.compose_post_placeholder, composePostFragment).commit()
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (supportFragmentManager.backStackEntryCount > 0) {
+                    val fragment = supportFragmentManager.findFragmentById(R.id.compose_post_placeholder)
+                    if (fragment is BackPressedHookable) {
+                        fragment.onBackPressed()
+                    } else {
+                        supportFragmentManager.popBackStack()
+                    }
+                    return
+                }
+
+                if (composePostFragment.cancelToCompose()) {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
+    }
+
+    override fun onFinish() {
+        Util.hideKeyboard(window.decorView) {
+            finish()
+        }
+    }
+
+    override fun addFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                R.anim.slide_in_left,
+                R.anim.slide_out_left,
+                R.anim.slide_in_right,
+                R.anim.slide_out_right
+            )
+            .replace(R.id.compose_post_placeholder, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }
