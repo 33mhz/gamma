@@ -2,6 +2,7 @@
 *.aab
 .gradle
 /local.properties
+version.properties
 .idea/
 .DS_Store
 /build
