@@ -11,7 +11,6 @@ import io.pnut.gamma.R
 import io.pnut.gamma.domain.entity.IDs
 import io.pnut.gamma.domain.entity.PmPostBody
 import io.pnut.gamma.domain.entity.PollPostBody
-import io.pnut.gamma.domain.entity.raw.LongPost
 import io.pnut.gamma.domain.entity.raw.OEmbed
 import io.pnut.gamma.domain.entity.raw.PollNotice
 import io.pnut.gamma.domain.entity.raw.RawValue
@@ -32,7 +31,6 @@ import io.pnut.gamma.util.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -53,7 +51,6 @@ class NewPrivateMessageViewModel @Inject constructor(
     val nsfw = MutableLiveData(false)
     val enablePoll = MutableLiveData(false)
     val spoiler = MutableLiveData<Spoiler?>(null)
-    val longPost = MutableLiveData<LongPost?>(null)
     var media: List<UriInfo> = emptyList()
 
     val loading = MutableLiveData(false)
@@ -96,9 +93,6 @@ class NewPrivateMessageViewModel @Inject constructor(
                 }
 
                 val raw = mutableMapOf<String, MutableList<RawValue>>()
-                longPost.value?.let {
-                    raw.getOrPut(LongPost.TYPE) { mutableListOf() }.add(it.copy(tstamp = Date().time))
-                }
                 spoiler.value?.let {
                     raw.getOrPut(Spoiler.TYPE) { mutableListOf() }.add(it)
                 }

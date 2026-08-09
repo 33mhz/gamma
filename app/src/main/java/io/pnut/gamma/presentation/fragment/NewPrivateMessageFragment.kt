@@ -17,7 +17,6 @@ import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.R
 import io.pnut.gamma.databinding.FragmentNewPrivateMessageBinding
-import io.pnut.gamma.domain.entity.raw.LongPost
 import io.pnut.gamma.domain.entity.raw.Spoiler
 import io.pnut.gamma.domain.model.UriInfo
 import io.pnut.gamma.presentation.activity.EditPhotoActivity
@@ -28,7 +27,7 @@ import io.pnut.gamma.util.ErrorCollections
 
 @AndroidEntryPoint
 class NewPrivateMessageFragment : BaseFragment(),
-    ComposeLongPostFragment.Callback, SpoilerDialogFragment.Callback,
+    SpoilerDialogFragment.Callback,
     ComposePollFragment.Callback {
 
     private var _binding: FragmentNewPrivateMessageBinding? = null
@@ -58,10 +57,6 @@ class NewPrivateMessageFragment : BaseFragment(),
 
     override fun onDiscardPoll() {
         viewModel.enablePoll.value = false
-    }
-
-    override fun onUpdateLongPost(longPost: LongPost?) {
-        viewModel.longPost.value = longPost
     }
 
     override fun onUpdateSpoiler(spoiler: Spoiler?) {
@@ -154,16 +149,14 @@ class NewPrivateMessageFragment : BaseFragment(),
         binding.viewLeftActionMenuView.setOnMenuItemClickListener(::onMenuItemClick)
         binding.viewRightActionMenuView.setOnMenuItemClickListener(::onMenuItemClick)
 
+        findMenuItemWithinLeftMenu(R.id.menuLongPost)?.isVisible = false
+
         viewModel.enablePoll.observe(viewLifecycleOwner) {
             togglePollView(it)
         }
 
         viewModel.status.observe(viewLifecycleOwner) {
             binding.statusTextView.text = it
-        }
-
-        viewModel.longPost.observe(viewLifecycleOwner) {
-            updateLongPostMenuItem()
         }
 
         viewModel.spoiler.observe(viewLifecycleOwner) {
@@ -201,7 +194,6 @@ class NewPrivateMessageFragment : BaseFragment(),
         updateNsfwMenuItem()
         updatePollMenuItem()
         updateSpoilerMenuItem()
-        updateLongPostMenuItem()
     }
 
     private fun onMenuItemClick(menuItem: MenuItem): Boolean {
@@ -209,7 +201,6 @@ class NewPrivateMessageFragment : BaseFragment(),
             R.id.menuInsertPhoto -> pickMultipleMediaLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             R.id.menuPoll -> viewModel.enablePoll.value = viewModel.enablePoll.value == false
             R.id.menuSpoiler -> setSpoiler()
-            R.id.menuLongPost -> composeLongPost()
             R.id.menuNsfw -> toggleNSFW()
             R.id.menuPost -> viewModel.onSend(requireContext(), pollFragment?.viewModel?.generatedPollPostBody)
         }
@@ -244,12 +235,6 @@ class NewPrivateMessageFragment : BaseFragment(),
         Util.setTintForCheckableMenuItem(requireContext(), spoilerMenuItem)
     }
 
-    private fun updateLongPostMenuItem() {
-        val longPostMenuItem = findMenuItemWithinLeftMenu(R.id.menuLongPost) ?: return
-        longPostMenuItem.isChecked = viewModel.longPost.value != null
-        Util.setTintForCheckableMenuItem(requireContext(), longPostMenuItem)
-    }
-
     private fun updateNsfwMenuItem() {
         val nsfwMenuItem = findMenuItemWithinLeftMenu(R.id.menuNsfw) ?: return
         val nsfwFlag = viewModel.nsfw.value ?: false
@@ -264,11 +249,6 @@ class NewPrivateMessageFragment : BaseFragment(),
     private fun setSpoiler() {
         val dialog = SpoilerDialogFragment.newInstance(viewModel.spoiler.value)
         dialog.show(childFragmentManager, NewPrivateMessageFragment::class.java.simpleName)
-    }
-
-    private fun composeLongPost() {
-        val fragment = ComposeLongPostFragment.newInstance(viewModel.longPost.value)
-        fragment.show(childFragmentManager, NewPrivateMessageFragment::class.java.simpleName)
     }
 
     private fun findMenuItemWithinLeftMenu(menuId: Int): MenuItem? {

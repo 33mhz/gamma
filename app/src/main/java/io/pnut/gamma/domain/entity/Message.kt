@@ -4,8 +4,11 @@ import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import io.pnut.gamma.domain.entity.entities.BaseContent
+import io.pnut.gamma.domain.entity.raw.RawValue
+import io.pnut.gamma.domain.entity.raw.Spoiler
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import java.util.Calendar
 import java.util.Date
 
 @Parcelize
@@ -22,12 +25,31 @@ data class Message(
     @Json(name = "thread_id") val threadId: String,
     val user: User?,
     @Json(name = "user_id") val rawUserId: String? = null,
+    @Json(name = "is_nsfw") val isNsfw: Boolean? = false,
     val content: BaseContent?,
-    @Json(name = "pagination_id") override var paginationId: String? = null
+    @Json(name = "pagination_id") override var paginationId: String? = null,
+    @Json(name = "raw") var raw: Map<String, List<RawValue>>? = null
 
 ) : Parcelable, UniquePageable {
     @IgnoredOnParcel
     override val uniqueKey by lazy { id }
+
+    @IgnoredOnParcel
+    var nsfwMask = isNsfw ?: false
+    @IgnoredOnParcel
+    var spoilerMask = false
+    @IgnoredOnParcel
+    val showContents: Boolean
+        get() = !nsfwMask && !spoilerMask
+    @IgnoredOnParcel
+    val spoiler = Spoiler.getSpoiler(raw)
+
+    init {
+        spoilerMask = spoiler?.let {
+            val spoilerDate = it.expiredAt ?: return@let true
+            spoilerDate.time > Calendar.getInstance().time.time
+        } ?: false
+    }
 
     @IgnoredOnParcel
     val userId: String? get() = user?.id ?: rawUserId

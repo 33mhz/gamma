@@ -54,7 +54,6 @@ import io.pnut.gamma.util.ErrorCollections
 import io.pnut.gamma.util.LogUtil
 import io.pnut.gamma.util.SingleLiveEvent
 import io.pnut.gamma.domain.entity.PollPostBody
-import io.pnut.gamma.domain.entity.raw.LongPost
 import io.pnut.gamma.domain.entity.raw.PollNotice
 import io.pnut.gamma.domain.entity.raw.Spoiler
 import io.pnut.gamma.domain.entity.raw.replacement.PostPoll
@@ -71,17 +70,12 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ComposeMessageFragment : BaseFragment(),
     AnimationCallback,
-    BackPressedHookable, ComposeLongPostFragment.Callback, SpoilerDialogFragment.Callback,
+    BackPressedHookable, SpoilerDialogFragment.Callback,
     ChangeAccountDialogFragment.Callback, ComposePollFragment.Callback {
 
     override fun onDiscardPoll() {
         viewModel.enablePoll.value = false
         updatePollMenuItem()
-    }
-
-    override fun onUpdateLongPost(longPost: LongPost?) {
-        viewModel.longPost = longPost
-        updateLongPostMenuItem()
     }
 
     override fun onUpdateSpoiler(spoiler: Spoiler?) {
@@ -119,7 +113,7 @@ class ComposeMessageFragment : BaseFragment(),
     }
 
     private enum class DialogKey {
-        Discard, Spoiler, Accounts, LongPost
+        Discard, Spoiler, Accounts
     }
 
     private enum class RequestCode { Discard }
@@ -206,13 +200,6 @@ class ComposeMessageFragment : BaseFragment(),
         updateNsfwMenuItem()
         updateSpoilerMenuItem()
         updatePollMenuItem()
-        updateLongPostMenuItem()
-    }
-
-    private fun updateLongPostMenuItem() {
-        val longPostMenuItem = findMenuItemWithinLeftMenu(R.id.menuLongPost) ?: return
-        longPostMenuItem.isChecked = viewModel.longPost != null
-        Util.setTintForCheckableMenuItem(requireContext(), longPostMenuItem)
     }
 
     private val viewModel: ComposeMessageViewModel by lazy {
@@ -398,6 +385,8 @@ class ComposeMessageFragment : BaseFragment(),
         binding.viewLeftActionMenuView.setOnMenuItemClickListener(::onMenuItemClick)
         binding.viewRightActionMenuView.setOnMenuItemClickListener(::onMenuItemClick)
 
+        findMenuItemWithinLeftMenu(R.id.menuLongPost)?.isVisible = false
+
         viewModel.replyTargetVisibility.observe(viewLifecycleOwner) {
             binding.replyTargetCardView.visibility = it
         }
@@ -475,7 +464,6 @@ class ComposeMessageFragment : BaseFragment(),
             R.id.menuInsertPhoto -> pickMultipleMediaLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             R.id.menuNsfw -> toggleNSFW(item)
             R.id.menuPost -> send()
-            R.id.menuLongPost -> composeLongPost()
             R.id.menuSpoiler -> setSpoiler()
             R.id.menuPoll -> enablePoll()
         }
@@ -493,11 +481,6 @@ class ComposeMessageFragment : BaseFragment(),
         dialog.show(childFragmentManager, DialogKey.Spoiler.name)
     }
 
-    private fun composeLongPost() {
-        val fragment = ComposeLongPostFragment.newInstance(viewModel.longPost)
-        fragment.show(childFragmentManager, DialogKey.LongPost.name)
-    }
-
     private fun toggleNSFW(item: MenuItem) {
         val nextValue = !item.isChecked
         item.isChecked = nextValue
@@ -509,7 +492,7 @@ class ComposeMessageFragment : BaseFragment(),
     fun cancelToCompose(force: Boolean = false): Boolean {
         val hasAnyMedia = adapter.getItems().isNotEmpty()
         val hasAnyRaw =
-            viewModel.longPost != null || viewModel.spoiler != null || pollPostBody != null
+            viewModel.spoiler != null || pollPostBody != null
         val isChanged =
             viewModel.computedInitialText != viewModel.text.value || hasAnyMedia || hasAnyRaw
         if (!force && isChanged) {
@@ -625,7 +608,6 @@ class ComposeMessageFragment : BaseFragment(),
         val replyTargetVisibility: LiveData<Int> = replyTarget.map {
             if (it != null) View.VISIBLE else View.GONE
         }
-        var longPost: LongPost? = null
         val text = MutableLiveData<String>().apply { value = "" }
         val maxLength = Constants.MAX_MESSAGE_TEXT_LENGTH
         val counter: LiveData<Int> = text.map {
@@ -669,9 +651,6 @@ class ComposeMessageFragment : BaseFragment(),
                     }
 
                     val raw = mutableMapOf<String, MutableList<RawValue>>()
-                    longPost?.let {
-                        raw.getOrPut(LongPost.TYPE) { mutableListOf() }.add(it.copy(tstamp = Date().time))
-                    }
                     spoiler?.let {
                         raw.getOrPut(Spoiler.TYPE) { mutableListOf() }.add(it)
                     }

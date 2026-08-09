@@ -12,16 +12,22 @@ import io.pnut.gamma.databinding.ListWithToolbarBinding
 import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.User
+import io.pnut.gamma.domain.entity.raw.OEmbed
 import androidx.lifecycle.lifecycleScope
 import io.pnut.gamma.domain.model.PageableItemWrapper
 import io.pnut.gamma.presentation.activity.ComposeMessageActivity
+import io.pnut.gamma.domain.model.ThumbAndFull
 import io.pnut.gamma.domain.model.io.GetMessagesInputData
 import io.pnut.gamma.domain.model.params.single.PaginationParam
 import io.pnut.gamma.domain.repository.IAccountRepository
 import io.pnut.gamma.domain.usecases.DeleteMessageUseCase
 import io.pnut.gamma.domain.usecases.GetMessagesUseCase
+import io.pnut.gamma.presentation.activity.PhotoViewActivity
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
 import io.pnut.gamma.presentation.adapter.MessageViewHolder
+import io.pnut.gamma.presentation.adapter.ThumbnailViewPagerAdapter
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import io.pnut.gamma.presentation.util.BindingUtil
 import io.pnut.gamma.presentation.util.DateUtil
 import io.pnut.gamma.presentation.util.EntityOnTouchListener
@@ -34,7 +40,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder>(),
     BaseListRecyclerViewAdapter.IBaseList<Message, MessageViewHolder>,
-    DeleteMessageDialogFragment.Callback, Util.DrawerContentFragment {
+    DeleteMessageDialogFragment.Callback, Util.DrawerContentFragment, ThumbnailViewPagerAdapter.Listener {
 
     override val menuItemId: Int
         get() = if (isPm) R.id.privateMessages else R.id.channels
@@ -130,6 +136,8 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
         isMainItem: Boolean
     ) {
         val context = viewHolder.itemView.context
+        val isDeleted = item.isDeleted == true
+        viewHolder.itemView.alpha = if (isDeleted) 0.5f else 1f
 
         item.user?.let { user ->
             viewHolder.screenNameTextView.text = user.name
@@ -141,8 +149,43 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
                 FragmentHelper.addFragment(requireContext(), fragment, user.id)
             }
         }
+
+        val isNsfw = item.nsfwMask
+        viewHolder.nsfwMaskLayout.visibility = getVisibility(isNsfw)
+        viewHolder.showNsfwButton.setOnClickListener {
+            item.nsfwMask = false
+            adapter.notifyItemChanged(viewHolder.bindingAdapterPosition)
+        }
+
+        val isSpoiler = item.spoilerMask
+        viewHolder.spoilerMaskLayout.visibility = getVisibility(isSpoiler)
+        val spoilerTopic = item.spoiler?.topic ?: ""
+        viewHolder.showSpoilerButton.text = context.getString(R.string.show_spoiler, spoilerTopic)
+        viewHolder.showSpoilerButton.setOnClickListener {
+            item.spoilerMask = false
+            adapter.notifyItemChanged(viewHolder.bindingAdapterPosition)
+        }
+        viewHolder.contentsWrapperLayout.visibility = getVisibility(item.showContents)
+
         viewHolder.bodyTextView.text = item.content?.getSpannableStringBuilder(context)
         viewHolder.relativeTimeTextView.text = DateUtil.getShortDateStr(context, item.createdAt)
+
+        val raw = item.raw
+        val photos = OEmbed.Photo.getPhotos(raw)
+        if (photos.isNotEmpty()) {
+            viewHolder.thumbnailViewPagerFrameLayout.visibility = View.VISIBLE
+            viewHolder.thumbnailViewPager.adapter = ThumbnailViewPagerAdapter(photos, this)
+            TabLayoutMediator(
+                viewHolder.thumbnailTabLayout,
+                viewHolder.thumbnailViewPager
+            ) { _: TabLayout.Tab, _: Int ->
+            }.attach()
+            viewHolder.thumbnailTabLayout.visibility =
+                if (photos.size == 1) View.GONE else View.VISIBLE
+        } else {
+            viewHolder.thumbnailViewPagerFrameLayout.visibility = View.GONE
+            viewHolder.thumbnailViewPager.adapter = null
+        }
 
         val isExpanded = previousViewHolderItem?.message == item
         viewHolder.foregroundActionsLayout.visibility = if (isExpanded) View.VISIBLE else View.GONE
@@ -177,6 +220,17 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
     private fun showThread(message: Message) {
         val fragment = MessageThreadFragment.newInstance(channelId, message)
         addFragment(fragment, "MessageThread_${message.threadId}")
+    }
+
+    private fun getVisibility(b: Boolean): Int = if (b) View.VISIBLE else View.GONE
+
+    override fun onClick(path: String, position: Int, items: List<String>) {
+        val newIntent = PhotoViewActivity.photoViewInstance(
+            requireContext(),
+            items.map { ThumbAndFull(it, it) },
+            position
+        )
+        startActivity(newIntent)
     }
 
     override fun getItemLayout(): Int = R.layout.fragment_message_item
