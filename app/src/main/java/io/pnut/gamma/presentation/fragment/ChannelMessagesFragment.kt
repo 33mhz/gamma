@@ -2,8 +2,10 @@ package io.pnut.gamma.presentation.fragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,7 +22,9 @@ import io.pnut.gamma.domain.model.ThumbAndFull
 import io.pnut.gamma.domain.model.io.GetMessagesInputData
 import io.pnut.gamma.domain.model.params.single.PaginationParam
 import io.pnut.gamma.domain.repository.IAccountRepository
+import io.pnut.gamma.domain.entity.Channel
 import io.pnut.gamma.domain.usecases.DeleteMessageUseCase
+import io.pnut.gamma.domain.usecases.GetChannelUseCase
 import io.pnut.gamma.domain.usecases.GetMessagesUseCase
 import io.pnut.gamma.presentation.activity.PhotoViewActivity
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
@@ -63,8 +67,32 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
         get() = channelType == io.pnut.gamma.domain.model.ChannelType.PM.value
 
     fun getUsernames(): ArrayList<String>? {
-        return arguments?.getStringArrayList(BundleKey.Usernames.name)
+        val argumentsUsernames = arguments?.getStringArrayList(BundleKey.Usernames.name)
+        if (!argumentsUsernames.isNullOrEmpty()) return argumentsUsernames
+
+        (viewModel as? ChannelMessagesViewModel)?.currentChannel?.value?.let { channel ->
+            val myId = accountRepository.getStoredIds().firstOrNull()
+            val users = channel.acl.write.users?.filter { it.id != myId }
+            if (!users.isNullOrEmpty()) {
+                return ArrayList(users.map { it.username })
+            }
+        }
+
+        val myId = accountRepository.getStoredIds().firstOrNull()
+        val usernamesFromMessages = viewModel.items.mapNotNull { (it as? PageableItemWrapper.Item)?.item?.user }
+            .filter { it.id != myId }
+            .map { it.username }
+            .distinct()
+
+        if (usernamesFromMessages.isNotEmpty()) {
+            return ArrayList(usernamesFromMessages)
+        }
+
+        return null
     }
+
+    @Inject
+    lateinit var getChannelUseCase: GetChannelUseCase
 
     @Inject
     lateinit var getMessagesUseCase: GetMessagesUseCase
@@ -92,7 +120,7 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
 
     override val viewModel: BaseListViewModel<Message> by lazy {
         ViewModelProvider(
-            this, ChannelMessagesViewModel.Factory(channelId, getMessagesUseCase)
+            this, ChannelMessagesViewModel.Factory(channelId, getMessagesUseCase, getChannelUseCase)
         )[ChannelMessagesViewModel::class.java]
     }
 
@@ -285,24 +313,42 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
                 else -> false
             }
         }
+
+        if (isPm && getUsernames().isNullOrEmpty()) {
+            (viewModel as? ChannelMessagesViewModel)?.fetchChannel()
+        }
     }
 
     class ChannelMessagesViewModel(
         private val channelId: String,
-        private val getMessagesUseCase: GetMessagesUseCase
+        private val getMessagesUseCase: GetMessagesUseCase,
+        private val getChannelUseCase: GetChannelUseCase
     ) : BaseListViewModel<Message>() {
+        val currentChannel = MutableLiveData<Channel>()
+
         override suspend fun getItems(requestPager: PageableItemWrapper.Pager<Message>?): PnutResponse<List<Message>> {
             val pagination = requestPager?.let { PaginationParam.createFromPager(it) } ?: PaginationParam()
             return getMessagesUseCase.run(GetMessagesInputData(channelId, pagination)).messages
         }
 
+        fun fetchChannel() {
+            viewModelScope.launch {
+                runCatching {
+                    getChannelUseCase.run(channelId)
+                }.onSuccess {
+                    currentChannel.value = it.data
+                }
+            }
+        }
+
         class Factory(
             private val channelId: String,
-            private val getMessagesUseCase: GetMessagesUseCase
+            private val getMessagesUseCase: GetMessagesUseCase,
+            private val getChannelUseCase: GetChannelUseCase
         ) : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return ChannelMessagesViewModel(channelId, getMessagesUseCase) as T
+                return ChannelMessagesViewModel(channelId, getMessagesUseCase, getChannelUseCase) as T
             }
         }
     }
