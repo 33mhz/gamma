@@ -78,16 +78,6 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
             }
         }
 
-        val myId = accountRepository.getStoredIds().firstOrNull()
-        val usernamesFromMessages = viewModel.items.mapNotNull { (it as? PageableItemWrapper.Item)?.item?.user }
-            .filter { it.id != myId }
-            .map { it.username }
-            .distinct()
-
-        if (usernamesFromMessages.isNotEmpty()) {
-            return ArrayList(usernamesFromMessages)
-        }
-
         return null
     }
 
