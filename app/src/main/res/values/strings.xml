@@ -83,6 +83,7 @@
     <string name="cannot_get_intent_data">Failed to get intent data</string>
     <string name="show_new_items">Show new items</string>
     <string name="file_date_format_template">yyyy/MM/dd HH:mm:ss</string>
+    <string name="date_format_yyyy_mm_dd">yyyy/MM/dd</string>
     <string name="add">Add</string>
     <string name="upload">Upload</string>
     <string name="unfollow">Unfollow</string>
@@ -317,4 +318,10 @@
     <string name="license">License</string>
     <string name="child_safety_standards">Child Safety Standards</string>
     <string name="privacy_policy">Privacy Policy</string>
+    <string name="public_room">Public Room</string>
+    <string name="private_room">Private Room</string>
+    <string name="subscribers">Subscribers</string>
+    <string name="created_at">Created</string>
+    <string name="channel_info">Channel info</string>
+    <string name="room">Room %s</string>
 </resources>

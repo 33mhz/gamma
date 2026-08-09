@@ -219,6 +219,18 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
                 .show()
             getRecyclerView(requireView()).layoutManager?.startSmoothScroll(SmoothScroller(ctx))
         }
+
+        binding.toolbar.inflateMenu(R.menu.channel_messages_menu)
+        binding.toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.channelInfo -> {
+                    val dialog = ChannelInfoDialogFragment.newInstance(channelId, isPm)
+                    dialog.show(childFragmentManager, "ChannelInfo")
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     class ChannelMessagesViewModel(

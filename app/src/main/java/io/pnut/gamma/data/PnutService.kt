@@ -171,7 +171,7 @@ interface PnutService {
     fun searchUsers(@QueryMap queries: Map<String, String>): Call<PnutResponse<List<User>>>
 
     // Channel resources
-    @GET("channels/{channelId}")
+    @GET("channels/{channelId}?include_channel_raw=1")
     fun getChannel(@Path("channelId") channelId: String): Call<PnutResponse<Channel>>
 
     @GET("channels/{channelId}/messages?include_deleted=0")

@@ -22,6 +22,7 @@ import io.pnut.gamma.domain.usecases.GetAuthenticatedUserUseCase
 import io.pnut.gamma.domain.usecases.GetCachedInteractionListUseCase
 import io.pnut.gamma.domain.usecases.GetCachedPostListUseCase
 import io.pnut.gamma.domain.usecases.GetCachedUserListUseCase
+import io.pnut.gamma.domain.usecases.GetChannelUseCase
 import io.pnut.gamma.domain.usecases.GetChannelsUseCase
 import io.pnut.gamma.domain.usecases.GetMessagesUseCase
 import io.pnut.gamma.domain.usecases.GetMessageThreadUseCase
@@ -217,6 +218,11 @@ object UseCaseModule {
     fun provideGetChannelsUseCase(
         pnutRepository: IPnutRepository
     ): GetChannelsUseCase = GetChannelsUseCase(pnutRepository)
+
+    @Provides
+    fun provideGetChannelUseCase(
+        pnutRepository: IPnutRepository
+    ): GetChannelUseCase = GetChannelUseCase(pnutRepository)
 
     @Provides
     fun provideGetMessagesUseCase(

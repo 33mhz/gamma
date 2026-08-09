@@ -290,6 +290,10 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         return defaultPnutService.unBlock(userId).await()
     }
 
+    override suspend fun getChannel(channelId: String): PnutResponse<Channel> {
+        return defaultPnutService.getChannel(channelId).await()
+    }
+
     override suspend fun getSubscribedChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
         return defaultPnutService.getSubscribedChannels(getChannelsParam.toMap()).await()
     }

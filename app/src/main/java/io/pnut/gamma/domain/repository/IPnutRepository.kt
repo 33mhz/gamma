@@ -77,6 +77,7 @@ interface IPnutRepository {
     suspend fun deleteAvatar(): PnutResponse<User>
 
     // channel and messages
+    suspend fun getChannel(channelId: String): PnutResponse<Channel>
     suspend fun getSubscribedChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
     suspend fun getPmChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
     suspend fun getTopicalChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
