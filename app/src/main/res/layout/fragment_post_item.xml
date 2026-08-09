@@ -207,7 +207,7 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:visibility="gone"
-                        app:icon="@drawable/ic_arrow_forward_black_24dp"
+                        app:icon="@drawable/ic_forum_black_24dp"
                         tools:text="Go to channel"
                         tools:visibility="visible" />
 

@@ -388,10 +388,11 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         uncheckMenuItem(binding.navigationView.menu)
         val fragment = supportFragmentManager.findFragmentById(R.id.fragmentPlaceholder)
         
-        val fabIcon = if (fragment is PrivateMessagesFragment || fragment is ChannelMessagesFragment) {
-            R.drawable.ic_mail_black_24dp
-        } else {
-            R.drawable.ic_create_black_24dp
+        val fabIcon = when {
+            fragment is PrivateMessagesFragment -> R.drawable.ic_mail_black_24dp
+            fragment is ChannelMessagesFragment && fragment.isPm -> R.drawable.ic_mail_black_24dp
+            fragment is ChannelMessagesFragment -> R.drawable.ic_forum_black_24dp
+            else -> R.drawable.ic_create_black_24dp
         }
         binding.fab.setImageResource(fabIcon)
 
