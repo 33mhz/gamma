@@ -116,7 +116,9 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
     }
 
     override suspend fun getPosts(ids: IDs): PnutResponse<List<Post>> {
-        return defaultPnutService.getPosts(ids).await()
+        val params = GetPostsParam(mapOf("ids" to ids.toString()))
+        params.add(io.pnut.gamma.domain.model.params.single.GeneralPostParam())
+        return defaultPnutService.getPosts(params.toMap()).await()
     }
 
     override fun createRepostSync(postId: String): PnutResponse<Post> {

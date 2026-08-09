@@ -100,7 +100,7 @@ interface PnutService {
     ): Call<PnutResponse<List<Interaction>>>
 
     @GET("posts")
-    fun getPosts(@Query("ids") ids: IDs): Call<PnutResponse<List<Post>>>
+    fun getPosts(@QueryMap params: Map<String, String>): Call<PnutResponse<List<Post>>>
 
     @GET("posts/{postId}/revisions")
     fun getRevision(@Path("postId") postId: String): Call<PnutResponse<List<Post>>>
@@ -174,10 +174,10 @@ interface PnutService {
     @GET("channels/{channelId}?include_channel_raw=1")
     fun getChannel(@Path("channelId") channelId: String): Call<PnutResponse<Channel>>
 
-    @GET("channels/{channelId}/messages?include_deleted=0")
+    @GET("channels/{channelId}/messages?include_deleted=0&include_message_raw=1")
     fun getChannelMessages(@Path("channelId") channelId: String, @QueryMap paging: Map<String, String>): Call<PnutResponse<List<Message>>>
 
-    @GET("channels/{channelId}/messages/{messageId}/thread?include_deleted=0")
+    @GET("channels/{channelId}/messages/{messageId}/thread?include_deleted=0&include_message_raw=1")
     fun getMessageThread(@Path("channelId") channelId: String, @Path("messageId") messageId: String): Call<PnutResponse<List<Message>>>
 
     @POST("channels/{channelId}/messages?include_message_raw=1&update_marker=1")
