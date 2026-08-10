@@ -111,4 +111,10 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
             context.getString(R.string.pref_hide_copy_mentions_key),
             res.getBoolean(R.bool.pref_hide_copy_mentions_default_value)
         )
+
+    override val usernameAutocomplete: Boolean
+        get() = sharedPreferences.getBoolean(
+            context.getString(R.string.pref_username_autocomplete_key),
+            true
+        )
 }

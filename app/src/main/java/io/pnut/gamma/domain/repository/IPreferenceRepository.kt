@@ -20,4 +20,5 @@ interface IPreferenceRepository {
     val cacheSize: Int
     val hideDirectedPosts: Boolean
     val hideCopyMentions: Boolean
+    val usernameAutocomplete: Boolean
 }

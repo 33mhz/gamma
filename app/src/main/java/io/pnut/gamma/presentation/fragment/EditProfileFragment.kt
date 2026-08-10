@@ -282,6 +282,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
         binding.viewNameEditText.doAfterTextChanged {
             viewModel.name.value = it.toString()
         }
+        
         binding.viewDescriptionEditText.doAfterTextChanged {
             viewModel.description.value = it.toString()
         }
@@ -397,11 +398,11 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
     }
 
     class EditProfileViewModel private constructor(
-        private val userId: String,
         private val getProfileUseCase: GetProfileUseCase,
         private val updateProfileUseCase: UpdateProfileUseCase,
         private val updateUserImageUseCase: UpdateUserImageUseCase
     ) : ViewModel() {
+
         val event = SingleLiveEvent<Event>()
         val loading = MutableLiveData<Boolean>().apply { value = true }
         val name = MutableLiveData<String?>()
@@ -554,7 +555,6 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return EditProfileViewModel(
-                    userId,
                     getProfileUseCase,
                     updateProfileUseCase,
                     updateUserImageUseCase

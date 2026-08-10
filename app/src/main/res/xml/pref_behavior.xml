@@ -3,6 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:key="@string/pref_behavior_key"
     android:title="@string/behavior">
+    <PreferenceCategory android:title="@string/pref_header_general">
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:key="@string/pref_username_autocomplete_key"
+            app:summary="@string/pref_username_autocomplete_summary"
+            app:title="@string/pref_username_autocomplete_title" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/posts">
         <SwitchPreferenceCompat
             app:defaultValue="true"

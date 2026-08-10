@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.pnut.gamma.R
+import io.pnut.gamma.data.db.dao.CacheDao
 import io.pnut.gamma.domain.entity.IDs
 import io.pnut.gamma.domain.entity.PmPostBody
 import io.pnut.gamma.domain.entity.PollPostBody
@@ -21,10 +23,13 @@ import io.pnut.gamma.domain.model.io.CreatePmMessageInputData
 import io.pnut.gamma.domain.model.io.CreatePollInputData
 import io.pnut.gamma.domain.model.io.GetExistingPmInputData
 import io.pnut.gamma.domain.model.io.UploadFileInputData
+import io.pnut.gamma.domain.repository.IAccountRepository
+import io.pnut.gamma.domain.repository.IPreferenceRepository
 import io.pnut.gamma.domain.usecases.CreatePmMessageUseCase
 import io.pnut.gamma.domain.usecases.CreatePollUseCase
 import io.pnut.gamma.domain.usecases.GetExistingPmUseCase
 import io.pnut.gamma.domain.usecases.UploadFileUseCase
+import io.pnut.gamma.presentation.util.MentionViewModelDelegate
 import io.pnut.gamma.util.Constants
 import io.pnut.gamma.util.LogUtil
 import io.pnut.gamma.util.SingleLiveEvent
@@ -35,11 +40,22 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NewPrivateMessageViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val getExistingPmUseCase: GetExistingPmUseCase,
     private val createPmMessageUseCase: CreatePmMessageUseCase,
     private val uploadFileUseCase: UploadFileUseCase,
-    private val createPollUseCase: CreatePollUseCase
+    private val createPollUseCase: CreatePollUseCase,
+    cacheDao: CacheDao,
+    accountRepository: IAccountRepository,
+    preferenceRepository: IPreferenceRepository
 ) : ViewModel() {
+
+    private val mentionDelegate = MentionViewModelDelegate(cacheDao, accountRepository, preferenceRepository, viewModelScope)
+    val suggestions = mentionDelegate.suggestions
+    
+    fun onTextChanged(text: String, selectionStart: Int, requireAtSymbol: Boolean = true) {
+        mentionDelegate.onTextChanged(text, selectionStart, requireAtSymbol)
+    }
 
     val usernames = MutableLiveData("")
     val text = MutableLiveData("")
@@ -88,7 +104,7 @@ class NewPrivateMessageViewModel @Inject constructor(
             try {
                 val cachedFiles = withContext(Dispatchers.IO) {
                     media.mapNotNull { uriInfo ->
-                        copyUriToCache(context, uriInfo.uri)?.let { UriInfo(it) }
+                        copyUriToCache(context, uriInfo.uri)
                     }
                 }
 
@@ -148,16 +164,21 @@ class NewPrivateMessageViewModel @Inject constructor(
         }
     }
 
-    private fun copyUriToCache(context: Context, uri: Uri): Uri? {
-        if (uri.scheme != "content") return uri
-        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
-        val fileName = getFileName(context, uri) ?: return null
-        val cacheFile = java.io.File(context.cacheDir, fileName)
-        val outputStream = cacheFile.outputStream()
-        inputStream.copyTo(outputStream)
-        inputStream.close()
-        outputStream.close()
-        return Uri.fromFile(cacheFile)
+    private fun copyUriToCache(context: Context, uri: Uri): UriInfo? {
+        if (uri.scheme != "content") return UriInfo(uri)
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+            val fileName = getFileName(context, uri) ?: return null
+            val cacheFile = java.io.File(context.cacheDir, fileName)
+            val outputStream = cacheFile.outputStream()
+            inputStream.copyTo(outputStream)
+            inputStream.close()
+            outputStream.close()
+            UriInfo(Uri.fromFile(cacheFile))
+        } catch (e: Exception) {
+            LogUtil.e(e.message)
+            null
+        }
     }
 
     private fun getFileName(context: Context, uri: Uri): String? {

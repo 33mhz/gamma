@@ -258,6 +258,9 @@
     <string name="avatar_swipe">Avatar swipe</string>
     <string name="avatar_swipe_desc">Control the post by swiping the post\'s avatar.</string>
     <string name="avatar_swipe_key">avatar_swipe</string>
+    <string name="pref_username_autocomplete_key">username_autocomplete</string>
+    <string name="pref_username_autocomplete_title">Username autocomplete</string>
+    <string name="pref_username_autocomplete_summary">Cache and suggest usernames while typing.</string>
     <string-array name="dark_mode">
         <item>Follow system</item>
         <item>Always off</item>

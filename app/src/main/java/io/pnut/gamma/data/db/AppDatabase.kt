@@ -6,14 +6,16 @@ import io.pnut.gamma.data.db.dao.CacheDao
 import io.pnut.gamma.data.db.entities.CachedInteractionEntity
 import io.pnut.gamma.data.db.entities.CachedPostEntity
 import io.pnut.gamma.data.db.entities.CachedUserEntity
+import io.pnut.gamma.data.db.entities.UserSuggestionEntity
 
 @Database(
     entities = [
         CachedPostEntity::class,
         CachedUserEntity::class,
-        CachedInteractionEntity::class
+        CachedInteractionEntity::class,
+        UserSuggestionEntity::class,
     ],
-    version = 2,
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

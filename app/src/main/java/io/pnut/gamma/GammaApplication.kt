@@ -3,6 +3,7 @@ package io.pnut.gamma
 import android.app.Activity
 import android.app.Application
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.emoji.bundled.BundledEmojiCompatConfig
 import androidx.emoji.text.EmojiCompat
@@ -27,6 +28,13 @@ open class GammaApplication : Application(), CoroutineScope by MainScope(), Conf
   lateinit var pnutRepository: IPnutRepository
   lateinit var accountRepository: IAccountRepository
   lateinit var workerFactory: HiltWorkerFactory
+  
+  private val preferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+    if (key == getString(R.string.pref_username_autocomplete_key)) {
+      val enabled = preferenceRepository.usernameAutocomplete
+      scheduleUserSuggestionSync(forceSync = enabled)
+    }
+  }
 
   override val workManagerConfiguration: Configuration
     get() = Configuration.Builder()
@@ -36,6 +44,7 @@ open class GammaApplication : Application(), CoroutineScope by MainScope(), Conf
   fun initApplication() {
     updateBaseTheme()
     updateTheme()
+    preferenceRepository.onRegisterChangePreference(preferenceChangeListener)
     runCatching {
       val config = BundledEmojiCompatConfig(this)
         .setReplaceAll(true)
@@ -68,6 +77,38 @@ open class GammaApplication : Application(), CoroutineScope by MainScope(), Conf
     ThemeColorUtil.applyTheme(this)
   }
 
+  protected fun scheduleUserSuggestionSync(forceSync: Boolean = false) {
+    if (!preferenceRepository.usernameAutocomplete) {
+        io.pnut.gamma.util.LogUtil.i("Cancelling user suggestion sync")
+        androidx.work.WorkManager.getInstance(this).cancelUniqueWork("UserSuggestionSync")
+        return
+    }
+
+    io.pnut.gamma.util.LogUtil.i("Scheduling user suggestion sync (forceSync=$forceSync)")
+    val constraints = androidx.work.Constraints.Builder()
+        .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
+        .build()
+
+    val periodicRequest = androidx.work.PeriodicWorkRequestBuilder<io.pnut.gamma.service.UserSuggestionWorker>(
+        3, java.util.concurrent.TimeUnit.DAYS
+    )
+        .setConstraints(constraints)
+        .build()
+
+    androidx.work.WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+        "UserSuggestionSync",
+        androidx.work.ExistingPeriodicWorkPolicy.KEEP,
+        periodicRequest
+    )
+
+    if (forceSync) {
+        val oneTimeRequest = androidx.work.OneTimeWorkRequestBuilder<io.pnut.gamma.service.UserSuggestionWorker>()
+            .setConstraints(constraints)
+            .build()
+        androidx.work.WorkManager.getInstance(this).enqueue(oneTimeRequest)
+    }
+  }
+
   companion object {
     fun getInstance(activity: Activity) = activity.application as GammaApplication
   }
@@ -91,5 +132,6 @@ class GammaHiltApplication : GammaApplication() {
     override fun onCreate() {
         super.onCreate()
         initApplication()
+        scheduleUserSuggestionSync()
     }
 }

@@ -14,13 +14,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.R
 import io.pnut.gamma.databinding.FragmentComposeLongPostBinding
 import io.pnut.gamma.domain.entity.raw.LongPost
 import io.pnut.gamma.presentation.util.Util
 import io.pnut.gamma.util.observeOnce
 
+@AndroidEntryPoint
 class ComposeLongPostFragment : DialogFragment(), DialogInterface.OnClickListener {
+    
     override fun onClick(dialog: DialogInterface?, which: Int) {
         when (which) {
             DialogInterface.BUTTON_POSITIVE -> ok()

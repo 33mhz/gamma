@@ -29,6 +29,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.R
 import io.pnut.gamma.databinding.ComposeThumbnailImageBinding
 import io.pnut.gamma.databinding.FragmentComposePostBinding
+import io.pnut.gamma.data.db.dao.CacheDao
+import io.pnut.gamma.domain.repository.IAccountRepository
+import io.pnut.gamma.domain.repository.IPreferenceRepository
+import io.pnut.gamma.presentation.adapter.UserSuggestionAdapter
+import io.pnut.gamma.presentation.util.MentionViewModelDelegate
 import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.entity.PostBody
 import io.pnut.gamma.domain.entity.User
@@ -64,7 +69,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.ArrayList
-import java.util.Date
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -72,6 +76,8 @@ class ComposeMessageFragment : BaseFragment(),
     AnimationCallback,
     BackPressedHookable, SpoilerDialogFragment.Callback,
     ChangeAccountDialogFragment.Callback, ComposePollFragment.Callback {
+
+    private lateinit var suggestionAdapter: UserSuggestionAdapter
 
     override fun onDiscardPoll() {
         viewModel.enablePoll.value = false
@@ -214,6 +220,9 @@ class ComposeMessageFragment : BaseFragment(),
                 uploadFileUseCase,
                 createMessageUseCase,
                 createPollUseCase,
+                cacheDao,
+                accountRepository,
+                preferenceRepository
             )
         )[ComposeMessageViewModel::class.java]
     }
@@ -242,6 +251,12 @@ class ComposeMessageFragment : BaseFragment(),
 
     @Inject
     lateinit var createPollUseCase: CreatePollUseCase
+
+    @Inject
+    lateinit var cacheDao: CacheDao
+
+    @Inject
+    lateinit var accountRepository: IAccountRepository
 
     private val hasAnotherAccounts by lazy { getAccountListUseCase.run(Unit).accounts.filterNot { it.id == currentUserId }.size > 1 }
 
@@ -409,9 +424,28 @@ class ComposeMessageFragment : BaseFragment(),
             viewModel.showAccountList()
         }
         
+        suggestionAdapter = UserSuggestionAdapter { user ->
+            val text = binding.composeTextEditText.text?.toString().orEmpty()
+            val selectionStart = binding.composeTextEditText.selectionStart
+            val subText = text.substring(0, selectionStart)
+            val lastAtPos = subText.lastIndexOf('@')
+            if (lastAtPos != -1) {
+                val newText = text.substring(0, lastAtPos + 1) + user.username + " " + text.substring(selectionStart)
+                binding.composeTextEditText.setText(newText)
+                binding.composeTextEditText.setSelection(lastAtPos + 1 + user.username.length + 1)
+            }
+        }
+        binding.suggestionRecyclerView.adapter = suggestionAdapter
+
+        viewModel.suggestions.observe(viewLifecycleOwner) {
+            suggestionAdapter.submitList(it)
+            binding.suggestionRecyclerView.visibility = if (it.isEmpty()) View.GONE else View.VISIBLE
+        }
+        
         binding.composeTextEditText.setText(viewModel.text.value)
         binding.composeTextEditText.doAfterTextChanged { 
             viewModel.text.value = it?.toString()
+            viewModel.onTextChanged(it?.toString().orEmpty(), binding.composeTextEditText.selectionStart)
         }
         
         viewModel.counterStr.observe(viewLifecycleOwner) {
@@ -588,8 +622,18 @@ class ComposeMessageFragment : BaseFragment(),
         currentUserId: String,
         private val uploadFileUseCase: UploadFileUseCase,
         private val createMessageUseCase: CreateMessageUseCase,
-        private val createPollUseCase: CreatePollUseCase
+        private val createPollUseCase: CreatePollUseCase,
+        cacheDao: CacheDao,
+        accountRepository: IAccountRepository,
+        preferenceRepository: IPreferenceRepository
     ) : ViewModel() {
+        private val mentionDelegate = MentionViewModelDelegate(cacheDao, accountRepository, preferenceRepository, viewModelScope)
+        val suggestions = mentionDelegate.suggestions
+        
+        fun onTextChanged(text: String, selectionStart: Int) {
+            mentionDelegate.onTextChanged(text, selectionStart)
+        }
+
         val event = SingleLiveEvent<Event>()
         val currentUserIdLiveData: MutableLiveData<String> =
             MutableLiveData<String>().apply { value = currentUserId }
@@ -739,7 +783,10 @@ class ComposeMessageFragment : BaseFragment(),
             private val currentUserId: String,
             private val uploadFileUseCase: UploadFileUseCase,
             private val createMessageUseCase: CreateMessageUseCase,
-            private val createPollUseCase: CreatePollUseCase
+            private val createPollUseCase: CreatePollUseCase,
+            private val cacheDao: CacheDao,
+            private val accountRepository: IAccountRepository,
+            private val preferenceRepository: IPreferenceRepository
         ) :
             ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -752,7 +799,10 @@ class ComposeMessageFragment : BaseFragment(),
                     currentUserId,
                     uploadFileUseCase,
                     createMessageUseCase,
-                    createPollUseCase
+                    createPollUseCase,
+                    cacheDao,
+                    accountRepository,
+                    preferenceRepository
                 ) as T
             }
         }

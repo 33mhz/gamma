@@ -16,6 +16,7 @@ import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.R
+import io.pnut.gamma.presentation.adapter.UserSuggestionAdapter
 import io.pnut.gamma.databinding.FragmentNewPrivateMessageBinding
 import io.pnut.gamma.domain.entity.raw.Spoiler
 import io.pnut.gamma.domain.model.UriInfo
@@ -34,6 +35,7 @@ class NewPrivateMessageFragment : BaseFragment(),
     private val binding get() = _binding!!
 
     private val viewModel: NewPrivateMessageViewModel by viewModels()
+    private lateinit var suggestionAdapter: UserSuggestionAdapter
 
     private val adapter: ThumbnailAdapter by lazy {
         ThumbnailAdapter(listener = thumbnailAdapterListener)
@@ -114,11 +116,40 @@ class NewPrivateMessageFragment : BaseFragment(),
             binding.bottomToolbar.postDelayed({
                 syncMenuState()
             }, 100)
+            viewModel.onTextChanged(usernameText, binding.usernamesEditText.selectionStart, requireAtSymbol = false)
         }
 
         binding.textEditText.doAfterTextChanged {
             viewModel.text.value = it?.toString() ?: ""
             binding.textEditText.post { updatePostMenuItem() }
+            viewModel.onTextChanged(it?.toString().orEmpty(), binding.textEditText.selectionStart)
+        }
+
+        suggestionAdapter = UserSuggestionAdapter { user ->
+            val focusedView = if (binding.usernamesEditText.isFocused) binding.usernamesEditText else binding.textEditText
+            val text = focusedView.text?.toString().orEmpty()
+            val selectionStart = focusedView.selectionStart
+            val subText = text.substring(0, selectionStart)
+            
+            if (focusedView == binding.usernamesEditText) {
+                val lastDelimiterPos = maxOf(subText.lastIndexOf(' '), subText.lastIndexOf(','))
+                val newText = text.substring(0, lastDelimiterPos + 1) + "@" + user.username + " " + text.substring(selectionStart)
+                focusedView.setText(newText)
+                focusedView.setSelection(lastDelimiterPos + 1 + 1 + user.username.length + 1)
+            } else {
+                val lastAtPos = subText.lastIndexOf('@')
+                if (lastAtPos != -1) {
+                    val newText = text.substring(0, lastAtPos + 1) + user.username + " " + text.substring(selectionStart)
+                    focusedView.setText(newText)
+                    focusedView.setSelection(lastAtPos + 1 + user.username.length + 1)
+                }
+            }
+        }
+        binding.suggestionRecyclerView.adapter = suggestionAdapter
+
+        viewModel.suggestions.observe(viewLifecycleOwner) {
+            suggestionAdapter.submitList(it)
+            binding.suggestionRecyclerView.visibility = if (it.isEmpty()) View.GONE else View.VISIBLE
         }
 
         viewModel.counter.observe(viewLifecycleOwner) {
