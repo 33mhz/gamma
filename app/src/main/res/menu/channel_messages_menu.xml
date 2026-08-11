@@ -6,5 +6,5 @@
         android:icon="@drawable/ic_menu_black_24dp"
         android:title="@string/channel_info"
         app:showAsAction="always"
-        app:iconTint="@android:color/white" />
+        app:iconTint="?attr/colorControlNormal" />
 </menu>
