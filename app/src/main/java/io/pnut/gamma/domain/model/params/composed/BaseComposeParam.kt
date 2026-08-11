@@ -12,7 +12,7 @@ abstract class BaseComposeParam(private val map: Map<String, String>? = emptyMap
             currentMap.entries.forEach { entry ->
                 res[entry.key] = entry.value
             }
-            LogUtil.e(res.toString())
+            LogUtil.d(res.toString())
             res
         }
     }

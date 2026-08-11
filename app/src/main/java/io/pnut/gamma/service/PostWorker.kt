@@ -97,7 +97,7 @@ class PostWorker @AssistedInject constructor(
                         res
                     }
                 postBodyOuter.pollPostBody?.let { it ->
-                    LogUtil.e("pollPostBody $it")
+                    LogUtil.d("pollPostBody $it")
                     runCatching {
                         createPollUseCase.run(CreatePollInputData(it))
                     }.onFailure {

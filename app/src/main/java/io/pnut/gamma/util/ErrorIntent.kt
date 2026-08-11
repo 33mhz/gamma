@@ -9,7 +9,7 @@ import io.pnut.gamma.BuildConfig
 object ErrorIntent {
     const val ACTION = "${BuildConfig.APPLICATION_ID}.Error"
     fun createErrorIntent(t: Throwable?): Intent {
-        LogUtil.e(t.toString())
+        LogUtil.d(t.toString())
         val message: String = when (t) {
             is ErrorCollections.CommunicationError -> t.errorResponse.meta.errorMessage
             else -> t?.message ?: Constants.UNKNOWN_ERROR

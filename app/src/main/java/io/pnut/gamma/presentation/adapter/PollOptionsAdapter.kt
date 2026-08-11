@@ -42,10 +42,10 @@ class PollOptionsAdapter(pollLikeValue: PollLikeValue, private var poll: Poll? =
     fun setPollDetail(poll: Poll) {
         this.poll = poll
         chosenPositions.clear()
-        LogUtil.e("poll $poll")
+        LogUtil.d("poll $poll")
         val positions =
             poll.options.withIndex().filter { it.value.isYourResponse == true }.map { it.index }
-        LogUtil.e("positions $positions")
+        LogUtil.d("positions $positions")
         chosenPositions.addAll(positions)
         submitList(poll.options)
     }
@@ -76,12 +76,12 @@ class PollOptionsAdapter(pollLikeValue: PollLikeValue, private var poll: Poll? =
             callback: () -> Unit
         ) {
             val value = option.getPercent(poll?.total)
-            LogUtil.e("total ${poll?.total} value $value ${option.respondents}")
+            LogUtil.d("total ${poll?.total} value $value ${option.respondents}")
             pollOptionProgressBar.progress = value
             pollOptionCheckBox.text = option.text
             pollOptionCountTextView.text =
                 itemView.context.getString(R.string.poll_percent_template, value)
-            LogUtil.e("alreadyClosed ${poll?.alreadyClosed}")
+            LogUtil.d("alreadyClosed ${poll?.alreadyClosed}")
             val alreadyClosed = poll?.alreadyClosed ?: false
             pollOptionCheckBox.isEnabled = !alreadyClosed
             pollOptionCheckBox.isChecked =

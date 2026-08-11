@@ -99,7 +99,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         viewHolder: BaseListRecyclerViewAdapter.SegmentViewHolder,
         itemWrapper: PageableItemWrapper.Pager<Post>
     ) {
-        LogUtil.e("onClickSegmentListener")
+        LogUtil.d("onClickSegmentListener")
         lifecycleScope.launch {
             viewModel.loadSegmentItems(itemWrapper)
         }
@@ -978,7 +978,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         }
 
         fun loadPoll(postId: String, pollNotice: PollNotice) {
-            LogUtil.e("loadPoll")
+            LogUtil.d("loadPoll")
             viewModelScope.launch {
                 runCatching {
                     getPollUseCase.run(

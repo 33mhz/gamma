@@ -24,7 +24,7 @@ class UserSuggestionWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
-        LogUtil.e("UserSuggestionWorker started")
+        LogUtil.d("UserSuggestionWorker started")
         if (!preferenceRepository.usernameAutocomplete) {
             return Result.success()
         }

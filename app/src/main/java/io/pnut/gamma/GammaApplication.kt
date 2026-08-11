@@ -79,12 +79,12 @@ open class GammaApplication : Application(), CoroutineScope by MainScope(), Conf
 
   protected fun scheduleUserSuggestionSync(forceSync: Boolean = false) {
     if (!preferenceRepository.usernameAutocomplete) {
-        io.pnut.gamma.util.LogUtil.i("Cancelling user suggestion sync")
+        io.pnut.gamma.util.LogUtil.d("Cancelling user suggestion sync")
         androidx.work.WorkManager.getInstance(this).cancelUniqueWork("UserSuggestionSync")
         return
     }
 
-    io.pnut.gamma.util.LogUtil.i("Scheduling user suggestion sync (forceSync=$forceSync)")
+    io.pnut.gamma.util.LogUtil.d("Scheduling user suggestion sync (forceSync=$forceSync)")
     val constraints = androidx.work.Constraints.Builder()
         .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
         .build()

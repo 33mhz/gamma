@@ -227,14 +227,14 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
     override fun supportFinishAfterTransition() {
         super.supportFinishAfterTransition()
-        LogUtil.e("supportFinishAfterTransition")
+        LogUtil.d("supportFinishAfterTransition")
         binding.fab.invalidate()
         binding.bottomAppBar.performHide()
     }
 
     override fun postponeEnterTransition() {
         super.postponeEnterTransition()
-        LogUtil.e("supportFinishAfterTransition")
+        LogUtil.d("supportFinishAfterTransition")
     }
     @Inject
     lateinit var getAuthenticatedUserUseCase: GetAuthenticatedUserUseCase

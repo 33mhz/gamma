@@ -225,7 +225,7 @@ class InteractionFragment :
                     )
                 }
             }
-            LogUtil.e(modParams.toString())
+            LogUtil.d(modParams.toString())
             return getInteractionUseCase.run(GetInteractionInputData(modParams)).res
         }
 

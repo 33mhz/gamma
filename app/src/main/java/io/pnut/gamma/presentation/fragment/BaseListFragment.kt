@@ -36,7 +36,6 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
     open val reverse = false
 
     private val listEventObserver = Observer<ListEvent> {
-        //        LogUtil.e("listEventObserver $it")
         @Suppress("UNCHECKED_CAST")
         when (it) {
             is ListEvent.ReceiveNewItems<*> -> receiveNewItems(
@@ -76,7 +75,7 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
         response: PnutResponse<List<T>>,
         requestPager: PageableItemWrapper<T>?
     ) {
-        LogUtil.e("receiveNewItems ${response.data.size}")
+        LogUtil.d("receiveNewItems ${response.data.size}")
         adapter.updateItems(requestPager, response)
         viewModel.loading.value = false
         viewModel.storeItems()
@@ -230,7 +229,7 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
             // prevent to send same request multi time
             if (loading.value == true) return
             loading.value = true
-            LogUtil.e("requestPager $requestPager")
+            LogUtil.d("requestPager $requestPager")
             viewModelScope.launch {
                 runCatching {
                     getItems(requestPager)

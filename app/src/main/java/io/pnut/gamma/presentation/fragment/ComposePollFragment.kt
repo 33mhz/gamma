@@ -50,7 +50,7 @@ class ComposePollFragment : BaseFragment(), ComposePollOptionFragment.Callback {
     private fun openMoreOptions() {
         val generatedPollPostBody = viewModel.generatedPollPostBody ?: return
         val fragment = ComposePollOptionFragment.newInstance(generatedPollPostBody)
-        LogUtil.e("generatedPollPostBody, $generatedPollPostBody")
+        LogUtil.d("generatedPollPostBody, $generatedPollPostBody")
         fragment.show(childFragmentManager, DialogKey.PollOption.name)
     }
 
@@ -58,7 +58,7 @@ class ComposePollFragment : BaseFragment(), ComposePollOptionFragment.Callback {
 
     private fun addOptionIfPossible() {
         composePollListAdapter.addItem()
-        LogUtil.e("generatedPollPostBody: ${viewModel.generatedPollPostBody}")
+        LogUtil.d("generatedPollPostBody: ${viewModel.generatedPollPostBody}")
     }
 
     private lateinit var binding: FragmentComposePollBinding

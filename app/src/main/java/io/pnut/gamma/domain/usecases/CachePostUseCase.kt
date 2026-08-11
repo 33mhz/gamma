@@ -12,7 +12,7 @@ open class CachePostUseCase(
 ) :
     AsyncUseCase<Unit, CachePostInputData>() {
     override suspend fun run(params: CachePostInputData) {
-        LogUtil.e("CachePostUseCase")
+        LogUtil.d("CachePostUseCase")
         if (params.streamType == StreamType.Explore.MissedConversations) return
         pnutCacheRepository.storePosts(
             params.list,

@@ -101,7 +101,7 @@ data class Post(
     val isPollNeedUpdate: Boolean
         get() {
             if (pollNotice == null) return false
-            LogUtil.e("in post model: isPollNeedUpdate $pollLastUpdate")
+            LogUtil.d("in post model: isPollNeedUpdate $pollLastUpdate")
             val res = (pollLastUpdate?.apply {
                 add(Calendar.MINUTE, 1)
             })?.time?.let { it < Calendar.getInstance().time } ?: true

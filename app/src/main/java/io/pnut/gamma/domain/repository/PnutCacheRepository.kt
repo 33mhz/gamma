@@ -58,7 +58,7 @@ class PnutCacheRepository(
 
     private fun CachePath.getFile(): File {
         val file = File("$baseCacheDir/$name")
-        LogUtil.e("file $file, ${file.parentFile}")
+        LogUtil.d("file $file, ${file.parentFile}")
         file.parentFile?.mkdirs()
         file.createNewFile()
         return file
