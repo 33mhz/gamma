@@ -85,7 +85,8 @@ class NewPrivateMessageViewModel @Inject constructor(
                 getExistingPmUseCase.run(GetExistingPmInputData(IDs(idsList)))
             }.onSuccess {
                 loading.value = false
-                event.value = Event.NavigateToChannel(it.res.data.id, idsList.joinToString(", "))
+                val usernames = idsList.map { it.trimStart('@') }
+                event.value = Event.NavigateToChannel(it.res.data.id, idsList.joinToString(", "), usernames)
             }.onFailure {
                 loading.value = false
                 event.value = Event.Error(it)
@@ -153,7 +154,8 @@ class NewPrivateMessageViewModel @Inject constructor(
                 val res = withContext(Dispatchers.IO) {
                     createPmMessageUseCase.run(CreatePmMessageInputData(messageBody))
                 }
-                event.value = Event.NavigateToChannel(res.res.data.channelId, idsList.joinToString(", "))
+                val usernames = idsList.map { it.trimStart('@') }
+                event.value = Event.NavigateToChannel(res.res.data.channelId, idsList.joinToString(", "), usernames)
             } catch (e: Exception) {
                 LogUtil.e(e.message)
                 event.value = Event.Error(e)
@@ -202,7 +204,7 @@ class NewPrivateMessageViewModel @Inject constructor(
     }
 
     sealed class Event {
-        data class NavigateToChannel(val channelId: String, val title: String) : Event()
+        data class NavigateToChannel(val channelId: String, val title: String, val usernames: List<String>) : Event()
         data class Error(val throwable: Throwable) : Event()
     }
 }

@@ -164,7 +164,7 @@ class NewPrivateMessageFragment : BaseFragment(),
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NewPrivateMessageViewModel.Event.NavigateToChannel -> {
-                    navigateToChannel(event.channelId, event.title)
+                    navigateToChannel(event.channelId, event.title, ArrayList(event.usernames))
                 }
                 is NewPrivateMessageViewModel.Event.Error -> {
                     val message = if (event.throwable is ErrorCollections) {
@@ -327,10 +327,11 @@ class NewPrivateMessageFragment : BaseFragment(),
         }
     }
 
-    private fun navigateToChannel(channelId: String, title: String) {
+    private fun navigateToChannel(channelId: String, title: String, usernames: ArrayList<String>) {
         val intent = Intent(requireContext(), io.pnut.gamma.presentation.activity.MainActivity::class.java).apply {
             putExtra("CHANNEL_ID", channelId)
             putExtra("CHANNEL_TITLE", title)
+            putStringArrayListExtra("USERNAMES", usernames)
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
         startActivity(intent)

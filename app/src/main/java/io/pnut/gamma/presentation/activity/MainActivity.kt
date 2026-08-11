@@ -275,6 +275,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
         setupNavigationView()
         setupFragment(savedInstanceState == null)
+        handleIntent(intent)
         setupNavigation()
         setupBottomAppBar()
 
@@ -338,10 +339,15 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent) {
         val channelId = intent.getStringExtra("CHANNEL_ID")
         val channelTitle = intent.getStringExtra("CHANNEL_TITLE") ?: "PM"
+        val usernames = intent.getStringArrayListExtra("USERNAMES")
         if (channelId != null) {
-            val fragment = ChannelMessagesFragment.newInstance(channelId, channelTitle, io.pnut.gamma.domain.model.ChannelType.PM.value)
+            val fragment = ChannelMessagesFragment.newInstance(channelId, channelTitle, io.pnut.gamma.domain.model.ChannelType.PM.value, usernames)
             FragmentHelper.addFragment(supportFragmentManager, fragment, channelId)
         }
     }
