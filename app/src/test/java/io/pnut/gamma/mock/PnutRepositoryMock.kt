@@ -303,6 +303,10 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override suspend fun getChannel(channelId: String): PnutResponse<Channel> {
+        TODO("not implemented")
+    }
+
     override suspend fun getSubscribedChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
         TODO("not implemented")
     }
@@ -331,6 +335,14 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
     }
 
     override suspend fun createMessage(channelId: String, message: PostBody): PnutResponse<Message> {
+        TODO("not implemented")
+    }
+
+    override suspend fun createPmMessage(message: io.pnut.gamma.domain.entity.PmPostBody): PnutResponse<Message> {
+        TODO("not implemented")
+    }
+
+    override suspend fun getExistingPm(ids: io.pnut.gamma.domain.entity.IDs): PnutResponse<Channel> {
         TODO("not implemented")
     }
 

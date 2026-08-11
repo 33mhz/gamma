@@ -62,8 +62,6 @@ android {
     versionCode = currentVersionCode
     versionName = "0.7.0"
     testInstrumentationRunner = "io.pnut.gamma.HiltTestRunner"
-    renderscriptTargetApi = 30
-    renderscriptSupportModeEnabled = true
   }
   buildTypes {
     release {
@@ -140,9 +138,9 @@ dependencies {
   implementation("androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion")
   androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
 
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
   implementation("androidx.constraintlayout:constraintlayout:2.2.2")
-  implementation("androidx.legacy:legacy-support-v4:1.0.0")
+  implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0")
 
   implementation("com.google.android.material:material:1.14.0")
   implementation("androidx.appcompat:appcompat:1.7.1")
@@ -169,8 +167,8 @@ dependencies {
 
   implementation("androidx.palette:palette-ktx:1.0.0")
   implementation("androidx.browser:browser:1.10.0")
-  implementation("androidx.emoji:emoji:1.2.0")
-  implementation("androidx.emoji:emoji-bundled:1.2.0")
+  implementation("androidx.emoji2:emoji2:1.6.0")
+  implementation("androidx.emoji2:emoji2-bundled:1.6.0")
 
   implementation("com.squareup.okhttp3:logging-interceptor:5.4.0")
 

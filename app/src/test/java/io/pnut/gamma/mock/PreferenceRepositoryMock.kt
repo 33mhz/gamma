@@ -44,4 +44,6 @@ open class PreferenceRepositoryMock : IPreferenceRepository {
     get() = false
   override val hideCopyMentions: Boolean
     get() = false
+  override val usernameAutocomplete: Boolean
+    get() = true
 }

@@ -11,7 +11,7 @@ open class SetupTokenUseCase(
 ) :
     AsyncUseCase<SetupTokenOutputData, Unit>() {
     override suspend fun run(params: Unit): SetupTokenOutputData {
-      Log.e("SetupTokenUseCase", "run")
+      Log.d("SetupTokenUseCase", "run")
 
         val account = accountRepository.getDefaultAccount() ?: return SetupTokenOutputData(
             false
