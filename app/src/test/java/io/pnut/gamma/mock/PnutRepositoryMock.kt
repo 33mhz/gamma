@@ -272,11 +272,19 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
     }
 
     override suspend fun mute(userId: String): PnutResponse<User> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return success {
+            val user = pnutMemoryDb.users.getValue(userId)
+            if (user.youMuted) throw TestException()
+            user.copy(youMuted = true)
+        }
     }
 
     override suspend fun unMute(userId: String): PnutResponse<User> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return success {
+            val user = pnutMemoryDb.users.getValue(userId)
+            if (!user.youMuted) throw TestException()
+            user.copy(youMuted = false)
+        }
     }
 
     override suspend fun block(userId: String): PnutResponse<User> {

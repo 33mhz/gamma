@@ -4,7 +4,8 @@ import io.pnut.gamma.domain.entity.User
 
 enum class Relationship {
     Follow, UnFollow,
-    Block, UnBlock;
+    Block, UnBlock,
+    Mute, UnMute;
 
     companion object {
         fun getRelationship(user: User): Relationship {

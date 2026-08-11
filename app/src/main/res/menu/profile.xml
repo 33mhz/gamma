@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group>
+    <group
+        android:id="@+id/groupMessage"
+        android:orderInCategory="100">
         <item
             android:id="@+id/menuMessage"
-            android:title="@string/send_a_message"
-            android:visible="false" />
+            android:title="@string/send_a_message" />
     </group>
-    <group>
+    <group
+        android:id="@+id/groupRelationship"
+        android:orderInCategory="200">
         <item
             android:id="@+id/menuMute"
-            android:title="@string/mute"
-            android:visible="false" />
+            android:title="@string/mute" />
         <item
             android:id="@+id/menuBlock"
-            android:title="@string/block"
-            android:visible="false" />
+            android:title="@string/block" />
     </group>
-    <group>
+    <group
+        android:id="@+id/groupShare"
+        android:orderInCategory="300">
         <item
             android:id="@+id/menuShare"
             android:title="@string/share" />

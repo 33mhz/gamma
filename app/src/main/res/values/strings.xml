@@ -22,7 +22,6 @@
     <string name="loading_now">Loading…</string>
     <string name="files">Files</string>
     <string name="edit_profile">Edit profile</string>
-    <string name="follow">Follow</string>
     <string name="following_with_name">\@%1$s\'s following</string>
     <string name="followers_with_name">\@%1$s\'s followers</string>
     <string name="since">Since: %s</string>
@@ -77,8 +76,12 @@
     <string name="favorites">Favorites</string>
     <string name="send_a_message">Send a Message</string>
     <string name="send">Send</string>
+    <string name="follow">Follow</string>
     <string name="block">Block</string>
     <string name="mute">Mute</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="unblock">Unblock</string>
+    <string name="unmute">Unmute</string>
     <string name="share">Share</string>
     <string name="cannot_get_intent_data">Failed to get intent data</string>
     <string name="show_new_items">Show new items</string>
@@ -86,8 +89,6 @@
     <string name="date_format_yyyy_mm_dd">yyyy/MM/dd</string>
     <string name="add">Add</string>
     <string name="upload">Upload</string>
-    <string name="unfollow">Unfollow</string>
-    <string name="unblock">Unblock</string>
     <string name="tag_stream_fragment_title_template">#%s</string>
     <string name="reply">Reply</string>
     <string name="go_to">Go to</string>

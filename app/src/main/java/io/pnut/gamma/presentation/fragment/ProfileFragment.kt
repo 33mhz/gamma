@@ -40,6 +40,7 @@ import io.pnut.gamma.domain.model.io.GetProfileInputData
 import io.pnut.gamma.domain.model.io.UpdateRelationshipInputData
 import io.pnut.gamma.domain.usecases.GetProfileUseCase
 import io.pnut.gamma.domain.usecases.UpdateRelationshipUseCase
+import io.pnut.gamma.presentation.activity.ComposeMessageActivity
 import io.pnut.gamma.presentation.activity.EditProfileActivity
 import io.pnut.gamma.presentation.activity.PhotoViewActivity
 import io.pnut.gamma.presentation.adapter.ProfilePagerAdapter
@@ -134,6 +135,19 @@ class ProfileFragment : BaseFragment() {
             binding.followingCountButton.text = resources.getQuantityString(R.plurals.following, it.counts.following, it.counts.following)
             binding.followerCountButton.text = resources.getQuantityString(R.plurals.follower, it.counts.followers, it.counts.followers)
             binding.postCountTextView.text = getString(R.string.post_count, it.counts.posts)
+
+            binding.toolbar.menu.let { menu ->
+                menu.setGroupDividerEnabled(true)
+                menu.findItem(R.id.menuBlock)?.apply {
+                    isVisible = !it.me
+                    setTitle(if (it.youBlocked) R.string.unblock else R.string.block)
+                }
+                menu.findItem(R.id.menuMute)?.apply {
+                    isVisible = !it.me
+                    setTitle(if (it.youMuted) R.string.unmute else R.string.mute)
+                }
+                menu.findItem(R.id.menuMessage)?.isVisible = !it.me
+            }
         }
         viewModel.iconUrl.observe(viewLifecycleOwner) {
             BindingUtil.glideAvatarSrc(binding.circleImageView, it)
@@ -216,9 +230,9 @@ class ProfileFragment : BaseFragment() {
 
     private fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menuMessage -> openMessageFragment()
-            R.id.menuBlock -> toggleBlock()
-            R.id.menuMute -> toggleMute()
+            R.id.menuMessage -> viewModel.openMessageFragment()
+            R.id.menuBlock -> viewModel.toggleBlock()
+            R.id.menuMute -> viewModel.toggleMute()
             R.id.menuShare -> share()
             R.id.menuShareUserPostsRss -> shareUserPostsRss()
             else -> return false
@@ -240,14 +254,7 @@ class ProfileFragment : BaseFragment() {
         startActivity(Intent.createChooser(sendIntent, resources.getText(R.string.share)))
     }
 
-    private fun toggleMute() {
-    }
 
-    private fun toggleBlock() {
-    }
-
-    private fun openMessageFragment() {
-    }
 
     private fun fixTransition(iconUrl: String) {
         Glide.with(requireContext())
@@ -317,6 +324,10 @@ class ProfileFragment : BaseFragment() {
             is Event.ShowAvatar -> it.url?.let { url -> showAvatar(url) }
             is Event.ShowCover -> it.url?.let { url -> showCover(url) }
             is Event.OpenVerifiedDomain -> openVerifiedDomain(it.url)
+            is Event.OpenMessage -> {
+                val intent = ComposeMessageActivity.newIntentForNewPm(requireContext(), arrayListOf(it.user.username))
+                startActivity(intent)
+            }
         }
     }
 
@@ -324,7 +335,7 @@ class ProfileFragment : BaseFragment() {
         context?.let { Util.openCustomTabUrl(it, url) }
     }
 
-    private enum class TransitionName { Avatar, Cover }
+    private enum class TransitionName { Avatar }
 
     private fun showCover(url: String) {
         PhotoViewActivity.startActivity(
@@ -477,14 +488,28 @@ class ProfileFragment : BaseFragment() {
 
         fun showAvatar() = event.emit(Event.ShowAvatar(user.value?.getAvatarUrl(null)))
         fun showCover() = event.emit(Event.ShowCover(user.value?.content?.coverImage?.url))
-        private fun follow() = updateRelationship(true)
-        private fun unfollow() = updateRelationship(false)
-        private fun updateRelationship(follow: Boolean) {
+
+        fun toggleBlock() {
+            val user = user.value ?: return
+            updateRelationship(if (user.youBlocked) Relationship.UnBlock else Relationship.Block)
+        }
+
+        fun toggleMute() {
+            val user = user.value ?: return
+            updateRelationship(if (user.youMuted) Relationship.UnMute else Relationship.Mute)
+        }
+
+        fun openMessageFragment() {
+            user.value?.let { event.emit(Event.OpenMessage(it)) }
+        }
+
+        private fun follow() = updateRelationship(Relationship.Follow)
+        private fun unfollow() = updateRelationship(Relationship.UnFollow)
+        private fun updateRelationship(relationship: Relationship) {
             viewModelScope.launch {
                 runCatching {
                     loading.postValue(true)
                     val user = user.value ?: return@launch
-                    val relationship = if (follow) Relationship.Follow else Relationship.UnFollow
                     updateRelationshipUseCase.run(
                         UpdateRelationshipInputData(
                             user.id,
@@ -524,6 +549,7 @@ class ProfileFragment : BaseFragment() {
         data class ShowAvatar(val url: String?) : Event()
         data class ShowCover(val url: String?) : Event()
         data class OpenVerifiedDomain(val url: String) : Event()
+        data class OpenMessage(val user: User) : Event()
     }
 
     companion object {

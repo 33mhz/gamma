@@ -14,6 +14,8 @@ class UpdateRelationshipUseCase(val pnutRepository: IPnutRepository) :
             Relationship.UnFollow -> pnutRepository.unFollow(userId)
             Relationship.Block -> pnutRepository.block(userId)
             Relationship.UnBlock -> pnutRepository.unBlock(userId)
+            Relationship.Mute -> pnutRepository.mute(userId)
+            Relationship.UnMute -> pnutRepository.unMute(userId)
         }
         return UpdateRelationshipOutputData(res)
     }

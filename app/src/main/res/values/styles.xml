@@ -45,6 +45,7 @@
         <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
         <item name="android:windowActivityTransitions">true</item>
         <item name="android:windowContentTransitions">true</item>
+        <item name="android:listDivider">@drawable/divider_full_bleed</item>
     </style>
 
     <style name="SplashWindowAnimationStyle" parent="android:Animation.Activity">
@@ -113,7 +114,16 @@
     <style name="ProfileToolbar">
         <item name="toolbarNavigationButtonStyle">@style/ToolbarNavigationButtonStyle.Profile</item>
         <item name="actionOverflowButtonStyle">@style/ActionOverflowButtonStyle</item>
+        <item name="popupTheme">@style/ProfilePopupMenu</item>
     </style>
+
+    <style name="ProfilePopupMenu" parent="ThemeOverlay.AppCompat.DayNight">
+    </style>
+
+    <style name="ProfileDropDownListView" parent="Widget.AppCompat.ListView.DropDown">
+    </style>
+
+
 
     <style name="ActionOverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="android:tint">@android:color/white</item>

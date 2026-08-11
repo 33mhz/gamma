@@ -85,4 +85,38 @@ class UpdateRelationshipUseCaseTest {
         val input = UpdateRelationshipInputData(others.id, Relationship.UnBlock)
         runBlocking { followUseCase.run(input) }
     }
+
+    @Test
+    fun succeedToMute() {
+        val others = Users.others
+        val followUseCase = getFollowUseCase(others)
+        val input = UpdateRelationshipInputData(others.id, Relationship.Mute)
+        val output = runBlocking { followUseCase.run(input) }
+        assertThat(output.res.data.youMuted).isTrue()
+    }
+
+    @Test(expected = TestException::class)
+    fun failToMute() {
+        val alreadyMutedUser = Users.others.copy(youMuted = true)
+        val followUseCase = getFollowUseCase(alreadyMutedUser)
+        val input = UpdateRelationshipInputData(alreadyMutedUser.id, Relationship.Mute)
+        runBlocking { followUseCase.run(input) }
+    }
+
+    @Test
+    fun succeedToUnMute() {
+        val alreadyMutedUser = Users.others.copy(youMuted = true)
+        val followUseCase = getFollowUseCase(alreadyMutedUser)
+        val input = UpdateRelationshipInputData(alreadyMutedUser.id, Relationship.UnMute)
+        val output = runBlocking { followUseCase.run(input) }
+        assertThat(output.res.data.youMuted).isFalse()
+    }
+
+    @Test(expected = TestException::class)
+    fun failToUnMute() {
+        val others = Users.others
+        val followUseCase = getFollowUseCase(others)
+        val input = UpdateRelationshipInputData(others.id, Relationship.UnMute)
+        runBlocking { followUseCase.run(input) }
+    }
 }
