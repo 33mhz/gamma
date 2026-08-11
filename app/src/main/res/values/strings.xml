@@ -328,4 +328,6 @@
     <string name="created_at">Created</string>
     <string name="channel_info">Channel info</string>
     <string name="room">Room %s</string>
+    <string name="subscribed">Subscribed</string>
+    <string name="mute_channel_description">Prevents other users from being able to auto-subscribe you to this channel.</string>
 </resources>

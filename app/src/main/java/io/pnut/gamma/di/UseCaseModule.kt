@@ -14,6 +14,8 @@ import io.pnut.gamma.domain.usecases.CacheUserUseCase
 import io.pnut.gamma.domain.usecases.CreateMessageUseCase
 import io.pnut.gamma.domain.usecases.CreatePmMessageUseCase
 import io.pnut.gamma.domain.usecases.GetExistingPmUseCase
+import io.pnut.gamma.domain.usecases.SubscribeChannelUseCase
+import io.pnut.gamma.domain.usecases.MuteChannelUseCase
 import io.pnut.gamma.domain.usecases.CreatePollUseCase
 import io.pnut.gamma.domain.usecases.DeleteMessageUseCase
 import io.pnut.gamma.domain.usecases.DeletePostUseCase
@@ -258,4 +260,14 @@ object UseCaseModule {
     fun provideGetExistingPmUseCase(
         pnutRepository: IPnutRepository
     ): GetExistingPmUseCase = GetExistingPmUseCase(pnutRepository)
+
+    @Provides
+    fun provideSubscribeChannelUseCase(
+        pnutRepository: IPnutRepository
+    ): SubscribeChannelUseCase = SubscribeChannelUseCase(pnutRepository)
+
+    @Provides
+    fun provideMuteChannelUseCase(
+        pnutRepository: IPnutRepository
+    ): MuteChannelUseCase = MuteChannelUseCase(pnutRepository)
 }

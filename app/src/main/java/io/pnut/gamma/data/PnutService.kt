@@ -204,6 +204,18 @@ interface PnutService {
     @GET("users/me/channels/subscribed")
     fun getPmChannels(@QueryMap paging: Map<String, String>): Call<PnutResponse<List<Channel>>>
 
+    @PUT("channels/{channelId}/subscribe")
+    fun subscribeChannel(@Path("channelId") channelId: String): Call<PnutResponse<Channel>>
+
+    @DELETE("channels/{channelId}/subscribe")
+    fun unsubscribeChannel(@Path("channelId") channelId: String): Call<PnutResponse<Channel>>
+
+    @PUT("channels/{channelId}/mute")
+    fun muteChannel(@Path("channelId") channelId: String): Call<PnutResponse<Channel>>
+
+    @DELETE("channels/{channelId}/mute")
+    fun unmuteChannel(@Path("channelId") channelId: String): Call<PnutResponse<Channel>>
+
     @GET("channels/streams/explore/topical")
     fun getTopicalChannels(@QueryMap paging: Map<String, String>): Call<PnutResponse<List<Channel>>>
 

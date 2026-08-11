@@ -335,6 +335,22 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         return defaultPnutService.getExistingPm(ids).await()
     }
 
+    override suspend fun subscribe(channelId: String): PnutResponse<Channel> {
+        return defaultPnutService.subscribeChannel(channelId).await()
+    }
+
+    override suspend fun unsubscribe(channelId: String): PnutResponse<Channel> {
+        return defaultPnutService.unsubscribeChannel(channelId).await()
+    }
+
+    override suspend fun muteChannel(channelId: String): PnutResponse<Channel> {
+        return defaultPnutService.muteChannel(channelId).await()
+    }
+
+    override suspend fun unmuteChannel(channelId: String): PnutResponse<Channel> {
+        return defaultPnutService.unmuteChannel(channelId).await()
+    }
+
     override suspend fun getInteractions(getInteractionsParam: GetInteractionsParam): PnutResponse<List<Interaction>> {
         return defaultPnutService.getInteractions(getInteractionsParam.toMap()).await()
     }
