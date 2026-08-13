@@ -58,6 +58,7 @@ class HomeFragment : Fragment(), Util.DrawerContentFragment {
         super.onViewCreated(view, savedInstanceState)
         val adapter = StreamViewPagerAdapter(this, context)
         binding.viewPager.adapter = adapter
+        binding.viewPager.offscreenPageLimit = 1
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = adapter.getPageTitle(position)
         }.attach()

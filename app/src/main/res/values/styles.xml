@@ -294,6 +294,14 @@
     <style name="TabStyle" parent="Widget.MaterialComponents.TabLayout">
         <item name="android:background">@color/toolbarBg</item>
         <item name="tabIndicator">@drawable/shape_tab_indicator</item>
+        <item name="tabTextAppearance">@style/TabNormalAppearance</item>
+        <item name="tabSelectedTextAppearance">@style/TabNormalAppearance</item>
+    </style>
+
+    <style name="TabNormalAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="AppBarLayoutStyle" parent="Widget.MaterialComponents.AppBarLayout.Surface">

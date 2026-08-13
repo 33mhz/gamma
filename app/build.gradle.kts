@@ -143,7 +143,7 @@ dependencies {
   implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0")
 
   implementation("com.google.android.material:material:1.14.0")
-  implementation("androidx.appcompat:appcompat:1.7.1")
+  implementation("androidx.appcompat:appcompat:1.8.0")
   implementation("androidx.recyclerview:recyclerview:1.4.0")
   implementation("com.squareup.retrofit2:retrofit:3.0.0")
   implementation("com.squareup.retrofit2:converter-moshi:3.0.0")
