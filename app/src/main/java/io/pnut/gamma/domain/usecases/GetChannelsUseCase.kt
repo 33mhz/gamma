@@ -9,7 +9,7 @@ class GetChannelsUseCase(private val pnutRepository: IPnutRepository) :
     AsyncUseCase<GetChannelsOutputData, GetChannelsInputData>() {
     override suspend fun run(params: GetChannelsInputData): GetChannelsOutputData {
         val channels = when (params.channelType) {
-            ChannelType.PublicChat -> pnutRepository.getTopicalChannels(params.params)
+            ChannelType.PublicChat -> pnutRepository.searchChannels(params.params)
             ChannelType.PM -> pnutRepository.getPmChannels(params.params)
             ChannelType.ExploreConversations -> pnutRepository.getExploreChannels("conversations", params.params)
             ChannelType.ExploreNew -> pnutRepository.getExploreChannels("new", params.params)

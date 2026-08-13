@@ -95,8 +95,13 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
         position: Int,
         isMainItem: Boolean
     ) {
+        val chatSettings = ChatSettings.getChatSettings(item.raw)
         val title = getChannelTitle(item)
         viewHolder.binding.screenNameTextView.text = title
+
+        val description = chatSettings?.description?.text
+        viewHolder.binding.descriptionTextView.text = description
+        viewHolder.binding.descriptionTextView.visibility = if (description.isNullOrBlank()) View.GONE else View.VISIBLE
 
         val user = item.recentMessage?.user ?: item.user
         viewHolder.binding.messageAuthorHandleTextView.text = user?.username?.let { "@$it" }
@@ -166,9 +171,10 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
     ) : BaseListViewModel<Channel>() {
         override suspend fun getItems(requestPager: PageableItemWrapper.Pager<Channel>?): PnutResponse<List<Channel>> {
             val params = GetChannelsParam().also { getChannelParams ->
-                val type = if (channelType == ChannelType.PublicChat) null else channelType.value
+                val type = channelType.value
+                val isPublic = if (channelType == ChannelType.PublicChat) true else null
                 val ownerId = if (channelType == ChannelType.Yours) accountRepository.getStoredIds().firstOrNull() else null
-                getChannelParams.add(GeneralChannelParam(includeRecentMessage = true, channelTypes = type, ownerId = ownerId))
+                getChannelParams.add(GeneralChannelParam(includeRecentMessage = true, channelTypes = type, ownerId = ownerId, isPublic = isPublic))
                 requestPager?.let { getChannelParams.add(PaginationParam.createFromPager(it)) }
             }
             val getChannelsOutputData =
@@ -191,6 +197,7 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
     companion object {
         fun subscribedChannels() = newInstance(ChannelType.Chat)
         fun yoursChannels() = newInstance(ChannelType.Yours)
+        fun publicChannels() = newInstance(ChannelType.PublicChat)
 
         fun newInstance(channelType: ChannelType) = ChannelListFragment().apply {
             arguments = Bundle().apply {

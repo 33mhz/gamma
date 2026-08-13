@@ -8,6 +8,7 @@ class ChannelsFragment : BaseTabbedFragment() {
 
     override val pagerItems = listOf(
         PagerItem({ ChannelListFragment.subscribedChannels() }, R.string.channels_subscribed),
+        PagerItem({ ChannelListFragment.publicChannels() }, R.string.channels_public),
         PagerItem({ ChannelListFragment.yoursChannels() }, R.string.channels_yours)
     )
 

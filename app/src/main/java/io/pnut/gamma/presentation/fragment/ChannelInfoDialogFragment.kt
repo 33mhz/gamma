@@ -68,6 +68,10 @@ class ChannelInfoDialogFragment : BottomSheetDialogFragment() {
         val chatSettings = ChatSettings.getChatSettings(channel.raw)
         binding.titleTextView.text = getString(R.string.room, channel.id)
 
+        val description = chatSettings?.description?.text
+        binding.descriptionTextView.text = description
+        binding.descriptionTextView.isVisible = !description.isNullOrBlank()
+
         if (!isPm && chatSettings?.categories != null && chatSettings.categories.isNotEmpty()) {
             binding.categoriesChipGroup.isVisible = true
             binding.categoriesChipGroup.removeAllViews()

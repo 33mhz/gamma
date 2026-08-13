@@ -221,6 +221,7 @@
     <string name="chat_rooms">Chat rooms</string>
     <string name="channel">Room</string>
     <string name="channels_subscribed">Subscribed</string>
+    <string name="channels_public">Public</string>
     <string name="channels_topical">Topical</string>
     <string name="channels_yours">Yours</string>
     <string name="channels_new">New</string>

@@ -12,7 +12,8 @@ data class GeneralChannelParam(
     val includeChannelRaw: Boolean = true,
     val includeRecentMessage: Boolean = true,
     val includeLimitedUsers: Boolean = true,
-    val ownerId: String? = null
+    val ownerId: String? = null,
+    val isPublic: Boolean? = null,
 ) : BaseParam {
     override fun toMap(): Map<String, String> = hashMapOf<String, String>().also { map ->
         map["include_read"] = includeRead.toInt().toString()
@@ -25,6 +26,7 @@ data class GeneralChannelParam(
         map["include_recent_message"] = includeRecentMessage.toInt().toString()
         map["include_limited_users"] = includeLimitedUsers.toInt().toString()
         if (ownerId != null) map["owner_id"] = ownerId
+        if (isPublic != null) map["is_public"] = isPublic.toInt().toString()
     }
 
 }

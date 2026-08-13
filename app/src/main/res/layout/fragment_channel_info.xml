@@ -18,6 +18,17 @@
             android:textAppearance="?attr/textAppearanceHeadline6"
             tools:text="Channel Title" />
 
+        <TextView
+            android:id="@+id/descriptionTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:textStyle="italic"
+            android:visibility="gone"
+            tools:text="Chat room description"
+            tools:visibility="visible" />
+
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/categoriesChipGroup"
             android:layout_width="match_parent"
