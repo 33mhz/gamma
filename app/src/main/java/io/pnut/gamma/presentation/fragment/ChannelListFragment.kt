@@ -97,9 +97,14 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
     ) {
         val title = getChannelTitle(item)
         viewHolder.binding.screenNameTextView.text = title
-        viewHolder.binding.handleNameTextView.visibility = View.GONE
 
         val user = item.recentMessage?.user ?: item.user
+        viewHolder.binding.messageAuthorHandleTextView.text = user?.username?.let { "@$it" }
+        viewHolder.binding.messageAuthorNameTextView.text = user?.name
+        val hasUser = user != null
+        viewHolder.binding.messageAuthorHandleTextView.visibility = if (hasUser) View.VISIBLE else View.GONE
+        viewHolder.binding.messageAuthorNameTextView.visibility = if (hasUser) View.VISIBLE else View.GONE
+
         user?.let { u ->
             val avatarUrl = User.getAvatarUrl(u, User.AvatarSize.Small)
             BindingUtil.glideAvatarSrc(viewHolder.binding.avatarImageView, avatarUrl)
@@ -111,6 +116,7 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
 
         viewHolder.binding.bodyTextView.text = item.recentMessage?.content?.getSpannableStringBuilder(viewHolder.itemView.context)
         viewHolder.binding.relativeTimeTextView.text = DateUtil.getShortDateStr(viewHolder.itemView.context, item.recentMessage?.createdAt)
+        viewHolder.binding.unreadIcon.visibility = if (item.hasUnread) View.VISIBLE else View.GONE
     }
 
     override fun getItemLayout(): Int = R.layout.fragment_channel_post_item

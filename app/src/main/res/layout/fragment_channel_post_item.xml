@@ -9,68 +9,124 @@
     android:foreground="?attr/selectableItemBackground"
     android:paddingBottom="@dimen/margin_regular">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/avatarImageView"
-        android:layout_width="@dimen/size_post_item_avatar"
-        android:layout_height="@dimen/size_post_item_avatar"
-        android:layout_marginStart="@dimen/margin_regular"
-        android:layout_marginTop="@dimen/margin_regular"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription"
-        tools:src="@tools:sample/avatars" />
-
     <TextView
         android:id="@+id/screenNameTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_regular"
         android:layout_marginTop="@dimen/margin_regular"
         android:ellipsize="end"
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-        app:layout_constraintEnd_toStartOf="@+id/relativeTimeTextView"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@+id/avatarImageView"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/unreadIcon"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constrainedWidth="true"
         tools:text="@tools:sample/first_names" />
 
-    <TextView
-        android:id="@+id/handleNameTextView"
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/unreadIcon"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginEnd="@dimen/margin_regular"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/screenNameTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/screenNameTextView"
+        app:srcCompat="@drawable/ic_mail_black_24dp"
+        app:tint="@color/colorPrimary"
+        tools:visibility="visible" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/messageBubble"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:ellipsize="end"
-        android:singleLine="true"
-        app:layout_constraintBaseline_toBaselineOf="@id/screenNameTextView"
-        app:layout_constraintEnd_toStartOf="@id/relativeTimeTextView"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toEndOf="@+id/screenNameTextView"
-        tools:text="@tools:sample/full_names" />
-
-    <TextView
-        android:id="@+id/relativeTimeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginTop="@dimen/margin_half"
         android:layout_marginEnd="@dimen/margin_regular"
-        app:layout_constraintBottom_toBottomOf="@+id/handleNameTextView"
+        app:cardBackgroundColor="@color/colorBubbleBackground"
+        app:cardCornerRadius="@dimen/margin_half"
+        app:cardElevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:text="5s" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/screenNameTextView">
 
-    <TextView
-        android:id="@+id/bodyTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_quoter"
-        android:layout_marginEnd="@dimen/margin_regular"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/screenNameTextView"
-        app:layout_constraintTop_toBottomOf="@+id/screenNameTextView"
-        tools:text="@tools:sample/lorem" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/margin_half">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/avatarImageView"
+                android:layout_width="@dimen/size_post_item_avatar_mini"
+                android:layout_height="@dimen/size_post_item_avatar_mini"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription"
+                tools:src="@tools:sample/avatars" />
+
+            <TextView
+                android:id="@+id/messageAuthorHandleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_half"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                android:textStyle="bold"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toStartOf="@+id/messageAuthorNameTextView"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toEndOf="@+id/avatarImageView"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="\@username" />
+
+            <TextView
+                android:id="@+id/messageAuthorNameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_quoter"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintBaseline_toBaselineOf="@+id/messageAuthorHandleTextView"
+                app:layout_constraintEnd_toStartOf="@+id/relativeTimeTextView"
+                app:layout_constraintStart_toEndOf="@+id/messageAuthorHandleTextView"
+                tools:text="Display Name" />
+
+            <TextView
+                android:id="@+id/relativeTimeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                app:layout_constraintBaseline_toBaselineOf="@+id/messageAuthorHandleTextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="5s" />
+
+            <TextView
+                android:id="@+id/bodyTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/messageAuthorHandleTextView"
+                app:layout_constraintTop_toBottomOf="@+id/messageAuthorHandleTextView"
+                tools:text="@tools:sample/lorem" />
+
+            <TextView
+                android:id="@+id/handleNameTextView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="MissingConstraints" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
