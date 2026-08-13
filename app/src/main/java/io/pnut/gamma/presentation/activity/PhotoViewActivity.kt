@@ -113,6 +113,21 @@ class PhotoViewActivity : BaseActivity() {
         binding.mediaViewPager.setCurrentItem(index, false)
         TabLayoutMediator(binding.mediaviewPagerIndicator, binding.mediaViewPager) { _, _ -> }.attach()
 
+        binding.prevButton.setOnClickListener {
+            binding.mediaViewPager.currentItem -= 1
+        }
+
+        binding.nextButton.setOnClickListener {
+            binding.mediaViewPager.currentItem += 1
+        }
+
+        binding.mediaViewPager.registerOnPageChangeCallback(object : androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                updateNavigationButtons(position)
+            }
+        })
+        updateNavigationButtons(index)
+
         binding.haulerView.setOnDragDismissedListener {
             finishAfterTransition()
         }
@@ -144,6 +159,14 @@ class PhotoViewActivity : BaseActivity() {
     fun toggleUI() {
         binding.toolbar.isVisible = !binding.toolbar.isVisible
         binding.mediaviewPagerIndicator.isVisible = !binding.mediaviewPagerIndicator.isVisible
+        updateNavigationButtons(binding.mediaViewPager.currentItem)
+    }
+
+    private fun updateNavigationButtons(position: Int) {
+        val total = adapter.itemCount
+        val uiVisible = binding.toolbar.isVisible
+        binding.prevButton.isVisible = uiVisible && position > 0
+        binding.nextButton.isVisible = uiVisible && position < total - 1
     }
 
     private fun setupAnimation() {

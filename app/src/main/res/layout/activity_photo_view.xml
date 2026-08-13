@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <io.pnut.gamma.presentation.view.hauler.HaulerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/haulerView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -38,7 +39,33 @@
                 app:tabBackground="@android:color/transparent"
                 app:tabIndicatorFullWidth="true"
                 app:tabIndicatorGravity="bottom"
-                app:tabIndicatorHeight="2dp" />
+                app:tabIndicatorHeight="2dp"
+                tools:ignore="SpeakableTextPresentCheck" />
+
+            <ImageButton
+                android:id="@+id/prevButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/go_to"
+                android:src="@drawable/ic_arrow_back_white_24dp"
+                app:tint="@android:color/white"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/nextButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical|end"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/go_to"
+                android:rotation="180"
+                android:src="@drawable/ic_arrow_back_white_24dp"
+                app:tint="@android:color/white"
+                android:visibility="gone" />
         </FrameLayout>
     </androidx.core.widget.NestedScrollView>
 </io.pnut.gamma.presentation.view.hauler.HaulerView>
