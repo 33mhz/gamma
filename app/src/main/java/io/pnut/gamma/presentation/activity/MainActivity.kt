@@ -36,7 +36,6 @@ import io.pnut.gamma.domain.usecases.GetAuthenticatedUserUseCase
 import io.pnut.gamma.domain.usecases.GetCurrentAccountUseCase
 import io.pnut.gamma.domain.usecases.UpdateDefaultAccountUseCase
 import io.pnut.gamma.presentation.adapter.AccountListAdapter
-import io.pnut.gamma.presentation.fragment.BaseListFragment
 import io.pnut.gamma.presentation.fragment.ChannelsFragment
 import io.pnut.gamma.presentation.fragment.PrivateMessagesFragment
 import io.pnut.gamma.presentation.fragment.ChannelMessagesFragment
@@ -59,6 +58,9 @@ import androidx.core.view.size
 import androidx.core.view.get
 import io.pnut.gamma.presentation.util.FragmentHelper
 import android.os.Build
+import androidx.fragment.app.Fragment
+import io.pnut.gamma.presentation.fragment.ExplorePostsFragment
+import io.pnut.gamma.presentation.fragment.ExploreRoomsFragment
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callback,
@@ -394,10 +396,10 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         uncheckMenuItem(binding.navigationView.menu)
         val fragment = supportFragmentManager.findFragmentById(R.id.fragmentPlaceholder)
         
-        val fabIcon = when {
-            fragment is PrivateMessagesFragment -> R.drawable.ic_mail_black_24dp
-            fragment is ChannelMessagesFragment && fragment.isPm -> R.drawable.ic_mail_black_24dp
-            fragment is ChannelMessagesFragment -> R.drawable.ic_forum_black_24dp
+        val fabIcon = when (fragment) {
+            is PrivateMessagesFragment -> R.drawable.ic_mail_black_24dp
+            is ChannelMessagesFragment if fragment.isPm -> R.drawable.ic_mail_black_24dp
+            is ChannelMessagesFragment -> R.drawable.ic_forum_black_24dp
             else -> R.drawable.ic_create_black_24dp
         }
         binding.fab.setImageResource(fabIcon)
@@ -478,11 +480,8 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         else {
             when (item.itemId) {
                 R.id.home -> goToHome()
-                R.id.conversations,
-                R.id.missedConversations,
-                R.id.newcomers,
-                R.id.photos,
-                R.id.trending,
+                R.id.explorePosts,
+                R.id.exploreRooms,
                 R.id.global -> showExploreStream(item.itemId)
 //                    R.id.file -> goToFiles()
                 R.id.privateMessages -> goToPrivateMessages()
@@ -531,12 +530,9 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         data class Failed(val t: Throwable) : Event()
     }
 
-    private val fragmentMap = mapOf<Int, () -> BaseListFragment<*, *>>(
-        R.id.conversations to { ExploreFragment.ConversationsFragment.newInstance() },
-        R.id.missedConversations to { ExploreFragment.MissedConversationsFragment.newInstance() },
-        R.id.newcomers to { ExploreFragment.NewcomersFragment.newInstance() },
-        R.id.photos to { ExploreFragment.PhotosFragment.newInstance() },
-        R.id.trending to { ExploreFragment.TrendingFragment.newInstance() },
+    private val fragmentMap = mapOf<Int, () -> Fragment>(
+        R.id.explorePosts to { ExplorePostsFragment.newInstance() },
+        R.id.exploreRooms to { ExploreRoomsFragment.newInstance() },
         R.id.global to { ExploreFragment.GlobalFragment.newInstance() }
     )
 

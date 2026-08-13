@@ -61,7 +61,9 @@
     <string name="icon_transition">icon_transition</string>
     <string name="fab_transition">fab_transition</string>
     <string name="remove_photo">Remove a photo</string>
-    <string name="explore">Explore</string>
+    <string name="explore_posts">Explore posts</string>
+    <string name="explore_template">Explore %s</string>
+    <string name="explore_rooms">Explore rooms</string>
     <string name="profile_transition">profile_transition</string>
     <string name="timezone">Timezone</string>
     <string name="locale">Locale</string>
@@ -220,6 +222,9 @@
     <string name="channel">Room</string>
     <string name="channels_subscribed">Subscribed</string>
     <string name="channels_topical">Topical</string>
+    <string name="channels_yours">Yours</string>
+    <string name="channels_new">New</string>
+    <string name="channels_active">Conversations</string>
     <plurals name="poll_day_template">
         <item quantity="zero" />
         <item quantity="one">%d day</item>

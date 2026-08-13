@@ -32,11 +32,7 @@ interface IPnutRepository {
     suspend fun getMentionStream(getPostsParam: GetPostsParam): PnutResponse<List<Post>>
     suspend fun getStars(userId: String, getPostsParam: GetPostsParam): PnutResponse<List<Post>>
     suspend fun getUserPosts(userId: String, getPostsParam: GetPostsParam): PnutResponse<List<Post>>
-    suspend fun getConversations(getPostsParam: GetPostsParam): PnutResponse<List<Post>>
-    suspend fun getMissedConversations(getPostsParam: GetPostsParam): PnutResponse<List<Post>>
-    suspend fun getNewcomers(getPostsParam: GetPostsParam): PnutResponse<List<Post>>
-    suspend fun getPhotos(getPostsParam: GetPostsParam): PnutResponse<List<Post>>
-    suspend fun getTrending(getPostsParam: GetPostsParam): PnutResponse<List<Post>>
+    suspend fun getExplorePosts(slug: String, getPostsParam: GetPostsParam): PnutResponse<List<Post>>
     suspend fun getGlobal(getPostsParam: GetPostsParam): PnutResponse<List<Post>>
     suspend fun getTagStream(tag: String, getPostsParam: GetPostsParam): PnutResponse<List<Post>>
     suspend fun searchPosts(params: GetPostsParam): PnutResponse<List<Post>>
@@ -81,6 +77,8 @@ interface IPnutRepository {
     suspend fun getSubscribedChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
     suspend fun getPmChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
     suspend fun getTopicalChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
+    suspend fun getExploreChannels(slug: String, getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
+    suspend fun searchChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
     suspend fun getMessages(channelId: String, paginationParam: PaginationParam): PnutResponse<List<Message>>
     suspend fun deleteMessage(channelId: String, messageId: String): PnutResponse<Message>
     suspend fun getMessageThread(channelId: String, messageId: String): PnutResponse<List<Message>>

@@ -20,10 +20,6 @@ import io.pnut.gamma.databinding.FragmentHomeBinding
 @AndroidEntryPoint
 class HomeFragment : Fragment(), Util.DrawerContentFragment {
 
-    interface Scrollable {
-        fun scrollToTop()
-    }
-
     private val tabListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabUnselected(tab: TabLayout.Tab?) {
         }
@@ -35,7 +31,7 @@ class HomeFragment : Fragment(), Util.DrawerContentFragment {
             if (tab == null) return
             val fragmentTag = "f${tab.position}"
             val fragment =
-                childFragmentManager.findFragmentByTag(fragmentTag) as? Scrollable ?: return
+                childFragmentManager.findFragmentByTag(fragmentTag) as? Util.Scrollable ?: return
             fragment.scrollToTop()
         }
     }

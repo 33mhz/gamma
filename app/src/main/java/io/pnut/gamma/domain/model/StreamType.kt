@@ -10,13 +10,13 @@ sealed class StreamType {
     data class Tag(val tag: String): StreamType()
     data class User(val userId: String): StreamType()
     data class Thread(val postId: String) : StreamType()
-    sealed class Explore(@StringRes val titleRes: Int): StreamType() {
-        object Conversations : Explore(R.string.conversations)
-        object MissedConversations : Explore(R.string.missed_conversations)
-        object Newcomers : Explore(R.string.newcomers)
-        object Photos : Explore(R.string.photos)
-        object Trending : Explore(R.string.trending)
-        object Global : Explore(R.string.global)
+    sealed class Explore(@StringRes val titleRes: Int, val slug: String): StreamType() {
+        object Conversations : Explore(R.string.conversations, "conversations")
+        object MissedConversations : Explore(R.string.missed_conversations, "missed_conversations")
+        object Newcomers : Explore(R.string.newcomers, "newcomers")
+        object Photos : Explore(R.string.photos, "photos")
+        object Trending : Explore(R.string.trending, "trending")
+        object Global : Explore(R.string.global, "global")
     }
 
     data class Search(val keyword: String) : StreamType()

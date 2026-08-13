@@ -14,7 +14,7 @@ import io.pnut.gamma.R
 import io.pnut.gamma.databinding.ListWithToolbarBinding
 
 
-abstract class ExploreFragment : PostItemFragment(), Util.DrawerContentFragment {
+abstract class ExploreFragment : PostItemFragment() {
 
     override fun getFragmentLayout(): Int = R.layout.list_with_toolbar
     override fun getRecyclerView(view: View): RecyclerView = ListWithToolbarBinding.bind(view).itemList
@@ -32,7 +32,10 @@ abstract class ExploreFragment : PostItemFragment(), Util.DrawerContentFragment 
             getRecyclerView(requireView()).layoutManager?.startSmoothScroll(SmoothScroller(ctx))
         }
         setTitleToToolbar(toolbar)
-
+        // Hide toolbar if it's in ExplorePostsFragment (parent is a Fragment)
+        if (parentFragment is ExplorePostsFragment) {
+            toolbar.visibility = View.GONE
+        }
     }
 
     private fun setTitleToToolbar(toolbar: Toolbar) {
@@ -44,7 +47,6 @@ abstract class ExploreFragment : PostItemFragment(), Util.DrawerContentFragment 
     @AndroidEntryPoint
     class ConversationsFragment : ExploreFragment() {
         override val streamType = StreamType.Explore.Conversations
-        override val menuItemId = R.id.conversations
 
         companion object {
             fun newInstance() = ConversationsFragment()
@@ -54,7 +56,6 @@ abstract class ExploreFragment : PostItemFragment(), Util.DrawerContentFragment 
     @AndroidEntryPoint
     class MissedConversationsFragment : ExploreFragment() {
         override val streamType = StreamType.Explore.MissedConversations
-        override val menuItemId = R.id.missedConversations
 
         companion object {
             fun newInstance() = MissedConversationsFragment()
@@ -64,7 +65,6 @@ abstract class ExploreFragment : PostItemFragment(), Util.DrawerContentFragment 
     @AndroidEntryPoint
     class NewcomersFragment : ExploreFragment() {
         override val streamType = StreamType.Explore.Newcomers
-        override val menuItemId = R.id.newcomers
 
         companion object {
             fun newInstance() = NewcomersFragment()
@@ -74,7 +74,6 @@ abstract class ExploreFragment : PostItemFragment(), Util.DrawerContentFragment 
     @AndroidEntryPoint
     class PhotosFragment : ExploreFragment() {
         override val streamType = StreamType.Explore.Photos
-        override val menuItemId = R.id.photos
 
         companion object {
             fun newInstance() = PhotosFragment()
@@ -84,7 +83,6 @@ abstract class ExploreFragment : PostItemFragment(), Util.DrawerContentFragment 
     @AndroidEntryPoint
     class TrendingFragment : ExploreFragment() {
         override val streamType = StreamType.Explore.Trending
-        override val menuItemId = R.id.trending
 
         companion object {
             fun newInstance() = TrendingFragment()
@@ -92,7 +90,7 @@ abstract class ExploreFragment : PostItemFragment(), Util.DrawerContentFragment 
     }
 
     @AndroidEntryPoint
-    class GlobalFragment : ExploreFragment() {
+    class GlobalFragment : ExploreFragment(), Util.DrawerContentFragment {
         override val streamType = StreamType.Explore.Global
         override val menuItemId = R.id.global
 

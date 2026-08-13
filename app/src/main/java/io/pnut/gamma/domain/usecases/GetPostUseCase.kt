@@ -47,12 +47,13 @@ open class GetPostUseCase(
                     )
                 )
             })
-            is StreamType.Explore.Conversations -> pnutRepository.getConversations(param)
-            is StreamType.Explore.MissedConversations -> pnutRepository.getMissedConversations(param)
-            is StreamType.Explore.Newcomers -> pnutRepository.getNewcomers(param)
-            is StreamType.Explore.Photos -> pnutRepository.getPhotos(param)
-            is StreamType.Explore.Trending -> pnutRepository.getTrending(param)
-            is StreamType.Explore.Global -> pnutRepository.getGlobal(param)
+            is StreamType.Explore -> {
+                if (streamType is StreamType.Explore.Global) {
+                    pnutRepository.getGlobal(param)
+                } else {
+                    pnutRepository.getExplorePosts(streamType.slug, param)
+                }
+            }
             is StreamType.Search -> pnutRepository.searchPosts(params.params.apply {
                 add(SearchPostParam(streamType.keyword))
             })

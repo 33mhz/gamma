@@ -198,24 +198,11 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         return defaultPnutService.getUserPosts(userId, getPostsParam.toMap()).await()
     }
 
-    override suspend fun getConversations(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
-        return defaultPnutService.getConversations(getPostsParam.toMap()).await()
-    }
-
-    override suspend fun getMissedConversations(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
-        return defaultPnutService.getMissedConversations(getPostsParam.toMap()).await()
-    }
-
-    override suspend fun getNewcomers(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
-        return defaultPnutService.getNewcomers(getPostsParam.toMap()).await()
-    }
-
-    override suspend fun getPhotos(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
-        return defaultPnutService.getPhotos(getPostsParam.toMap()).await()
-    }
-
-    override suspend fun getTrending(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
-        return defaultPnutService.getTrending(getPostsParam.toMap()).await()
+    override suspend fun getExplorePosts(
+        slug: String,
+        getPostsParam: GetPostsParam
+    ): PnutResponse<List<Post>> {
+        return defaultPnutService.getExplore(slug, getPostsParam.toMap()).await()
     }
 
     override suspend fun getGlobal(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
@@ -306,6 +293,17 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
 
     override suspend fun getTopicalChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
         return defaultPnutService.getTopicalChannels(getChannelsParam.toMap()).await()
+    }
+
+    override suspend fun getExploreChannels(
+        slug: String,
+        getChannelsParam: GetChannelsParam
+    ): PnutResponse<List<Channel>> {
+        return defaultPnutService.getExploreChannels(slug, getChannelsParam.toMap()).await()
+    }
+
+    override suspend fun searchChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
+        return defaultPnutService.searchChannels(getChannelsParam.toMap()).await()
     }
 
     override suspend fun getMessages(

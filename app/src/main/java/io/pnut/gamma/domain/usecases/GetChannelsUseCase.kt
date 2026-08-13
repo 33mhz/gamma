@@ -11,6 +11,11 @@ class GetChannelsUseCase(private val pnutRepository: IPnutRepository) :
         val channels = when (params.channelType) {
             ChannelType.PublicChat -> pnutRepository.getTopicalChannels(params.params)
             ChannelType.PM -> pnutRepository.getPmChannels(params.params)
+            ChannelType.ExploreConversations -> pnutRepository.getExploreChannels("conversations", params.params)
+            ChannelType.ExploreNew -> pnutRepository.getExploreChannels("new", params.params)
+            ChannelType.ExploreTopical -> pnutRepository.getExploreChannels("topical", params.params)
+            ChannelType.ExploreTrending -> pnutRepository.getExploreChannels("trending", params.params)
+            ChannelType.Yours -> pnutRepository.searchChannels(params.params)
             else -> pnutRepository.getSubscribedChannels(params.params)
         }
         return GetChannelsOutputData(channels)

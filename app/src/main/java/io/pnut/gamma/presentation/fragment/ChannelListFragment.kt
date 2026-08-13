@@ -54,7 +54,7 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
     override fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
     override val viewModel: BaseListViewModel<Channel> by lazy {
         ViewModelProvider(
-            this, ChannelListViewModel.Factory(channelType, getChannelUseCase)
+            this, ChannelListViewModel.Factory(channelType, getChannelUseCase, accountRepository)
         )[ChannelListViewModel::class.java]
     }
 
@@ -155,12 +155,14 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
 
     class ChannelListViewModel(
         private val channelType: ChannelType,
-        private val getChannelsUseCase: GetChannelsUseCase
+        private val getChannelsUseCase: GetChannelsUseCase,
+        private val accountRepository: IAccountRepository
     ) : BaseListViewModel<Channel>() {
         override suspend fun getItems(requestPager: PageableItemWrapper.Pager<Channel>?): PnutResponse<List<Channel>> {
             val params = GetChannelsParam().also { getChannelParams ->
                 val type = if (channelType == ChannelType.PublicChat) null else channelType.value
-                getChannelParams.add(GeneralChannelParam(includeRecentMessage = true, channelTypes = type))
+                val ownerId = if (channelType == ChannelType.Yours) accountRepository.getStoredIds().firstOrNull() else null
+                getChannelParams.add(GeneralChannelParam(includeRecentMessage = true, channelTypes = type, ownerId = ownerId))
                 requestPager?.let { getChannelParams.add(PaginationParam.createFromPager(it)) }
             }
             val getChannelsOutputData =
@@ -170,22 +172,21 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
 
         class Factory(
             private val channelType: ChannelType,
-            private val getChannelsUseCase: GetChannelsUseCase
+            private val getChannelsUseCase: GetChannelsUseCase,
+            private val accountRepository: IAccountRepository
         ) : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return ChannelListViewModel(channelType, getChannelsUseCase) as T
+                return ChannelListViewModel(channelType, getChannelsUseCase, accountRepository) as T
             }
         }
     }
 
     companion object {
-        fun pmChannels() = newInstance(ChannelType.PM)
-        fun chatChannels() = newInstance(ChannelType.Chat)
         fun subscribedChannels() = newInstance(ChannelType.Chat)
-        fun topicalChannels() = newInstance(ChannelType.PublicChat)
+        fun yoursChannels() = newInstance(ChannelType.Yours)
 
-        private fun newInstance(channelType: ChannelType) = ChannelListFragment().apply {
+        fun newInstance(channelType: ChannelType) = ChannelListFragment().apply {
             arguments = Bundle().apply {
                 putSerializable(BundleKey.ChannelType.name, channelType)
             }

@@ -56,22 +56,7 @@ interface PnutService {
     fun getExploreList(): Call<PnutResponse<List<Explore>>>
 
     @GET("posts/streams/explore/{slug}")
-    fun getExplore(@Path("slug") slug: String): Call<PnutResponse<List<Post>>>
-
-    @GET("posts/streams/explore/conversations")
-    fun getConversations(@QueryMap pagination: Map<String, String>): Call<PnutResponse<List<Post>>>
-
-    @GET("posts/streams/explore/missed_conversations")
-    fun getMissedConversations(@QueryMap pagination: Map<String, String>): Call<PnutResponse<List<Post>>>
-
-    @GET("posts/streams/explore/newcomers")
-    fun getNewcomers(@QueryMap pagination: Map<String, String>): Call<PnutResponse<List<Post>>>
-
-    @GET("posts/streams/explore/photos")
-    fun getPhotos(@QueryMap pagination: Map<String, String>): Call<PnutResponse<List<Post>>>
-
-    @GET("posts/streams/explore/trending")
-    fun getTrending(@QueryMap pagination: Map<String, String>): Call<PnutResponse<List<Post>>>
+    fun getExplore(@Path("slug") slug: String, @QueryMap pagination: Map<String, String>): Call<PnutResponse<List<Post>>>
 
     @GET("posts/{postId}/thread")
     fun getThread(@Path("postId") postId: String, @QueryMap params: Map<String, String>): Call<PnutResponse<List<Post>>>
@@ -218,6 +203,12 @@ interface PnutService {
 
     @GET("channels/streams/explore/topical")
     fun getTopicalChannels(@QueryMap paging: Map<String, String>): Call<PnutResponse<List<Channel>>>
+
+    @GET("channels/streams/explore/{slug}")
+    fun getExploreChannels(@Path("slug") slug: String, @QueryMap paging: Map<String, String>): Call<PnutResponse<List<Channel>>>
+
+    @GET("channels/search")
+    fun searchChannels(@QueryMap params: Map<String, String>): Call<PnutResponse<List<Channel>>>
 
     @GET("users/me/channels")
     fun getChannels(@QueryMap paging: Map<String, String>): Call<PnutResponse<List<Channel>>>

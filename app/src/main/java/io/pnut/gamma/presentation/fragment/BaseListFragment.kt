@@ -25,6 +25,7 @@ import io.pnut.gamma.util.LogUtil
 import io.pnut.gamma.util.SingleLiveEvent
 import kotlinx.coroutines.launch
 import io.pnut.gamma.R
+import io.pnut.gamma.presentation.util.Util
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -32,7 +33,7 @@ import androidx.core.view.updatePadding
 
 abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder> : BaseFragment(),
     SwipeRefreshLayout.OnRefreshListener,
-    InfiniteScrollListener.Callback, HomeFragment.Scrollable {
+    InfiniteScrollListener.Callback, Util.Scrollable {
     open val reverse = false
 
     private val listEventObserver = Observer<ListEvent> {

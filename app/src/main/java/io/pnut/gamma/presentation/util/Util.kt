@@ -135,4 +135,8 @@ object Util {
         getAttributeValue(context, android.R.attr.windowBackground)
 
     fun getVisibility(b: Boolean) = if (b) View.VISIBLE else View.GONE
+
+    interface Scrollable {
+        fun scrollToTop()
+    }
 }

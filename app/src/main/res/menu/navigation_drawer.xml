@@ -8,54 +8,41 @@
             android:checked="true"
             android:icon="@drawable/ic_home_black_24dp"
             android:title="@string/home" />
-        <item android:title="@string/explore">
-            <menu>
-                <group
-                    android:id="@+id/explore"
-                    android:checkableBehavior="single"
-                    android:orderInCategory="100">
-                    <item
-                        android:id="@+id/global"
-                        android:icon="@drawable/ic_public_black_24dp"
-                        android:title="@string/global" />
-                    <item
-                        android:id="@+id/conversations"
-                        android:icon="@drawable/ic_forum_black_24dp"
-                        android:title="@string/conversations" />
-                    <item
-                        android:id="@+id/missedConversations"
-                        android:icon="@drawable/ic_chat_bubble_black_24dp"
-                        android:title="@string/missed_conversations" />
-                    <item
-                        android:id="@+id/newcomers"
-                        android:icon="@drawable/ic_person_add_black_24dp"
-                        android:title="@string/newcomers" />
-                    <item
-                        android:id="@+id/photos"
-                        android:icon="@drawable/ic_photo_camera_24dp"
-                        android:title="@string/photos" />
-                    <item
-                        android:id="@+id/trending"
-                        android:icon="@drawable/ic_trending_up_black_24dp"
-                        android:title="@string/trending" />
-                </group>
-            </menu>
-        </item>
+        <item
+            android:id="@+id/global"
+            android:icon="@drawable/ic_public_black_24dp"
+            android:title="@string/global" />
+        <item
+            android:id="@+id/explorePosts"
+            android:icon="@drawable/ic_explore_black_24dp"
+            android:title="@string/explore_posts" />
     </group>
+
     <group
-        android:id="@+id/otherGroup"
+        android:id="@+id/pmGroup"
         android:checkableBehavior="single"
-        android:menuCategory="secondary"
-        android:orderInCategory="250">
+        android:orderInCategory="200">
         <item
             android:id="@+id/privateMessages"
             android:icon="@drawable/ic_mail_black_24dp"
             android:title="@string/private_messages" />
+    </group>
+
+    <group
+        android:id="@+id/channelsGroup"
+        android:checkableBehavior="single"
+        android:menuCategory="secondary"
+        android:orderInCategory="250">
         <item
             android:id="@+id/channels"
             android:icon="@drawable/ic_forum_black_24dp"
             android:title="@string/chat_rooms" />
+        <item
+            android:id="@+id/exploreRooms"
+            android:icon="@drawable/ic_explore_black_24dp"
+            android:title="@string/explore_rooms" />
     </group>
+
     <group
         android:id="@+id/other"
         android:menuCategory="system">
