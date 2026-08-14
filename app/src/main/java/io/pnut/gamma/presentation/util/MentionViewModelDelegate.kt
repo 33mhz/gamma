@@ -38,9 +38,10 @@ class MentionViewModelDelegate(
         searchJob?.cancel()
         searchJob = coroutineScope.launch {
             try {
-                val result = cacheDao.searchSuggestions(query)
+                val currentUserId = accountRepository.getDefaultAccount()?.id ?: ""
+                val result = cacheDao.searchSuggestions(query, currentUserId)
                 val token = accountRepository.getDefaultAccount()?.token
-                _suggestions.value = result.map { 
+                _suggestions.value = result.map {
                     UserSuggestion(it.id, it.username, it.name, token, it.youFollow)
                 }.sortedBy { it.username.lowercase() }
             } catch (_: Exception) {

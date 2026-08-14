@@ -62,8 +62,8 @@ interface CacheDao {
     @Query("DELETE FROM cached_interactions")
     suspend fun deleteAllInteractions()
 
-    @Query("SELECT * FROM user_suggestions WHERE username LIKE :query || '%' OR name LIKE '%' || :query || '%' ORDER BY youFollow DESC, username ASC LIMIT 8")
-    suspend fun searchSuggestions(query: String): List<UserSuggestionEntity>
+    @Query("SELECT * FROM user_suggestions WHERE (username LIKE :query || '%' OR name LIKE '%' || :query || '%') AND id != :currentUserId ORDER BY youFollow DESC, username ASC LIMIT 8")
+    suspend fun searchSuggestions(query: String, currentUserId: String): List<UserSuggestionEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSuggestions(suggestions: List<UserSuggestionEntity>)
