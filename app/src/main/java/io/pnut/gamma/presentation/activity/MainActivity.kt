@@ -24,6 +24,7 @@ import com.google.android.material.transition.platform.MaterialContainerTransfor
 import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.broadcast.ErrorReceiver
 import io.pnut.gamma.broadcast.PostReceiver
+import io.pnut.gamma.broadcast.RelationshipReceiver
 import io.pnut.gamma.databinding.AccountListBinding
 import io.pnut.gamma.databinding.ActivityMainBinding
 import io.pnut.gamma.databinding.NavigationDrawerHeaderBinding
@@ -43,6 +44,7 @@ import io.pnut.gamma.presentation.fragment.ExploreFragment
 import io.pnut.gamma.presentation.fragment.HomeFragment
 import io.pnut.gamma.presentation.fragment.ProfileFragment
 import io.pnut.gamma.presentation.fragment.SearchFragment
+import io.pnut.gamma.presentation.fragment.UserListFragment.SuggestedUserListFragment
 import io.pnut.gamma.presentation.util.BindingUtil
 import io.pnut.gamma.presentation.util.LoginUtil
 import io.pnut.gamma.presentation.util.SnackbarCallback
@@ -64,9 +66,13 @@ import io.pnut.gamma.presentation.fragment.ExploreRoomsFragment
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callback,
-    AccountListAdapter.Listener, ErrorReceiver.Callback {
+    AccountListAdapter.Listener, ErrorReceiver.Callback, RelationshipReceiver.Callback {
     override fun onReceiveError(message: String) {
         Snackbar.make(binding.coordinatorLayout, message, Snackbar.LENGTH_LONG).showAsError()
+    }
+
+    override fun onRelationshipChanged() {
+        viewModel.refresh()
     }
 
     override fun onDeletePostReceive(post: Post) {
@@ -202,6 +208,9 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
     private fun setMenuItemVisibilities(visible: Boolean) {
         setMenuItemVisibilities(binding.navigationView.menu, visible)
+        if (visible) {
+            updateSuggestedUsersVisibility()
+        }
     }
 
     private fun setMenuItemVisibilities(menu: Menu, visible: Boolean) {
@@ -250,6 +259,10 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
     private val errorReceiver by lazy {
         ErrorReceiver(this)
+    }
+
+    private val relationshipReceiver by lazy {
+        RelationshipReceiver(this)
     }
 
     private val receiverManager by lazy {
@@ -326,16 +339,22 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     }
 
 
+    override fun onResume() {
+        super.onResume()
+    }
+
     override fun onStart() {
         super.onStart()
         receiverManager.registerReceiver(postReceiver, PostWorker.getIntentFilter())
         receiverManager.registerReceiver(errorReceiver, ErrorIntent.getIntentFilter())
+        receiverManager.registerReceiver(relationshipReceiver, RelationshipReceiver.getIntentFilter())
     }
 
     override fun onStop() {
         super.onStop()
         receiverManager.unregisterReceiver(postReceiver)
         receiverManager.unregisterReceiver(errorReceiver)
+        receiverManager.unregisterReceiver(relationshipReceiver)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -352,6 +371,14 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
             val fragment = ChannelMessagesFragment.newInstance(channelId, channelTitle, io.pnut.gamma.domain.model.ChannelType.PM.value, usernames)
             FragmentHelper.addFragment(supportFragmentManager, fragment, channelId)
         }
+
+        val userId = intent.getStringExtra("USER_ID")
+        if (userId != null) {
+            val iconUrl = intent.getStringExtra("USER_ICON_URL")
+            val user: User? = androidx.core.os.BundleCompat.getParcelable(intent.extras ?: Bundle.EMPTY, "USER", User::class.java)
+            val fragment = ProfileFragment.newInstance(userId, iconUrl, user)
+            FragmentHelper.addFragment(supportFragmentManager, fragment, userId)
+        }
     }
 
     private fun setupFragment(firstStart: Boolean) {
@@ -360,7 +387,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
             supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.fragmentPlaceholder, homeFragment)
+                .replace(R.id.container, homeFragment)
                 .commit()
         }
         supportFragmentManager.addOnBackStackChangedListener(::syncMenu)
@@ -377,6 +404,12 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 
                     BindingUtil.glideSrc(headerBinding.navigationDrawerHeaderImageView, it.content.coverImage.url)
                     BindingUtil.glideAvatarSrc(headerBinding.navigationDrawerAvatarImageView, it.content.avatarImage.url)
+
+                    if (it.counts.following >= 5) {
+                        preferenceRepository.setExceededWelcomeFollowed(it.id, true)
+                    }
+
+                    updateSuggestedUsersVisibility()
                 }
             }
             
@@ -392,9 +425,17 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         binding.navigationView.addHeaderView(accountListView)
     }
 
+    private fun updateSuggestedUsersVisibility() {
+        val user = viewModel.user.value ?: return
+        val showSuggested = preferenceRepository.suggestUserFollows && 
+                           !preferenceRepository.hasExceededWelcomeFollowed(user.id) && 
+                           user.counts.following < 5
+        binding.navigationView.menu.findItem(R.id.suggestedUsers)?.isVisible = showSuggested
+    }
+
     private fun syncMenu() {
         uncheckMenuItem(binding.navigationView.menu)
-        val fragment = supportFragmentManager.findFragmentById(R.id.fragmentPlaceholder)
+        val fragment = supportFragmentManager.findFragmentById(R.id.container)
         
         val fabIcon = when (fragment) {
             is PrivateMessagesFragment -> R.drawable.ic_mail_black_24dp
@@ -424,7 +465,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     }
 
     private fun openComposePostDialog() {
-        val fragment = supportFragmentManager.findFragmentById(R.id.fragmentPlaceholder)
+        val fragment = supportFragmentManager.findFragmentById(R.id.container)
         if (fragment is PrivateMessagesFragment || fragment is ChannelMessagesFragment && fragment.isPm) {
             val usernames = (fragment as? ChannelMessagesFragment)?.getUsernames()
             val intent = ComposeMessageActivity.newIntentForNewPm(this, usernames)
@@ -486,6 +527,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
 //                    R.id.file -> goToFiles()
                 R.id.privateMessages -> goToPrivateMessages()
                 R.id.channels -> goToChannels()
+                R.id.suggestedUsers -> goToSuggestedUsers()
                 R.id.settings -> goToSettings()
             }
             closeDrawer()
@@ -511,6 +553,13 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         val tag = PrivateMessagesFragment::class.java.simpleName
         val cache = supportFragmentManager.findFragmentByTag(tag)
         val fragment = cache ?: PrivateMessagesFragment.newInstance()
+        FragmentHelper.addFragment(supportFragmentManager, fragment, tag)
+    }
+
+    private fun goToSuggestedUsers() {
+        val tag = SuggestedUserListFragment::class.java.simpleName
+        val cache = supportFragmentManager.findFragmentByTag(tag)
+        val fragment = cache ?: SuggestedUserListFragment.newInstance()
         FragmentHelper.addFragment(supportFragmentManager, fragment, tag)
     }
 

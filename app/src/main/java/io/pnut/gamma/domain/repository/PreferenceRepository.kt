@@ -117,4 +117,24 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
             context.getString(R.string.pref_username_autocomplete_key),
             true
         )
+
+    override val suggestUserFollows: Boolean
+        get() = sharedPreferences.getBoolean(
+            context.getString(R.string.pref_suggest_user_follows_key),
+            true
+        )
+
+    override fun hasExceededWelcomeFollowed(userId: String): Boolean {
+        return sharedPreferences.getBoolean(
+            "${context.getString(R.string.pref_has_exceeded_welcome_followed_key)}_$userId",
+            false
+        )
+    }
+
+    override fun setExceededWelcomeFollowed(userId: String, exceeded: Boolean) {
+        editor.putBoolean(
+            "${context.getString(R.string.pref_has_exceeded_welcome_followed_key)}_$userId",
+            exceeded
+        ).apply()
+    }
 }

@@ -14,6 +14,11 @@ class MainActivityViewModel(private val getAuthenticatedUserUseCase: GetAuthenti
     init {
         getUserInfo()
     }
+
+    fun refresh() {
+        getUserInfo()
+    }
+
     private fun getUserInfo() {
         viewModelScope.launch {
             runCatching {

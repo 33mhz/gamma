@@ -152,6 +152,9 @@ interface PnutService {
     @DELETE("users/{userId}/block")
     fun unBlock(@Path("userId") userId: String): Call<PnutResponse<User>>
 
+    @GET("users/suggested")
+    fun getSuggestedUsers(@QueryMap pagination: Map<String, String>): Call<PnutResponse<List<User>>>
+
     @GET("users/search")
     fun searchUsers(@QueryMap queries: Map<String, String>): Call<PnutResponse<List<User>>>
 

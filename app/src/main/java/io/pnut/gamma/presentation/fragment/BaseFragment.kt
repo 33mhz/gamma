@@ -3,7 +3,7 @@ package io.pnut.gamma.presentation.fragment
 import androidx.fragment.app.Fragment
 import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.domain.repository.IPreferenceRepository
-import io.pnut.gamma.presentation.util.FragmentHelper
+import io.pnut.gamma.presentation.util.navigateTo
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -19,6 +19,6 @@ abstract class BaseFragment : Fragment() {
     }
 
     protected fun addFragment(fragment: Fragment, tag: String): Fragment? {
-        return FragmentHelper.addFragment(requireContext(), fragment, tag)
+        return navigateTo(fragment, tag)
     }
 }

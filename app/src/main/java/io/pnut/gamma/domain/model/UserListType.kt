@@ -6,6 +6,7 @@ sealed class UserListType {
     data class Search(val keyword: String) : UserListType()
     object Blocked : UserListType()
     object Muted : UserListType()
+    object Suggested : UserListType()
 
     val categoryName: String
         get() {

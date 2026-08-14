@@ -21,4 +21,7 @@ interface IPreferenceRepository {
     val hideDirectedPosts: Boolean
     val hideCopyMentions: Boolean
     val usernameAutocomplete: Boolean
+    val suggestUserFollows: Boolean
+    fun hasExceededWelcomeFollowed(userId: String): Boolean
+    fun setExceededWelcomeFollowed(userId: String, exceeded: Boolean)
 }

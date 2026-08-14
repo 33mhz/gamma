@@ -60,12 +60,6 @@ interface HaveEntities {
 
         private fun openLink(context: Context, entity: Entities.SealedEntity.LinkEntities) {
             val link = entity.url
-//            val menuLabel = context.getString(R.string.post)
-
-//            val pendingIntent = ComposePostActivity.shareUrlIntent(context, null, link).run {
-//                PendingIntent.getActivity(context, 0, this, 0)
-//            }
-//            val icon = BitmapFactory.decodeResource(context.resources, R.drawable.ic_create_black_24dp)
             Util.openCustomTabUrl(context, link)
         }
     }

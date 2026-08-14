@@ -33,6 +33,7 @@ import com.google.android.material.transition.platform.MaterialContainerTransfor
 import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.coroutines.launch
 import io.pnut.gamma.R
+import io.pnut.gamma.broadcast.RelationshipReceiver
 import io.pnut.gamma.databinding.FragmentProfileBinding
 import io.pnut.gamma.domain.Relationship
 import io.pnut.gamma.domain.entity.User
@@ -49,6 +50,7 @@ import io.pnut.gamma.presentation.util.EntityOnTouchListener
 import com.bumptech.glide.Glide
 import io.pnut.gamma.presentation.util.ShareUtil
 import io.pnut.gamma.presentation.util.Util
+import io.pnut.gamma.presentation.util.navigateTo
 import io.pnut.gamma.util.SingleLiveEvent
 import java.util.Calendar
 import javax.inject.Inject
@@ -307,12 +309,12 @@ class ProfileFragment : BaseFragment() {
 
     private fun openFollowerList(user: User) {
         val fragment = FollowingFollowerListFragment.FollowerListFragment.newInstance(user)
-        addFragment(fragment, "follower")
+        navigateTo(fragment, "follower")
     }
 
     private fun openFollowingList(user: User) {
         val fragment = FollowingFollowerListFragment.FollowingListFragment.newInstance(user)
-        addFragment(fragment, "following")
+        navigateTo(fragment, "following")
     }
 
     private fun eventHandling(it: Event?) {
@@ -518,6 +520,9 @@ class ProfileFragment : BaseFragment() {
                     )
                 }.onSuccess {
                     user.postValue(it.res.data)
+                    if (relationship == Relationship.Follow || relationship == Relationship.UnFollow) {
+                        RelationshipReceiver.broadcast(app)
+                    }
                 }
                 loading.postValue(false)
             }

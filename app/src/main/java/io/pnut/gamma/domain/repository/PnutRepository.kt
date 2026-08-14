@@ -171,6 +171,10 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         return defaultPnutService.getMutedUsers(getUsersParam.toMap()).await()
     }
 
+    override suspend fun getSuggestedUsers(getUsersParam: GetUsersParam): PnutResponse<List<User>> {
+        return defaultPnutService.getSuggestedUsers(getUsersParam.toMap()).await()
+    }
+
     override suspend fun getUnifiedStream(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
         return defaultPnutService.getUnifiedStream(getPostsParam.toMap()).await()
 

@@ -48,7 +48,11 @@
     <string name="name">Name</string>
     <string name="description">Description</string>
     <string name="pref_header_user">User</string>
+    <string name="pref_header_suggested_users">Suggested users</string>
+    <string name="pref_button_suggested_users">Follower suggestions</string>
     <string name="pref_header_account">Account</string>
+    <string name="suggest_user_follows">Suggest user follows</string>
+    <string name="suggest_user_follows_description">Check how many users are followed at startup and show suggestion lookup in main menu.</string>
     <string name="sign_up">Sign up</string>
     <string name="gallery">Gallery</string>
     <string name="markdown_link">[%1$s](%2$s)</string>

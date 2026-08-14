@@ -85,7 +85,7 @@ class ComposePollOptionFragment : DialogFragment(), DialogInterface.OnClickListe
         binding = DataBindingUtil.inflate(
             layoutInflater,
             R.layout.fragment_compose_poll_option,
-            view?.findViewById(R.id.content),
+            view?.findViewById(R.id.container),
             false
         )
         binding.lifecycleOwner = this

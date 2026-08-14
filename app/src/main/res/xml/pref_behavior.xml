@@ -9,6 +9,11 @@
             app:key="@string/pref_username_autocomplete_key"
             app:summary="@string/pref_username_autocomplete_summary"
             app:title="@string/pref_username_autocomplete_title" />
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:key="@string/pref_suggest_user_follows_key"
+            app:summary="@string/suggest_user_follows_description"
+            app:title="@string/suggest_user_follows" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/posts">
         <SwitchPreferenceCompat

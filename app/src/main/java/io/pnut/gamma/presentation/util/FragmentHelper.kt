@@ -8,6 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import io.pnut.gamma.R
 
+fun Fragment.navigateTo(fragment: Fragment, tag: String): Fragment? {
+    return FragmentHelper.addFragment(requireContext(), fragment, tag)
+}
+
 object FragmentHelper {
     fun addFragment(
         context: Context,
@@ -62,7 +66,8 @@ object FragmentHelper {
         tag: String,
         transitionMap: Map<View, String>?
     ): Fragment? {
-        val foundFragment = fm.findFragmentById(R.id.fragmentPlaceholder)
+        val containerId = R.id.container
+        val foundFragment = fm.findFragmentById(containerId)
         if (foundFragment != null && (foundFragment == fragment || foundFragment.tag == tag)) return foundFragment
         val ft = fm
             .beginTransaction()
@@ -78,24 +83,12 @@ object FragmentHelper {
             val transitionName = it.value
             ft.addSharedElement(sharedElement, transitionName)
         }
-//        ft.hide(foundFragment)
-        ft.replace(R.id.fragmentPlaceholder, fragment, tag)
-//        if(!fragment.isAdded) {
-////                    ft.(foundFragment)
-//            ft.add(R.id.fragmentPlaceholder, fragment, tag)
-//            ft.addToBackStack(null)
-//
-//        } else {
-//            ft.show(fragment)
-//            ft.addToBackStack(null)
-//        }
-//        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        
+        ft.replace(containerId, fragment, tag)
         ft.addToBackStack(tag)
         ft.commit()
         return null
     }
-
-    private fun getFragmentTag(tag: String, index: Int): String = "$tag-$index"
 
     fun backFragment(fm: FragmentManager?) {
         fm?.let {

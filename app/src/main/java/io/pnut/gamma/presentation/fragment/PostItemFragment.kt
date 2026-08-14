@@ -78,7 +78,7 @@ import io.pnut.gamma.presentation.adapter.ThumbnailViewPagerAdapter
 import io.pnut.gamma.presentation.util.BindingUtil
 import io.pnut.gamma.presentation.util.DateUtil
 import io.pnut.gamma.presentation.util.EntityOnTouchListener
-import io.pnut.gamma.presentation.util.FragmentHelper
+import io.pnut.gamma.presentation.util.navigateTo
 import io.pnut.gamma.presentation.util.PostTouchHelperCallback
 import io.pnut.gamma.presentation.util.Util
 import io.pnut.gamma.presentation.view.LinkableTextView
@@ -444,18 +444,13 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         viewHolder.avatarView.transitionName = iconTransitionName
         viewHolder.avatarView.setOnClickListener {
             currentPosition = viewHolder.bindingAdapterPosition
-            val transitionMap = HashMap(
-                hashMapOf<View, String>(
-                    Pair(it, it.transitionName)
-                )
-            )
             val id = item.mainPost.user?.id ?: return@setOnClickListener
             val fragment =
                 ProfileFragment.newInstance(id, url, item.mainPost.user, it.transitionName)
             sharedElementReturnTransition = moveTransition
             fragment.sharedElementEnterTransition = moveTransition
             (fragment.exitTransition as? TransitionSet)?.excludeTarget(it.transitionName, true)
-            FragmentHelper.addFragment(requireContext(), fragment, id, transitionMap)
+            navigateTo(fragment, id)
         }
 
         viewHolder.dateTextView.text =
@@ -573,7 +568,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             viewHolder.goToChannelButton.setOnClickListener {
                 val fragment =
                     ChannelMessagesFragment.newInstance(invite.channelId, channelLabel, null, null)
-                FragmentHelper.addFragment(requireContext(), fragment, invite.channelId)
+                navigateTo(fragment, invite.channelId)
             }
         }
         val revisionType = when {
@@ -726,7 +721,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         val mainPost = item.mainPost
         val tag = "PostThread_${mainPost.threadId}"
         val fm = parentFragmentManager
-        val currentFragment = fm.findFragmentById(R.id.fragmentPlaceholder)
+        val currentFragment = fm.findFragmentById(R.id.container)
         if (currentFragment != null && currentFragment.tag == tag) {
             if (currentFragment is PostItemFragment) {
                 currentFragment.updateMainPostId(item.id)

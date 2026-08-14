@@ -9,6 +9,10 @@
             app:key="@string/pref_user_key"
             android:title="@string/pref_header_user" />
         <Preference
+            android:fragment="io.pnut.gamma.presentation.fragment.UserListFragment$SuggestedUserListFragment"
+            android:icon="@drawable/ic_person_add_black_24dp"
+            android:title="@string/pref_button_suggested_users" />
+        <Preference
             android:icon="@drawable/ic_public_black_24dp"
             android:title="@string/pref_header_account"
             app:widgetLayout="@layout/preference_widget_open_in_new">

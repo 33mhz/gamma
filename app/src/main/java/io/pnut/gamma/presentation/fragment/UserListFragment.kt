@@ -1,5 +1,6 @@
 package io.pnut.gamma.presentation.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
@@ -8,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import io.pnut.gamma.R
+import io.pnut.gamma.broadcast.RelationshipReceiver
 import io.pnut.gamma.domain.Relationship
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.User
@@ -26,6 +28,7 @@ import io.pnut.gamma.domain.usecases.GetUsersUseCase
 import io.pnut.gamma.domain.usecases.UpdateRelationshipUseCase
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
 import io.pnut.gamma.presentation.adapter.UserViewHolder
+import io.pnut.gamma.presentation.util.navigateTo
 import io.pnut.gamma.util.SingleLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -53,6 +56,7 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
         ViewModelProvider(
             this,
             UserListViewModel.Factory(
+                requireActivity().application,
                 userListType,
                 getUsersUseCase,
                 cachedUserListUseCase,
@@ -82,7 +86,7 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
         itemWrapper: PageableItemWrapper<User>
     ) {
         val fragment = ProfileFragment.newInstance(item.id, item.content.avatarImage.url, item)
-        addFragment(fragment, item.id)
+        navigateTo(fragment, item.id)
     }
 
     override fun onBindViewHolder(
@@ -97,6 +101,7 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
     override fun getItemLayout(): Int = R.layout.fragment_user_item
 
     class UserListViewModel(
+        private val app: android.app.Application,
         private val userListType: UserListType,
         private val getUsersUseCase: GetUsersUseCase,
         private val cachedUserListUseCase: GetCachedUserListUseCase,
@@ -114,6 +119,10 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
         }
 
         override fun loadCache() {
+            if (userListType == UserListType.Suggested) {
+                super.loadCache()
+                return
+            }
             viewModelScope.launch {
                 runCatching {
                     cachedUserListUseCase.run(GetCachedUserListInputData((userListType)))
@@ -125,6 +134,9 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
         }
 
         override fun storeItems() {
+            if (userListType == UserListType.Suggested) {
+                return
+            }
             viewModelScope.launch {
                 runCatching {
                     cacheUserUseCase.run(CacheUserInputData(items, userListType))
@@ -146,6 +158,9 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
                     )
                 }.onSuccess {
                     updateUser.postValue(it.res.data)
+                    if (relationship == Relationship.Follow || relationship == Relationship.UnFollow) {
+                        RelationshipReceiver.broadcast(app)
+                    }
                 }
             }
         }
@@ -167,6 +182,7 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
         }
 
         class Factory(
+            private val app: android.app.Application,
             private val userListType: UserListType,
             private val getUsersUseCase: GetUsersUseCase,
             private val cachedUserListUseCase: GetCachedUserListUseCase,
@@ -177,6 +193,7 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
                 return UserListViewModel(
+                    app,
                     userListType,
                     getUsersUseCase,
                     cachedUserListUseCase,
@@ -220,6 +237,44 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
                     putString(BundleKey.Keyword.name, keyword)
                 }
             }
+        }
+    }
+
+    @AndroidEntryPoint
+    class SuggestedUserListFragment : UserListFragment() {
+        override val userListType = UserListType.Suggested
+        override val itemNameRes = R.string.pref_header_suggested_users
+
+        override fun getFragmentLayout() = R.layout.list_with_toolbar
+        override fun getRecyclerView(view: View) = io.pnut.gamma.databinding.ListWithToolbarBinding.bind(view).itemList
+
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+            val binding = io.pnut.gamma.databinding.ListWithToolbarBinding.bind(view)
+            binding.toolbar.setNavigationOnClickListener { backToPrevFragment() }
+            binding.toolbar.setTitle(R.string.pref_header_suggested_users)
+        }
+
+        override fun onResume() {
+            super.onResume()
+        }
+
+        override fun onClickItemListener(
+            viewHolder: UserViewHolder,
+            item: User,
+            itemWrapper: PageableItemWrapper<User>
+        ) {
+            val intent = Intent(requireContext(), io.pnut.gamma.presentation.activity.MainActivity::class.java).apply {
+                putExtra("USER_ID", item.id)
+                putExtra("USER_ICON_URL", item.content.avatarImage.url)
+                putExtra("USER", item)
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
+            startActivity(intent)
+        }
+
+        companion object {
+            fun newInstance() = SuggestedUserListFragment()
         }
     }
 }

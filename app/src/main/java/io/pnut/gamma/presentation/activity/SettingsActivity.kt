@@ -66,7 +66,7 @@ class SettingsActivity : BaseActivity(),
                 R.anim.slide_in_right,
                 R.anim.slide_out_right
             )
-            .replace(R.id.content, fragment)
+            .replace(R.id.container, fragment)
             .addToBackStack(null)
             .commit()
         return true
@@ -85,8 +85,22 @@ class SettingsActivity : BaseActivity(),
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.content, SettingsFragment.newInstance(currentAccount.screenName))
+                .replace(R.id.container, SettingsFragment.newInstance(currentAccount.screenName))
                 .commit()
+        }
+        supportFragmentManager.addOnBackStackChangedListener {
+            syncToolbar()
+        }
+        syncToolbar()
+    }
+
+    private fun syncToolbar() {
+        val fragment = supportFragmentManager.findFragmentById(R.id.container)
+        if (fragment is io.pnut.gamma.presentation.fragment.UserListFragment.SuggestedUserListFragment || 
+            fragment is io.pnut.gamma.presentation.fragment.ProfileFragment) {
+            supportActionBar?.hide()
+        } else {
+            supportActionBar?.show()
         }
     }
 
@@ -147,6 +161,8 @@ class SettingsActivity : BaseActivity(),
 
     @AndroidEntryPoint
     abstract class BasePreferenceFragment : PreferenceFragmentCompat() {
+        @Inject
+        lateinit var preferenceRepository: io.pnut.gamma.domain.repository.IPreferenceRepository
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
@@ -237,11 +253,22 @@ class SettingsActivity : BaseActivity(),
     class BehaviorPreferenceFragment : BasePreferenceFragment() {
         override val rootKey: Int = R.string.pref_behavior_key
 
+        @Inject
+        lateinit var getCurrentAccountUseCase: GetCurrentAccountUseCase
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(
                 R.xml.pref_behavior,
                 getString(R.string.pref_behavior_key)
             )
+
+            val currentAccount = getCurrentAccountUseCase.run(Unit).account
+            if (currentAccount != null && preferenceRepository.hasExceededWelcomeFollowed(currentAccount.id)) {
+                findPreference<Preference>(getString(R.string.pref_suggest_user_follows_key))?.apply {
+                    isVisible = false
+                    isEnabled = false
+                }
+            }
         }
     }
 
@@ -250,13 +277,13 @@ class SettingsActivity : BaseActivity(),
         ClearStreamCacheWorker.Receiver.Listener, ClearGlideCacheWorker.Receiver.Listener {
         override fun onClearGlideCache() {
             clearGlideCacheButton?.isEnabled = false
-            val contentView = activity?.findViewById<View>(R.id.content) ?: return
+            val contentView = activity?.findViewById<View>(R.id.container) ?: return
             Snackbar.make(contentView, R.string.cache_cleared, Snackbar.LENGTH_SHORT).show()
         }
 
         override fun onClearStreamCache() {
             clearStreamCacheButton?.isEnabled = false
-            val contentView = activity?.findViewById<View>(R.id.content) ?: return
+            val contentView = activity?.findViewById<View>(R.id.container) ?: return
             Snackbar.make(contentView, R.string.cache_cleared, Snackbar.LENGTH_SHORT).show()
         }
 

@@ -60,6 +60,7 @@ interface IPnutRepository {
     suspend fun getFollowers(userId: String, getUsersParam: GetUsersParam): PnutResponse<List<User>>
     suspend fun getBlockedUsers(getUsersParam: GetUsersParam): PnutResponse<List<User>>
     suspend fun getMutedUsers(getUsersParam: GetUsersParam): PnutResponse<List<User>>
+    suspend fun getSuggestedUsers(getUsersParam: GetUsersParam): PnutResponse<List<User>>
     suspend fun searchUsers(getSearchUsersParam: GetUsersParam): PnutResponse<List<User>>
     suspend fun follow(userId: String): PnutResponse<User>
     suspend fun unFollow(userId: String): PnutResponse<User>

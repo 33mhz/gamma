@@ -30,6 +30,7 @@ import io.pnut.gamma.domain.usecases.GetInteractionUseCase
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
 import io.pnut.gamma.presentation.adapter.ReactionUsersAdapter
 import io.pnut.gamma.presentation.util.DateUtil
+import io.pnut.gamma.presentation.util.navigateTo
 import io.pnut.gamma.util.LogUtil
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -136,7 +137,7 @@ class InteractionFragment :
 
     private fun showPost(post: Post) {
         val fragment = ThreadFragment.newInstance(post, post.id)
-        addFragment(fragment, post.id)
+        navigateTo(fragment, post.id)
     }
 
 
@@ -144,7 +145,7 @@ class InteractionFragment :
         object : ReactionUsersAdapter.Listener {
             override fun onUserClick(user: User) {
                 val fragment = ProfileFragment.newInstance(user.id, user.getAvatarUrl(), user)
-                addFragment(fragment, user.username)
+                navigateTo(fragment, user.username)
             }
         }
     }

@@ -19,6 +19,7 @@ class GetUsersUseCase(private val pnutRepository: IPnutRepository) :
                 })
             is UserListType.Blocked -> pnutRepository.getBlockedUsers(params.getUsersParam)
             is UserListType.Muted -> pnutRepository.getMutedUsers(params.getUsersParam)
+            is UserListType.Suggested -> pnutRepository.getSuggestedUsers(params.getUsersParam)
         }
         return GetUsersOutputData(res)
     }

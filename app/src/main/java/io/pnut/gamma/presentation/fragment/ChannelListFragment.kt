@@ -23,7 +23,7 @@ import io.pnut.gamma.domain.usecases.GetChannelsUseCase
 import io.pnut.gamma.domain.usecases.UpdateMarkerUseCase
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
 import io.pnut.gamma.presentation.util.BindingUtil
-import io.pnut.gamma.presentation.util.FragmentHelper
+import io.pnut.gamma.presentation.util.navigateTo
 import io.pnut.gamma.domain.entity.User
 import io.pnut.gamma.presentation.util.DateUtil
 import io.pnut.gamma.databinding.FragmentChannelPostItemBinding
@@ -77,7 +77,7 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
         val title = getChannelTitle(item)
         val usernames = getChannelUsernames(item)
         val fragment = ChannelMessagesFragment.newInstance(item.id, title, item.type, usernames)
-        FragmentHelper.addFragment(requireContext(), fragment, item.id)
+        navigateTo(fragment, item.id)
     }
 
     override fun onBindViewHolder(
@@ -115,7 +115,7 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
             BindingUtil.glideAvatarSrc(viewHolder.binding.avatarImageView, avatarUrl)
             viewHolder.binding.avatarImageView.setOnClickListener {
                 val fragment = ProfileFragment.newInstance(u.id, avatarUrl, u)
-                FragmentHelper.addFragment(requireContext(), fragment, u.id)
+                navigateTo(fragment, u.id)
             }
         }
 

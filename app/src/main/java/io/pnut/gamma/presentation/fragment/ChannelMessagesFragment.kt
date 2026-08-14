@@ -35,7 +35,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import io.pnut.gamma.presentation.util.BindingUtil
 import io.pnut.gamma.presentation.util.DateUtil
 import io.pnut.gamma.presentation.util.EntityOnTouchListener
-import io.pnut.gamma.presentation.util.FragmentHelper
+import io.pnut.gamma.presentation.util.navigateTo
 import io.pnut.gamma.presentation.util.SmoothScroller
 import io.pnut.gamma.presentation.util.Util
 import kotlinx.coroutines.launch
@@ -164,7 +164,7 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
             BindingUtil.glideAvatarSrc(viewHolder.avatarImageView, avatarUrl)
             viewHolder.avatarImageView.setOnClickListener {
                 val fragment = ProfileFragment.newInstance(user.id, avatarUrl, user)
-                FragmentHelper.addFragment(requireContext(), fragment, user.id)
+                navigateTo(fragment, user.id)
             }
         }
 

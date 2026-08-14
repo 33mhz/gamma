@@ -47,6 +47,11 @@
         android:id="@+id/other"
         android:menuCategory="system">
         <item
+            android:id="@+id/suggestedUsers"
+            android:icon="@drawable/ic_person_add_black_24dp"
+            android:title="@string/pref_button_suggested_users"
+            android:visible="false" />
+        <item
             android:id="@+id/settings"
             android:icon="@drawable/ic_settings_black_24dp"
             android:title="@string/settings" />
