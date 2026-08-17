@@ -14,12 +14,19 @@ sealed class ErrorCollections(val displayErrorMessageRes: Int) : Exception() {
         ErrorCollections(R.string.communication_error) {
         companion object {
             fun create(json: String): CommunicationError {
-                return MoshiSingleton.moshi.adapter(ErrorResponse::class.java).fromJson(json)?.let {
-                    CommunicationError(
-                        it
-                    )
+                val response = try {
+                    if (json.isNotBlank()) {
+                        MoshiSingleton.moshi.adapter(ErrorResponse::class.java).fromJson(json)
+                    } else {
+                        null
+                    }
+                } catch (_: Exception) {
+                    null
                 }
-                    ?: throw Constants.unknownErrorException()
+
+                return CommunicationError(
+                    response ?: ErrorResponse(ErrorResponse.Meta(0, Constants.UNKNOWN_ERROR))
+                )
             }
         }
 

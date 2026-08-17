@@ -52,15 +52,18 @@ suspend fun <T> Call<PnutResponse<T>>.await(): PnutResponse<T> =
                 call: Call<PnutResponse<T>>,
                 response: Response<PnutResponse<T>>
             ) {
-                response.body()?.let { cont.resume(it) }
-                    ?: response.errorBody()?.let {
-                        cont.cancel(
-                            ErrorCollections.CommunicationError.create(
-                                it.string()
-                            )
-                        )
+                val body = response.body()
+                if (body != null) {
+                    cont.resume(body)
+                } else {
+                    val errorBody = response.errorBody()
+                    val exception = if (errorBody != null) {
+                        ErrorCollections.CommunicationError.create(errorBody.string())
+                    } else {
+                        Constants.unknownErrorException()
                     }
-
+                    cont.resumeWithException(exception)
+                }
             }
         })
 
