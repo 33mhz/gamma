@@ -9,7 +9,6 @@ import android.app.Application
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.core.os.BundleCompat
