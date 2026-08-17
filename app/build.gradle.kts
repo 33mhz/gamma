@@ -60,7 +60,7 @@ android {
     minSdk = 30
     targetSdk = 37
     versionCode = currentVersionCode
-    versionName = "0.8.0"
+    versionName = "0.9.0"
     testInstrumentationRunner = "io.pnut.gamma.HiltTestRunner"
   }
   buildTypes {
@@ -170,7 +170,7 @@ dependencies {
   implementation("androidx.emoji2:emoji2:1.6.0")
   implementation("androidx.emoji2:emoji2-bundled:1.6.0")
 
-  implementation("com.squareup.okhttp3:logging-interceptor:5.4.0")
+  implementation("com.squareup.okhttp3:logging-interceptor:5.5.0")
 
   val daggerVersion = "2.60.1"
   implementation("com.google.dagger:dagger:$daggerVersion")

@@ -110,24 +110,11 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun getConversations(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun getMissedConversations(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun getNewcomers(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun getPhotos(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun getTrending(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun getExplorePosts(
+        slug: String,
+        getPostsParam: GetPostsParam
+    ): PnutResponse<List<Post>> {
+        TODO("not implemented")
     }
 
     override suspend fun getGlobal(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
@@ -251,6 +238,10 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override suspend fun getSuggestedUsers(getUsersParam: GetUsersParam): PnutResponse<List<User>> {
+        TODO("not implemented")
+    }
+
     override suspend fun searchUsers(getSearchUsersParam: GetUsersParam): PnutResponse<List<User>> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -327,6 +318,21 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         TODO("not implemented")
     }
 
+    override suspend fun getExploreChannels(
+        slug: String,
+        getChannelsParam: GetChannelsParam
+    ): PnutResponse<List<Channel>> {
+        TODO("not implemented")
+    }
+
+    override suspend fun searchChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
+        TODO("not implemented")
+    }
+
+    override suspend fun searchMessages(getChannelsParam: GetChannelsParam): PnutResponse<List<Message>> {
+        TODO("not implemented")
+    }
+
     override suspend fun getMessages(
         channelId: String,
         paginationParam: PaginationParam
@@ -351,6 +357,22 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
     }
 
     override suspend fun getExistingPm(ids: io.pnut.gamma.domain.entity.IDs): PnutResponse<Channel> {
+        TODO("not implemented")
+    }
+
+    override suspend fun subscribe(channelId: String): PnutResponse<Channel> {
+        TODO("not implemented")
+    }
+
+    override suspend fun unsubscribe(channelId: String): PnutResponse<Channel> {
+        TODO("not implemented")
+    }
+
+    override suspend fun muteChannel(channelId: String): PnutResponse<Channel> {
+        TODO("not implemented")
+    }
+
+    override suspend fun unmuteChannel(channelId: String): PnutResponse<Channel> {
         TODO("not implemented")
     }
 

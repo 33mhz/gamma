@@ -213,6 +213,9 @@ interface PnutService {
     @GET("channels/search")
     fun searchChannels(@QueryMap params: Map<String, String>): Call<PnutResponse<List<Channel>>>
 
+    @GET("channels/messages/search")
+    fun searchMessages(@QueryMap params: Map<String, String>): Call<PnutResponse<List<Message>>>
+
     @GET("users/me/channels")
     fun getChannels(@QueryMap paging: Map<String, String>): Call<PnutResponse<List<Channel>>>
 

@@ -8,5 +8,6 @@ enum class ChannelType(val value: String) {
     ExploreNew("io.pnut.core.chat"),
     ExploreTopical("io.pnut.core.chat"),
     ExploreTrending("io.pnut.core.chat"),
-    Yours("io.pnut.core.chat")
+    Yours("io.pnut.core.chat"),
+    Search("io.pnut.core.chat"),
 }

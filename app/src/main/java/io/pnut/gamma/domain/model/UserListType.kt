@@ -10,11 +10,12 @@ sealed class UserListType {
 
     val categoryName: String
         get() {
-            val userId = when (this) {
+            val identifier = when (this) {
                 is Followers -> userId
                 is Following -> userId
+                is Search -> keyword
                 else -> "me"
             }
-            return "${this::class.java.simpleName}/$userId"
+            return "${this::class.java.simpleName}/$identifier"
         }
 }

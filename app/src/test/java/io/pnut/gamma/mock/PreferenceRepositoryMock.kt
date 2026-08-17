@@ -46,4 +46,13 @@ open class PreferenceRepositoryMock : IPreferenceRepository {
     get() = false
   override val usernameAutocomplete: Boolean
     get() = true
+  override val suggestUserFollows: Boolean
+    get() = false
+
+  override fun hasExceededWelcomeFollowed(userId: String): Boolean {
+    return false
+  }
+
+  override fun setExceededWelcomeFollowed(userId: String, exceeded: Boolean) {
+  }
 }

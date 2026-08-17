@@ -130,7 +130,7 @@
     <string name="delete_post">Delete post</string>
     <string name="action_result_snackbar_template">%1$s: @%2$s: %3$s</string>
     <string name="no_items_template">No %s.</string>
-    <string name="users">users</string>
+    <string name="users">Users</string>
     <string name="closed_poll">Closed poll: %s</string>
     <string name="thread">Thread</string>
     <string name="thread_with_id">Thread %s</string>
@@ -185,7 +185,6 @@
     <string name="revised">Revised</string>
     <string name="format_time">%1$tH:%1$tM:%1$tS</string>
     <string name="cannot_load_file">Cannot load file</string>
-    <string name="accounts">Users</string>
     <string name="account_not_found">User not found</string>
     <string name="cannot_open_url">Cannot open URL.</string>
     <string name="communication_error">Communication error</string>

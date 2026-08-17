@@ -18,6 +18,7 @@ import io.pnut.gamma.domain.model.io.UpdateMarkerInputData
 import io.pnut.gamma.domain.model.params.composed.GetChannelsParam
 import io.pnut.gamma.domain.model.params.single.GeneralChannelParam
 import io.pnut.gamma.domain.model.params.single.PaginationParam
+import io.pnut.gamma.domain.model.params.single.SearchChannelParam
 import io.pnut.gamma.domain.repository.IAccountRepository
 import io.pnut.gamma.domain.usecases.GetChannelsUseCase
 import io.pnut.gamma.domain.usecases.UpdateMarkerUseCase
@@ -39,6 +40,9 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
         arguments?.let { BundleCompat.getSerializable(it, BundleKey.ChannelType.name, ChannelType::class.java) }
             ?: ChannelType.Chat
     }
+    private val keyword: String? by lazy {
+        arguments?.getString(BundleKey.Keyword.name)
+    }
 
     @Inject
     lateinit var getChannelUseCase: GetChannelsUseCase
@@ -54,7 +58,7 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
     override fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
     override val viewModel: BaseListViewModel<Channel> by lazy {
         ViewModelProvider(
-            this, ChannelListViewModel.Factory(channelType, getChannelUseCase, accountRepository)
+            this, ChannelListViewModel.Factory(channelType, keyword, getChannelUseCase, accountRepository)
         )[ChannelListViewModel::class.java]
     }
 
@@ -162,10 +166,11 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
         }
     }
 
-    protected enum class BundleKey { ChannelType }
+    protected enum class BundleKey { ChannelType, Keyword }
 
     class ChannelListViewModel(
         private val channelType: ChannelType,
+        private val keyword: String?,
         private val getChannelsUseCase: GetChannelsUseCase,
         private val accountRepository: IAccountRepository
     ) : BaseListViewModel<Channel>() {
@@ -175,6 +180,9 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
                 val isPublic = if (channelType == ChannelType.PublicChat) true else null
                 val ownerId = if (channelType == ChannelType.Yours) accountRepository.getStoredIds().firstOrNull() else null
                 getChannelParams.add(GeneralChannelParam(includeRecentMessage = true, channelTypes = type, ownerId = ownerId, isPublic = isPublic))
+                if (channelType == ChannelType.Search && keyword != null) {
+                    getChannelParams.add(SearchChannelParam(keyword = keyword, order = "activity"))
+                }
                 requestPager?.let { getChannelParams.add(PaginationParam.createFromPager(it)) }
             }
             val getChannelsOutputData =
@@ -184,12 +192,13 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
 
         class Factory(
             private val channelType: ChannelType,
+            private val keyword: String?,
             private val getChannelsUseCase: GetChannelsUseCase,
             private val accountRepository: IAccountRepository
         ) : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return ChannelListViewModel(channelType, getChannelsUseCase, accountRepository) as T
+                return ChannelListViewModel(channelType, keyword, getChannelsUseCase, accountRepository) as T
             }
         }
     }
@@ -202,6 +211,18 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
         fun newInstance(channelType: ChannelType) = ChannelListFragment().apply {
             arguments = Bundle().apply {
                 putSerializable(BundleKey.ChannelType.name, channelType)
+            }
+        }
+    }
+
+    @AndroidEntryPoint
+    class SearchChannelsFragment : ChannelListFragment() {
+        companion object {
+            fun newInstance(keyword: String) = SearchChannelsFragment().apply {
+                arguments = Bundle().apply {
+                    putSerializable(BundleKey.ChannelType.name, ChannelType.Search)
+                    putString(BundleKey.Keyword.name, keyword)
+                }
             }
         }
     }

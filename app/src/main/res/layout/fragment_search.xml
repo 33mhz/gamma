@@ -42,6 +42,7 @@
                         android:id="@+id/keywordEditText"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginEnd="88dp"
                         android:background="@android:color/transparent"
                         android:hint="@string/keyword_search"
                         android:imeOptions="actionSearch"
@@ -52,10 +53,22 @@
                         tools:ignore="Autofill" />
 
                     <ImageView
+                        android:id="@+id/searchTypeButton"
                         android:layout_width="@dimen/size_normal_icon"
                         android:layout_height="@dimen/size_normal_icon"
                         android:layout_gravity="end|center_vertical"
                         android:layout_marginEnd="@dimen/margin_regular"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:imageResource="@{viewModel.searchType.iconRes}"
+                        app:tint="@color/toolbarIcon" />
+
+                    <ImageView
+                        android:layout_width="@dimen/size_normal_icon"
+                        android:layout_height="@dimen/size_normal_icon"
+                        android:layout_gravity="end|center_vertical"
+                        android:layout_marginEnd="56dp"
                         android:clickable="true"
                         android:contentDescription="@string/clear_text"
                         android:focusable="true"
@@ -66,19 +79,10 @@
                         app:tint="@color/toolbarIcon" />
                 </FrameLayout>
             </androidx.appcompat.widget.Toolbar>
-
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/searchTabLayout"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@android:color/transparent"
-                app:tabGravity="fill"
-                app:tabIndicatorColor="?attr/colorPrimary"
-                app:tabMode="fixed" />
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/searchViewPager"
+        <FrameLayout
+            android:id="@+id/searchContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />

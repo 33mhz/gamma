@@ -1,7 +1,6 @@
 package io.pnut.gamma.presentation.fragment
 
 
-import android.content.Context
 import android.os.Bundle
 import androidx.core.os.BundleCompat
 import android.os.Parcelable
@@ -11,12 +10,9 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayoutMediator
 import androidx.lifecycle.*
 import kotlinx.parcelize.Parcelize
+import androidx.appcompat.widget.PopupMenu
 import io.pnut.gamma.R
 import io.pnut.gamma.databinding.FragmentSearchBinding
 import io.pnut.gamma.presentation.util.ShareUtil
@@ -47,11 +43,6 @@ class SearchFragment : BaseFragment() {
         if (!it) return@Observer
         // initial menu update handled by Event.Search observer
     }
-    private val pageChangeListener = object : ViewPager2.OnPageChangeCallback() {
-        override fun onPageSelected(position: Int) {
-            updateMenu(position)
-        }
-    }
 
     private val postSearchRssUrl
         get() = Constants.API_BASE_URL + "feed/rss/posts/search?q=${URLEncoder.encode(
@@ -59,9 +50,7 @@ class SearchFragment : BaseFragment() {
             Charset.defaultCharset().name()
         )}"
 
-    private fun updateMenu(position: Int) {
-        val currentAdapter = adapter ?: return
-        val searchType = currentAdapter.fragments[position].searchType
+    private fun updateMenu(searchType: SearchType) {
         updateMenuItemVisibility(R.id.menuSharePostSearch, searchType == SearchType.Post)
     }
 
@@ -71,22 +60,18 @@ class SearchFragment : BaseFragment() {
         menuItem.isVisible = visibility
     }
 
-    private var adapter: SearchPagerAdapter? = null
     private lateinit var binding: FragmentSearchBinding
     private var showKeyboardFlag: Boolean = false
     private val eventObserver = Observer<Event> {
         when (it) {
             is Event.Search -> {
                 hideKeyboard()
-                val newPagerInfo = updatePagerInfo(it.keyword)
-                val newAdapter = SearchPagerAdapter(requireContext(), this, newPagerInfo)
-                adapter = newAdapter
-                val position = binding.searchViewPager.currentItem
-                binding.searchViewPager.adapter = newAdapter
-                TabLayoutMediator(binding.searchTabLayout, binding.searchViewPager) { tab, pos ->
-                    tab.text = newAdapter.getPageTitle(pos)
-                }.attach()
-                updateMenu(position)
+                updatePagerInfo(it.keyword)
+                showSearchResult(it.searchType, it.keyword)
+                updateMenu(it.searchType)
+            }
+            is Event.Clear -> {
+                clearResults()
             }
         }
     }
@@ -100,6 +85,9 @@ class SearchFragment : BaseFragment() {
         viewModel.firstSearch.observe(this, firstSearchObserver)
         if (savedInstanceState != null) {
             BundleCompat.getParcelable(savedInstanceState, StateKey.PagerInfo.name, PagerInfo::class.java)?.let { pagerInfo = it }
+        } else {
+            val initialTypeOrdinal = arguments?.getInt(BundleKey.InitialType.name, SearchType.Post.ordinal) ?: SearchType.Post.ordinal
+            viewModel.searchType.value = SearchType.entries[initialTypeOrdinal]
         }
     }
 
@@ -115,9 +103,9 @@ class SearchFragment : BaseFragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-        binding.searchViewPager.registerOnPageChangeCallback(pageChangeListener)
         binding.toolbar.setNavigationOnClickListener { backToPrevFragment() }
         binding.toolbar.setOnMenuItemClickListener(menuItemClickListener)
+        binding.searchTypeButton.setOnClickListener { showSearchTypeMenu(it) }
         binding.keywordEditText.setOnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                 (event != null && event.action == android.view.KeyEvent.ACTION_DOWN &&
@@ -133,12 +121,9 @@ class SearchFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val newAdapter = SearchPagerAdapter(requireContext(), this, pagerInfo)
-        adapter = newAdapter
-        binding.searchViewPager.adapter = newAdapter
-        TabLayoutMediator(binding.searchTabLayout, binding.searchViewPager) { tab, position ->
-            tab.text = newAdapter.getPageTitle(position)
-        }.attach()
+        if (pagerInfo.keyword.isNotEmpty()) {
+            showSearchResult(viewModel.searchType.value ?: SearchType.Post, pagerInfo.keyword)
+        }
         showKeyboard()
     }
 
@@ -159,15 +144,65 @@ class SearchFragment : BaseFragment() {
 
     override fun onDestroyView() {
         hideKeyboard()
-        binding.searchViewPager.unregisterOnPageChangeCallback(pageChangeListener)
-        adapter = null
         super.onDestroyView()
+    }
+
+    private fun showSearchTypeMenu(view: View) {
+        val popup = PopupMenu(requireContext(), view)
+        SearchType.entries.forEachIndexed { index, type ->
+            popup.menu.add(0, index, index, type.titleRes).setIcon(type.iconRes)
+        }
+        Util.setTintForToolbarIcons(requireContext(), popup.menu)
+
+        try {
+            val fieldPopup = popup.javaClass.getDeclaredField("mPopup")
+            fieldPopup.isAccessible = true
+            val menuPopupHelper = fieldPopup.get(popup)
+            val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
+            val setForceIcons = classPopupHelper.getMethod("setForceShowIcon", Boolean::class.javaPrimitiveType)
+            setForceIcons.invoke(menuPopupHelper, true)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        popup.setOnMenuItemClickListener { item ->
+            val type = SearchType.entries[item.itemId]
+            viewModel.searchType.value = type
+            if (viewModel.firstSearch.value == true) {
+                viewModel.search()
+            }
+            true
+        }
+        popup.show()
+    }
+
+    private fun showSearchResult(searchType: SearchType, keyword: String) {
+        val fragment = when (searchType) {
+            SearchType.Post -> PostItemFragment.SearchPostsFragment.newInstance(keyword)
+            SearchType.Chat -> ChannelListFragment.SearchChannelsFragment.newInstance(keyword)
+            SearchType.User -> UserListFragment.SearchUserListFragment.newInstance(keyword)
+            SearchType.PrivateMessage -> SearchMessagesFragment.newInstance(keyword)
+        }
+
+        childFragmentManager.beginTransaction()
+            .replace(R.id.searchContainer, fragment)
+            .commit()
+    }
+
+    private fun clearResults() {
+        val fragment = childFragmentManager.findFragmentById(R.id.searchContainer)
+        if (fragment != null) {
+            childFragmentManager.beginTransaction()
+                .remove(fragment)
+                .commit()
+        }
     }
 
     @Parcelize
     data class PagerInfo(val time: Long, val keyword: String) : Parcelable
 
     private enum class StateKey { PagerInfo }
+    private enum class BundleKey { InitialType }
 
     private var pagerInfo: PagerInfo = PagerInfo(System.currentTimeMillis(), "")
 
@@ -176,44 +211,16 @@ class SearchFragment : BaseFragment() {
         outState.putParcelable(StateKey.PagerInfo.name, pagerInfo)
     }
 
-    enum class SearchType(val titleRes: Int) { Post(R.string.posts), User(R.string.users) }
-
-    data class FragmentInfo(val fragment: Fragment, val searchType: SearchType)
-
-    class SearchPagerAdapter(
-        private val context: Context,
-        fragment: Fragment,
-        var pagerInfo: PagerInfo
-    ) : FragmentStateAdapter(fragment) {
-        val fragments
-            get() = SearchType.entries.map {
-                val fragment = {
-                    when (it) {
-                        SearchType.Post -> PostItemFragment.SearchPostsFragment.newInstance(pagerInfo.keyword)
-                        SearchType.User -> UserListFragment.SearchUserListFragment.newInstance(pagerInfo.keyword)
-                    }
-                }
-                FragmentInfo(fragment(), it)
-            }
-
-        override fun getItemCount(): Int = if (pagerInfo.keyword.isNotEmpty()) fragments.size else 0
-
-        override fun createFragment(position: Int): Fragment = fragments[position].fragment
-
-        override fun getItemId(position: Int): Long {
-            return pagerInfo.time + position
-        }
-
-        override fun containsItem(itemId: Long): Boolean {
-            return itemId >= pagerInfo.time && itemId < pagerInfo.time + fragments.size
-        }
-
-        fun getPageTitle(position: Int): CharSequence =
-            context.getString(fragments[position].searchType.titleRes)
+    enum class SearchType(val titleRes: Int, val iconRes: Int) {
+        Post(R.string.posts, R.drawable.ic_create_black_24dp),
+        PrivateMessage(R.string.private_messages, R.drawable.ic_chat_bubble_outline_black_24dp),
+        Chat(R.string.chat_rooms, R.drawable.ic_forum_black_24dp),
+        User(R.string.users, R.drawable.ic_person_black_24dp),
     }
 
     sealed class Event {
-        data class Search(val keyword: String) : Event()
+        data class Search(val keyword: String, val searchType: SearchType) : Event()
+        object Clear : Event()
     }
 
     class SearchViewModel : ViewModel() {
@@ -221,6 +228,7 @@ class SearchFragment : BaseFragment() {
         var lastKeyword: String = ""
         val event = SingleLiveEvent<Event>()
         var firstSearch = MutableLiveData<Boolean>().apply { value = false }
+        val searchType = MutableLiveData<SearchType>().apply { value = SearchType.Post }
 
         class Factory : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -232,11 +240,13 @@ class SearchFragment : BaseFragment() {
         fun search() = keyword.value?.takeIf { it.isNotEmpty() }?.let {
             firstSearch.value = true
             lastKeyword = it
-            event.emit(Event.Search(it))
+            event.emit(Event.Search(it, searchType.value ?: SearchType.Post))
         }
 
         fun clear() {
             keyword.value = ""
+            firstSearch.value = false
+            event.emit(Event.Clear)
         }
 
         val clearButtonVisibility: LiveData<Int> = keyword.map {
@@ -245,6 +255,10 @@ class SearchFragment : BaseFragment() {
     }
 
     companion object {
-        fun newInstance() = SearchFragment()
+        fun newInstance(initialType: SearchType = SearchType.Post) = SearchFragment().apply {
+            arguments = Bundle().apply {
+                putInt(BundleKey.InitialType.name, initialType.ordinal)
+            }
+        }
     }
 }

@@ -39,6 +39,7 @@ import io.pnut.gamma.domain.usecases.LogoutUseCase
 import io.pnut.gamma.domain.usecases.PostUseCase
 import io.pnut.gamma.domain.usecases.ReportPostUseCase
 import io.pnut.gamma.domain.usecases.RepostUseCase
+import io.pnut.gamma.domain.usecases.SearchMessagesUseCase
 import io.pnut.gamma.domain.usecases.SetupTokenUseCase
 import io.pnut.gamma.domain.usecases.StarUseCase
 import io.pnut.gamma.domain.usecases.UpdateDefaultAccountUseCase
@@ -140,6 +141,10 @@ object UseCaseModule {
         accountRepository: IAccountRepository,
         pnutRepository: IPnutRepository
     ): UpdateDefaultAccountUseCase = UpdateDefaultAccountUseCase(accountRepository, pnutRepository)
+
+    @Provides
+    fun provideSearchMessagesUseCase(pnutRepository: IPnutRepository): SearchMessagesUseCase =
+        SearchMessagesUseCase(pnutRepository)
 
     @Provides
     fun provideLogoutUseCase(

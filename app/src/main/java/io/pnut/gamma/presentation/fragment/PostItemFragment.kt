@@ -951,6 +951,10 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         }
 
         override fun loadCache() {
+            if (streamType is StreamType.Search) {
+                super.loadCache()
+                return
+            }
             viewModelScope.launch {
                 runCatching {
                     getCachedPostUseCase.run(GetCachedPostListInputData(streamType))
@@ -965,6 +969,9 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         }
 
         override fun storeItems() {
+            if (streamType is StreamType.Search) {
+                return
+            }
             viewModelScope.launch {
                 runCatching {
                     cachePostUseCase.run((CachePostInputData(items, streamType)))

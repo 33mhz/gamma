@@ -66,7 +66,7 @@ class ChangeAccountDialogFragment : DialogFragment() {
         )
 
         return MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.accounts)
+            .setTitle(R.string.users)
             .setView(binding.root)
             .create()
     }

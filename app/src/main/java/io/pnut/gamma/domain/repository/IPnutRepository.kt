@@ -80,6 +80,7 @@ interface IPnutRepository {
     suspend fun getTopicalChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
     suspend fun getExploreChannels(slug: String, getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
     suspend fun searchChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>>
+    suspend fun searchMessages(getChannelsParam: GetChannelsParam): PnutResponse<List<Message>>
     suspend fun getMessages(channelId: String, paginationParam: PaginationParam): PnutResponse<List<Message>>
     suspend fun deleteMessage(channelId: String, messageId: String): PnutResponse<Message>
     suspend fun getMessageThread(channelId: String, messageId: String): PnutResponse<List<Message>>

@@ -310,6 +310,10 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         return defaultPnutService.searchChannels(getChannelsParam.toMap()).await()
     }
 
+    override suspend fun searchMessages(getChannelsParam: GetChannelsParam): PnutResponse<List<Message>> {
+        return defaultPnutService.searchMessages(getChannelsParam.toMap()).await()
+    }
+
     override suspend fun getMessages(
         channelId: String,
         paginationParam: PaginationParam

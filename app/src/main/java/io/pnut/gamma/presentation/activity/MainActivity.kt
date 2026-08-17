@@ -329,10 +329,23 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
     }
 
     private fun showSearchFragment() {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
+        val initialType = when (currentFragment) {
+            is ChannelsFragment,
+            is ExploreRoomsFragment -> SearchFragment.SearchType.Chat
+            is ChannelMessagesFragment -> {
+                if (currentFragment.isPm) SearchFragment.SearchType.PrivateMessage
+                else SearchFragment.SearchType.Chat
+            }
+            is PrivateMessagesFragment -> SearchFragment.SearchType.PrivateMessage
+            is ProfileFragment -> SearchFragment.SearchType.User
+            else -> SearchFragment.SearchType.Post
+        }
+
         val existFragment =
             FragmentHelper.addFragment(
                 supportFragmentManager,
-                SearchFragment.newInstance(),
+                SearchFragment.newInstance(initialType),
                 SearchFragment::class.java.simpleName
             )
         (existFragment as? SearchFragment)?.focusToEditText()

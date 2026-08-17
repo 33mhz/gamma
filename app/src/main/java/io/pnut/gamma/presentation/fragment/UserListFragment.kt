@@ -37,7 +37,6 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
     BaseListRecyclerViewAdapter.IBaseList<User, UserViewHolder>,
     UserViewHolder.Callback {
     private val updateUserObserver = Observer<User> {
-//        if (it == null) return@Observer
         adapter.updateItem(PageableItemWrapper.Item(it))
         viewModel.storeItems()
     }
@@ -119,7 +118,7 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
         }
 
         override fun loadCache() {
-            if (userListType == UserListType.Suggested) {
+            if (userListType == UserListType.Suggested || userListType is UserListType.Search) {
                 super.loadCache()
                 return
             }
@@ -134,7 +133,7 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
         }
 
         override fun storeItems() {
-            if (userListType == UserListType.Suggested) {
+            if (userListType == UserListType.Suggested || userListType is UserListType.Search) {
                 return
             }
             viewModelScope.launch {
