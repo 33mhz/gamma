@@ -176,6 +176,7 @@ class PhotoViewActivity : BaseActivity() {
                 sharedElements: MutableMap<String, View>
             ) {
                 super.onMapSharedElements(names, sharedElements)
+                if (names.isEmpty()) return
                 val view = adapter.getItem(binding.mediaViewPager.currentItem).requireView()
                     .findViewById<View>(R.id.photoView)
                 sharedElements[names[0]] = view

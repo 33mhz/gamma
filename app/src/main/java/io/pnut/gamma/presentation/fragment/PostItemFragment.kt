@@ -795,7 +795,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             ) {
                 val viewHolder =
                     recyclerView.findViewHolderForLayoutPosition(currentPosition) ?: return
-                if (names == null || sharedElements == null) return
+                if (names.isNullOrEmpty() || sharedElements == null) return
                 sharedElements[names[0]] = viewHolder.itemView.findViewById(R.id.avatarImageView)
             }
         })
