@@ -115,6 +115,20 @@
         <item name="toolbarNavigationButtonStyle">@style/ToolbarNavigationButtonStyle.Profile</item>
         <item name="actionOverflowButtonStyle">@style/ActionOverflowButtonStyle</item>
         <item name="popupTheme">@style/ProfilePopupMenu</item>
+        <item name="titleTextAppearance">@style/TextAppearance.ProfileToolbar.Title</item>
+        <item name="subtitleTextAppearance">@style/TextAppearance.ProfileToolbar.Subtitle</item>
+    </style>
+
+    <style name="TextAppearance.ProfileToolbar.Title" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:shadowColor">@color/nameShadow</item>
+        <item name="android:shadowRadius">10</item>
+    </style>
+
+    <style name="TextAppearance.ProfileToolbar.Subtitle" parent="TextAppearance.MaterialComponents.Subtitle2">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:shadowColor">@color/nameShadow</item>
+        <item name="android:shadowRadius">10</item>
     </style>
 
     <style name="ProfilePopupMenu" parent="ThemeOverlay.AppCompat.DayNight">
@@ -134,7 +148,7 @@
     </style>
 
     <style name="ToolbarNavigationButtonStyle.Profile">
-        <item name="android:tint">@android:color/white</item>
+        <item name="android:tint">@null</item>
     </style>
 
     <style name="ToolbarNavigationButtonStyle.PhotoView">
