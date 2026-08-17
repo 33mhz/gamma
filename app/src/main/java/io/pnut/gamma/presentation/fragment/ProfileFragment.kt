@@ -7,7 +7,9 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.core.os.BundleCompat
@@ -21,12 +23,15 @@ import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
+import androidx.palette.graphics.Palette
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
@@ -57,6 +62,7 @@ import javax.inject.Inject
 import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.util.Constants
 import kotlin.math.abs
+import androidx.core.graphics.drawable.toDrawable
 
 @AndroidEntryPoint
 class ProfileFragment : BaseFragment() {
@@ -138,6 +144,25 @@ class ProfileFragment : BaseFragment() {
             binding.followerCountButton.text = resources.getQuantityString(R.plurals.follower, it.counts.followers, it.counts.followers)
             binding.postCountTextView.text = getString(R.string.post_count, it.counts.posts)
 
+            if (it.content.coverImage.isDefault) {
+                val iconUrl = it.getAvatarUrl(User.AvatarSize.Normal)
+                Glide.with(this).asBitmap().load(iconUrl).into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        val palette = Palette.from(resource).generate()
+                        val color = palette.mutedSwatch?.rgb ?: Color.BLACK
+                        binding.coverImageView.setImageDrawable(color.toDrawable())
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        binding.coverImageView.setImageDrawable(placeholder)
+                    }
+                })
+            } else {
+                Glide.with(this).load(it.content.coverImage.url)
+                    .apply(RequestOptions.bitmapTransform(BlurTransformation(20)))
+                    .into(binding.coverImageView)
+            }
+
             binding.toolbar.menu.let { menu ->
                 menu.setGroupDividerEnabled(true)
                 menu.findItem(R.id.menuBlock)?.apply {
@@ -209,20 +234,6 @@ class ProfileFragment : BaseFragment() {
         binding.circleImageView.setOnClickListener { viewModel.showAvatar() }
 
         toolbarSetup(binding.appBar, binding.swipeRefreshLayout)
-//        setEnterSharedElementCallback(object : SharedElementCallback() {
-//            override fun onMapSharedElements(
-//                names: List<String>,
-//                sharedElements: MutableMap<String, View>
-//            ) {
-//                binding.circleImageView.clipToOutline = true
-//                sharedElements[names[0]] = binding.circleImageView
-//            }
-//        })
-
-        val coverUrl = User.getCoverUrl(userId)
-        Glide.with(this).load(coverUrl)
-            .apply(RequestOptions.bitmapTransform(BlurTransformation(20)))
-            .into(binding.coverImageView)
 
 //        binding.circleImageView.setShape(preferenceRepository.shapeOfAvatar)
 //        binding.circleImageView.setBackgroundResource(preferenceRepository.shapeOfAvatar.drawableRes)
