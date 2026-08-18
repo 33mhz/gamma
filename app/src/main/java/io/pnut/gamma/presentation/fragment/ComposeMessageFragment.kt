@@ -25,16 +25,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
 import java.io.File
 import androidx.lifecycle.viewModelScope
-import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.R
-import io.pnut.gamma.databinding.ComposeThumbnailImageBinding
 import io.pnut.gamma.databinding.FragmentComposePostBinding
 import io.pnut.gamma.data.db.dao.CacheDao
 import io.pnut.gamma.domain.repository.IAccountRepository
 import io.pnut.gamma.domain.repository.IPreferenceRepository
 import io.pnut.gamma.presentation.adapter.UserSuggestionAdapter
 import io.pnut.gamma.presentation.util.MentionViewModelDelegate
+import io.pnut.gamma.presentation.adapter.ComposeThumbnailAdapter
 import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.entity.PostBody
 import io.pnut.gamma.domain.entity.User
@@ -147,7 +146,7 @@ class ComposeMessageFragment : BaseFragment(),
     }
 
     private var listener: Callback? = null
-    private val thumbnailAdapterListener = object : ThumbnailAdapter.Callback {
+    private val thumbnailAdapterListener = object : ComposeThumbnailAdapter.Callback {
         override fun updateList(list: List<UriInfo>) {
             viewModel.media = list.toMutableList()
         }
@@ -240,7 +239,7 @@ class ComposeMessageFragment : BaseFragment(),
     private var _binding: FragmentComposePostBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var adapter: ThumbnailAdapter
+    private lateinit var adapter: ComposeThumbnailAdapter
 
     @Inject
     lateinit var getAccountListUseCase: GetAccountListUseCase
@@ -367,10 +366,8 @@ class ComposeMessageFragment : BaseFragment(),
     }
 
     private val pickMultipleMediaLauncher = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
-        uris.forEach { uri ->
-            adapter.add(UriInfo(uri))
-        }
         if (uris.isNotEmpty()) {
+            adapter.addAll(uris.map { UriInfo(it) })
             viewModel.previewAttachmentsVisibility.value = View.VISIBLE
         }
     }
@@ -389,7 +386,7 @@ class ComposeMessageFragment : BaseFragment(),
         viewModel.loading.observe(viewLifecycleOwner, loadingObserver)
         viewModel.status.observe(viewLifecycleOwner, statusObserver)
 
-        adapter = ThumbnailAdapter(viewModel.media.toMutableList(), thumbnailAdapterListener)
+        adapter = ComposeThumbnailAdapter(viewModel.media.toMutableList(), thumbnailAdapterListener)
         viewModel.previewAttachmentsVisibility.observe(viewLifecycleOwner) {
             binding.thumbnailRecyclerView.visibility = it
         }
@@ -554,65 +551,6 @@ class ComposeMessageFragment : BaseFragment(),
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    class ThumbnailAdapter(
-        private val items: MutableList<UriInfo> = mutableListOf(),
-        private val listener: Callback
-    ) :
-        androidx.recyclerview.widget.RecyclerView.Adapter<ThumbnailAdapter.ViewHolder>() {
-        interface Callback {
-            fun onRemove()
-            fun onClick(uri: Uri, index: Int)
-            fun updateList(list: List<UriInfo>)
-        }
-
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.compose_thumbnail_image, parent, false)
-            return ViewHolder(view)
-        }
-
-        override fun getItemCount(): Int = items.size
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val uriInfo = items[position]
-            Glide
-                .with(holder.binding.thumbnail)
-                .load(uriInfo.uri)
-                .sizeMultiplier(.7f)
-                .into(holder.binding.thumbnail)
-
-            holder.binding.removeButton.setOnClickListener { remove(holder.bindingAdapterPosition) }
-            holder.binding.thumbnail.setOnClickListener { listener.onClick(uriInfo.uri, holder.bindingAdapterPosition) }
-        }
-
-        private fun remove(index: Int) {
-            items.removeAt(index)
-            listener.onRemove()
-            listener.updateList(items)
-            notifyItemRemoved(index)
-        }
-
-        fun add(uriInfo: UriInfo) {
-            val index = items.size
-            items.add(index, uriInfo)
-            listener.updateList(items)
-            notifyItemInserted(index)
-        }
-
-        fun replace(uriInfo: UriInfo, index: Int) {
-            items[index] = uriInfo
-            listener.updateList(items)
-            notifyItemChanged(index)
-        }
-
-        fun getItems() = items
-
-        class ViewHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
-            val binding = ComposeThumbnailImageBinding.bind(view)
-        }
     }
 
     sealed class Event {

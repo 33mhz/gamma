@@ -13,9 +13,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
-import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.R
+import io.pnut.gamma.presentation.adapter.ComposeThumbnailAdapter
 import io.pnut.gamma.presentation.adapter.UserSuggestionAdapter
 import io.pnut.gamma.databinding.FragmentNewPrivateMessageBinding
 import io.pnut.gamma.domain.entity.raw.Spoiler
@@ -38,11 +38,11 @@ class NewPrivateMessageFragment : BaseFragment(),
     private val viewModel: NewPrivateMessageViewModel by viewModels()
     private lateinit var suggestionAdapter: UserSuggestionAdapter
 
-    private val adapter: ThumbnailAdapter by lazy {
-        ThumbnailAdapter(listener = thumbnailAdapterListener)
+    private val adapter: ComposeThumbnailAdapter by lazy {
+        ComposeThumbnailAdapter(listener = thumbnailAdapterListener)
     }
 
-    private val thumbnailAdapterListener = object : ThumbnailAdapter.Callback {
+    private val thumbnailAdapterListener = object : ComposeThumbnailAdapter.Callback {
         override fun updateList(list: List<UriInfo>) {
             viewModel.media = list.toMutableList()
         }
@@ -81,10 +81,6 @@ class NewPrivateMessageFragment : BaseFragment(),
     override fun onDetach() {
         super.onDetach()
         listener = null
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(
@@ -309,7 +305,7 @@ class NewPrivateMessageFragment : BaseFragment(),
 
     private val pickMultipleMediaLauncher = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
         if (uris.isNotEmpty()) {
-            uris.forEach { adapter.add(UriInfo(it)) }
+            adapter.addAll(uris.map { UriInfo(it) })
             binding.thumbnailRecyclerView.visibility = View.VISIBLE
         }
     }
@@ -348,64 +344,6 @@ class NewPrivateMessageFragment : BaseFragment(),
     fun focusToEditText() {
         binding.usernamesEditText.requestFocus()
         Util.showKeyboard(binding.usernamesEditText)
-    }
-
-    class ThumbnailAdapter(
-        private val items: MutableList<UriInfo> = mutableListOf(),
-        private val listener: Callback
-    ) :
-        androidx.recyclerview.widget.RecyclerView.Adapter<ThumbnailAdapter.ViewHolder>() {
-        interface Callback {
-            fun onRemove()
-            fun onClick(uri: Uri, index: Int)
-            fun updateList(list: List<UriInfo>)
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.compose_thumbnail_image, parent, false)
-            return ViewHolder(view)
-        }
-
-        override fun getItemCount(): Int = items.size
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val uriInfo = items[position]
-            Glide
-                .with(holder.binding.thumbnail)
-                .load(uriInfo.uri)
-                .sizeMultiplier(.7f)
-                .into(holder.binding.thumbnail)
-
-            holder.binding.removeButton.setOnClickListener { remove(holder.bindingAdapterPosition) }
-            holder.binding.thumbnail.setOnClickListener { listener.onClick(uriInfo.uri, holder.bindingAdapterPosition) }
-        }
-
-        private fun remove(index: Int) {
-            items.removeAt(index)
-            listener.onRemove()
-            listener.updateList(items)
-            notifyItemRemoved(index)
-        }
-
-        fun add(uriInfo: UriInfo) {
-            val index = items.size
-            items.add(index, uriInfo)
-            listener.updateList(items)
-            notifyItemInserted(index)
-        }
-
-        fun replace(uriInfo: UriInfo, index: Int) {
-            items[index] = uriInfo
-            listener.updateList(items)
-            notifyItemChanged(index)
-        }
-
-        fun getItems() = items
-
-        class ViewHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
-            val binding = io.pnut.gamma.databinding.ComposeThumbnailImageBinding.bind(view)
-        }
     }
 
     override fun onDestroyView() {
