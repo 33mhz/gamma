@@ -712,6 +712,7 @@ class ComposePostFragment : BaseFragment(),
         }
 
         private fun copyUriToCache(context: Context, uri: Uri): Uri? {
+            if (uri.authority == "io.pnut.gamma.fileprovider") return uri
             return try {
                 val inputStream = context.contentResolver.openInputStream(uri) ?: return null
                 val extension = context.contentResolver.getType(uri)?.split("/")?.lastOrNull() ?: "jpg"

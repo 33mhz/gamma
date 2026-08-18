@@ -110,9 +110,7 @@ class NewPrivateMessageFragment : BaseFragment(),
             binding.textLayout.isVisible = hasUsernames
             binding.counterTextView.isVisible = hasUsernames
             binding.bottomToolbar.isVisible = hasUsernames
-            binding.bottomToolbar.postDelayed({
-                syncMenuState()
-            }, 100)
+            updatePostMenuItem()
             viewModel.onTextChanged(usernameText, binding.usernamesEditText.selectionStart, requireAtSymbol = false)
         }
 
@@ -193,9 +191,7 @@ class NewPrivateMessageFragment : BaseFragment(),
         }
 
         binding.thumbnailRecyclerView.adapter = adapter
-        binding.root.postDelayed({
-            syncMenuState()
-        }, 100)
+        syncMenuState()
     }
 
     private fun syncMenuState() {

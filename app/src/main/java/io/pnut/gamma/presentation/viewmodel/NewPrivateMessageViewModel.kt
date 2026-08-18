@@ -36,6 +36,7 @@ import io.pnut.gamma.util.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -123,7 +124,7 @@ class NewPrivateMessageViewModel @Inject constructor(
 
                         // Cleanup cache file
                         if (it.uri.scheme == "file") {
-                            it.uri.path?.let { path -> java.io.File(path).delete() }
+                            it.uri.path?.let { path -> File(path).delete() }
                         }
 
                         res
@@ -167,15 +168,14 @@ class NewPrivateMessageViewModel @Inject constructor(
     }
 
     private fun copyUriToCache(context: Context, uri: Uri): UriInfo? {
-        if (uri.scheme != "content") return UriInfo(uri)
+        if (uri.scheme != "content" || uri.authority == "io.pnut.gamma.fileprovider") return UriInfo(uri)
         return try {
             val inputStream = context.contentResolver.openInputStream(uri) ?: return null
             val fileName = getFileName(context, uri) ?: return null
-            val cacheFile = java.io.File(context.cacheDir, fileName)
-            val outputStream = cacheFile.outputStream()
-            inputStream.copyTo(outputStream)
-            inputStream.close()
-            outputStream.close()
+            val cacheFile = File(context.cacheDir, fileName)
+            cacheFile.outputStream().use { outputStream ->
+                inputStream.use { it.copyTo(outputStream) }
+            }
             UriInfo(Uri.fromFile(cacheFile))
         } catch (e: Exception) {
             LogUtil.e(e.message)

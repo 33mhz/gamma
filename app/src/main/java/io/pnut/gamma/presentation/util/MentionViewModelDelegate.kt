@@ -38,9 +38,10 @@ class MentionViewModelDelegate(
         searchJob?.cancel()
         searchJob = coroutineScope.launch {
             try {
-                val currentUserId = accountRepository.getDefaultAccount()?.id ?: ""
+                val account = accountRepository.getDefaultAccount()
+                val currentUserId = account?.id ?: ""
                 val result = cacheDao.searchSuggestions(query, currentUserId)
-                val token = accountRepository.getDefaultAccount()?.token
+                val token = account?.token
                 _suggestions.value = result.map {
                     UserSuggestion(it.id, it.username, it.name, token, it.youFollow)
                 }.sortedBy { it.username.lowercase() }
@@ -71,8 +72,10 @@ class MentionViewModelDelegate(
         // Don't show suggestions until at least two characters are typed
         if (mentionText.length < 2) return null
 
-        // Username regex: alphanumeric + underscore, up to 20 chars
-        val regex = Regex("^[a-zA-Z0-9_]{2,20}$")
-        return if (regex.matches(mentionText)) mentionText else null
+        return if (USERNAME_REGEX.matches(mentionText)) mentionText else null
+    }
+
+    companion object {
+        private val USERNAME_REGEX = Regex("^[a-zA-Z0-9_]{2,20}$")
     }
 }
