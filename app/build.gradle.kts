@@ -9,7 +9,6 @@ plugins {
   id("com.google.devtools.ksp")
   id("kotlin-parcelize")
   id("com.google.android.gms.oss-licenses-plugin")
-  id("com.google.firebase.crashlytics")
   id("jacoco")
   id("com.google.dagger.hilt.android")
 }
@@ -174,7 +173,6 @@ dependencies {
   implementation("com.google.android.gms:play-services-oss-licenses:17.5.1")
 
   implementation(platform("com.google.firebase:firebase-bom:34.17.0"))
-  implementation("com.google.firebase:firebase-crashlytics")
 
   testImplementation("junit:junit:4.13.2")
   testImplementation("com.google.truth:truth:1.4.5")
@@ -210,4 +208,5 @@ dependencies {
 
 if (file("google-services.json").exists()) {
   pluginManager.apply("com.google.gms.google-services")
+  pluginManager.apply("com.google.firebase:firebase-crashlytics")
 }
