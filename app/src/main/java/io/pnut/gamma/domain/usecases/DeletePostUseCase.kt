@@ -6,7 +6,7 @@ import io.pnut.gamma.domain.repository.IPnutRepository
 
 class DeletePostUseCase(private val pnutRepository: IPnutRepository) :
     UseCase<DeletePostOutputData, DeletePostInputData>() {
-    override fun run(params: DeletePostInputData): DeletePostOutputData {
+    override suspend fun run(params: DeletePostInputData): DeletePostOutputData {
         val res = pnutRepository.deletePost(params.postId)
         return DeletePostOutputData(res)
     }

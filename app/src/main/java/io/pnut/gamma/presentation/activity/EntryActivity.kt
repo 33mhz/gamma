@@ -8,7 +8,6 @@ import io.pnut.gamma.domain.usecases.SetupTokenUseCase
 import io.pnut.gamma.service.ClearCacheWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.runBlocking
 import io.pnut.gamma.BuildConfig
 import javax.inject.Inject
 import kotlin.reflect.KClass
@@ -31,10 +30,7 @@ class EntryActivity : BaseActivity(), CoroutineScope by MainScope() {
   private fun proceed() {
     if (!BuildConfig.DEBUG) ClearCacheWorker.enqueue(this)
 
-    val existDefaultAccount: Boolean = runBlocking {
-      val res = setupTokenUseCase.run(Unit)
-      res.existDefaultAccount
-    }
+    val existDefaultAccount: Boolean = setupTokenUseCase.run(Unit).existDefaultAccount
     val intentClass: KClass<out Activity> =
       if (existDefaultAccount)
         MainActivity::class

@@ -8,7 +8,7 @@ import android.os.Bundle
 import androidx.core.os.BundleCompat
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
-import androidx.databinding.DataBindingUtil
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -99,14 +99,19 @@ class SpoilerDialogFragment : DialogFragment(), DialogInterface.OnClickListener 
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.fragment_spoiler_dialog,
-            null,
-            false
-        )
-        binding.lifecycleOwner = this
-        binding.viewModel = viewModel
+        binding = FragmentSpoilerDialogBinding.inflate(layoutInflater)
+
+        binding.spoilerEditText.doAfterTextChanged {
+            if (viewModel.topic.value != it.toString()) {
+                viewModel.topic.value = it.toString()
+            }
+        }
+
+        viewModel.topic.observe(this) {
+            if (binding.spoilerEditText.text.toString() != it) {
+                binding.spoilerEditText.setText(it)
+            }
+        }
 
         val builder = MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.spoiler_alert)

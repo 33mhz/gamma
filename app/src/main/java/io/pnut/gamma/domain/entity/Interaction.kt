@@ -11,6 +11,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 
+@Parcelize
 sealed class Interaction(
     override val paginationId: String,
     open val eventDate: Date,

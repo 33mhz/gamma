@@ -14,7 +14,6 @@ import io.pnut.gamma.domain.repository.IPnutRepository
 import io.pnut.gamma.domain.repository.IPreferenceRepository
 import io.pnut.gamma.domain.usecases.SetupTokenUseCase
 import io.pnut.gamma.testutil.IntentUtil
-import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -58,9 +57,7 @@ class EntryActivityTest {
   }
 
   private fun stubSetupTokenUseCase(result: Boolean) {
-      runBlocking {
-          Mockito.`when`(setupTokenUseCase.run(Unit)).thenReturn(SetupTokenOutputData(result))
-      }
+      Mockito.`when`(setupTokenUseCase.run(Unit)).thenReturn(SetupTokenOutputData(result))
   }
 
   @Test

@@ -6,7 +6,7 @@ import io.pnut.gamma.domain.repository.IPnutRepository
 
 class CreatePollUseCase(private val pnutRepository: IPnutRepository) :
     UseCase<CreatePollOutputData, CreatePollInputData>() {
-    override fun run(params: CreatePollInputData): CreatePollOutputData {
+    override suspend fun run(params: CreatePollInputData): CreatePollOutputData {
         val pollPostBody = params.pollPostBody
         val res = pnutRepository.createPoll(pollPostBody)
         return CreatePollOutputData(res.data)

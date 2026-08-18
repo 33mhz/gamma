@@ -11,7 +11,7 @@ class ReportPostUseCase @Inject constructor(
     private val pnutRepository: IPnutRepository,
     private val accountRepository: IAccountRepository
 ) : UseCase<ReportPostOutputData, ReportPostInputData>() {
-    override fun run(params: ReportPostInputData): ReportPostOutputData {
+    override suspend fun run(params: ReportPostInputData): ReportPostOutputData {
         val token = accountRepository.getToken(params.accountId) ?: throw ErrorCollections.AccountNotFound()
         pnutRepository.updateDefaultPnutService(token)
         val res = pnutRepository.reportPost(params.postId, params.reason)

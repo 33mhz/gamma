@@ -7,10 +7,11 @@ import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.pnut.gamma.domain.entity.Interaction
+import io.pnut.gamma.domain.entity.raw.LongPost
 import io.pnut.gamma.domain.entity.raw.OEmbed
 import io.pnut.gamma.presentation.util.PageableItemWrapperConverter
+import java.lang.reflect.Type
 import java.util.Date
 
 object MoshiSingleton {
@@ -42,6 +43,12 @@ object MoshiSingleton {
         .add(RawMapJsonAdapterFactory())
         .add(BaseContentJsonAdapterFactory())
         .add(MicroTimestampAdapter())
+        .add(object : JsonAdapter.Factory {
+            override fun create(type: Type, annotations: Set<Annotation>, moshi: Moshi): JsonAdapter<*>? {
+                if (type == LongPost::class.java) return LongPostJsonAdapter(moshi)
+                return null
+            }
+        })
         .add(
             PolymorphicJsonAdapterFactory.of(OEmbed::class.java, "type")
                 .withSubtype(OEmbed.Photo::class.java, OEmbed.Photo.TYPE)
@@ -51,7 +58,6 @@ object MoshiSingleton {
         .add(PageableItemWrapperConverter.storableUserAdapterFactory)
         .add(PageableItemWrapperConverter.storableInteractionAdapterFactory)
         .add(PageableItemWrapperConverter.storablePostAdapterFactory)
-        .add(KotlinJsonAdapterFactory())
         .build()
 
 }

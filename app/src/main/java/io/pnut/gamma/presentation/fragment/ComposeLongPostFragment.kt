@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.BundleCompat
-import androidx.databinding.DataBindingUtil
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -96,14 +96,30 @@ class ComposeLongPostFragment : DialogFragment(), DialogInterface.OnClickListene
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.fragment_compose_long_post,
-            null,
-            false
-        )
-        binding.lifecycleOwner = this
-        binding.viewModel = viewModel
+        binding = FragmentComposeLongPostBinding.inflate(layoutInflater)
+
+        binding.titleEditText.doAfterTextChanged {
+            if (viewModel.title.value != it.toString()) {
+                viewModel.title.value = it.toString()
+            }
+        }
+        binding.bodyEditText.doAfterTextChanged {
+            if (viewModel.body.value != it.toString()) {
+                viewModel.body.value = it.toString()
+            }
+        }
+
+        viewModel.title.observe(this) {
+            if (binding.titleEditText.text.toString() != it) {
+                binding.titleEditText.setText(it)
+            }
+        }
+
+        viewModel.body.observe(this) {
+            if (binding.bodyEditText.text.toString() != it) {
+                binding.bodyEditText.setText(it)
+            }
+        }
 
         val builder = MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.long_post)

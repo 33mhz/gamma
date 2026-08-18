@@ -2,9 +2,11 @@ package io.pnut.gamma.domain.entity.raw
 
 import android.os.Parcelable
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
+@JsonClass(generateAdapter = true)
 open class OEmbed(
     open val type: String,
     open val version: String
@@ -32,6 +34,7 @@ open class OEmbed(
     }
 
     @Parcelize
+    @JsonClass(generateAdapter = true)
     data class Photo(
         val width: Int,
         val height: Int,
@@ -57,6 +60,7 @@ open class OEmbed(
     }
 
     @Parcelize
+    @JsonClass(generateAdapter = true)
     data class Video(
         override val version: String
     ) : OEmbed(TYPE, version), Parcelable {

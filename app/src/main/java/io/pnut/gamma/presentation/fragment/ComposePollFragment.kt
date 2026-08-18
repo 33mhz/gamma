@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.databinding.DataBindingUtil
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.*
 import io.pnut.gamma.domain.entity.PollPostBody
 import io.pnut.gamma.domain.model.PollDeadline
@@ -87,12 +87,46 @@ class ComposePollFragment : BaseFragment(), ComposePollOptionFragment.Callback {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_compose_poll, container, false)
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = viewLifecycleOwner
+        binding = FragmentComposePollBinding.inflate(inflater, container, false)
         binding.composePollRecyclerView.adapter = composePollListAdapter
         binding.composePollRecyclerView.isNestedScrollingEnabled = false
+
+        binding.composePollOptionalPromptTextEditText.doAfterTextChanged {
+            if (viewModel.prompt.value != it.toString()) {
+                viewModel.prompt.value = it.toString()
+            }
+        }
+
+        viewModel.prompt.observe(viewLifecycleOwner) {
+            if (binding.composePollOptionalPromptTextEditText.text.toString() != it) {
+                binding.composePollOptionalPromptTextEditText.setText(it)
+            }
+        }
+
+        viewModel.enableAddOptionButton.observe(viewLifecycleOwner) {
+            binding.composePollOptionalAddChoiceButton.isEnabled = it
+        }
+
+        binding.composePollOptionalAddChoiceButton.setOnClickListener {
+            viewModel.addOption()
+        }
+
+        binding.composePollMoreOptionsLayout.setOnClickListener {
+            viewModel.openMoreOptions()
+        }
+
+        viewModel.durationStr.observe(viewLifecycleOwner) {
+            binding.composePollDurationValue.text = it
+        }
+
+        viewModel.maxOptions.observe(viewLifecycleOwner) {
+            binding.composePollMaxOptionsValue.text = it.toString()
+        }
+
+        viewModel.isAnonymous.observe(viewLifecycleOwner) {
+            binding.composeAnonymousValue.text = getString(if (it) R.string.yes else R.string.no)
+        }
+
         binding.composePollToolbar.let {
             AppCompatResources.getColorStateList(it.context, R.color.toolbar_icon_tint)
             val colorStateList =

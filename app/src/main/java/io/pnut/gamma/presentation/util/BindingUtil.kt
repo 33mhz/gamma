@@ -5,7 +5,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.appcompat.widget.Toolbar
-import androidx.databinding.BindingAdapter
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -19,7 +18,6 @@ import io.pnut.gamma.R
 import io.pnut.gamma.domain.model.preference.ShapeOfAvatar
 
 object BindingUtil {
-    @BindingAdapter("glideAvatarSrc")
     @JvmStatic
     fun glideAvatarSrc(view: ImageView, url: String?) {
         if (url.isNullOrEmpty()) {
@@ -59,7 +57,6 @@ object BindingUtil {
             .into(view)
     }
 
-    @BindingAdapter("glideSrc")
     @JvmStatic
     fun glideSrc(view: ImageView, url: String?) {
         if (url.isNullOrEmpty()) {
@@ -75,37 +72,31 @@ object BindingUtil {
             .into(view)
     }
 
-    @BindingAdapter("textId")
     @JvmStatic
     fun TextView.setTextRes(res: Int?) {
         if(res != null && res > 0) this.setText(res) else this.text = ""
     }
 
-    @BindingAdapter("onNavigationClick")
     @JvmStatic
     fun Toolbar.setOnNavigationClick(listener: View.OnClickListener) {
         setNavigationOnClickListener(listener)
     }
 
-    @BindingAdapter("title")
     @JvmStatic
     fun Toolbar.setTitleBinding(newTitle: Function0<String>) {
         title = newTitle()
     }
 
-    @BindingAdapter("subtitle")
     @JvmStatic
     fun Toolbar.setSubTitleBinding(newSubTitle: Function0<String>) {
         subtitle = newSubTitle()
     }
 
-    @BindingAdapter("backgroundTint")
     @JvmStatic
     fun setBackgroundTint(view: MaterialButton, @ColorInt color: Int) {
         view.setBackgroundColor(color)
     }
 
-    @BindingAdapter("loading")
     @JvmStatic
     fun setLoadingIndicator(view: MaterialButton, loading: Boolean) {
         view.icon = if (loading) {
@@ -121,4 +112,3 @@ object BindingUtil {
     }
 
 }
-

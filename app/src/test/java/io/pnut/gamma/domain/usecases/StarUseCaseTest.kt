@@ -1,5 +1,6 @@
 package io.pnut.gamma.domain.usecases
 
+import kotlinx.coroutines.runBlocking
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.Post
 import io.pnut.gamma.domain.model.io.StarInputData
@@ -24,7 +25,7 @@ class StarUseCaseTest {
                 )
             }
         })
-        val starOutputData = starUseCase.run(StarInputData(unStarredPost.id, true))
+        val starOutputData = runBlocking { starUseCase.run(StarInputData(unStarredPost.id, true)) }
         assertThat(starOutputData.res.data).isEqualTo(unStarredPost.copy(youBookmarked = true))
     }
 
@@ -35,7 +36,7 @@ class StarUseCaseTest {
                 throw TestException()
             }
         })
-        starUseCase.run(StarInputData(starredPost.id, true))
+        runBlocking { starUseCase.run(StarInputData(starredPost.id, true)) }
     }
 
     @Test
@@ -45,7 +46,7 @@ class StarUseCaseTest {
                 return PnutResponse(PnutResponse.Meta(200), starredPost.copy(youBookmarked = false))
             }
         })
-        val starOutputData = starUseCase.run(StarInputData(starredPost.id, false))
+        val starOutputData = runBlocking { starUseCase.run(StarInputData(starredPost.id, false)) }
         assertThat(starOutputData.res.data).isEqualTo(starredPost.copy(youBookmarked = false))
     }
 
@@ -56,6 +57,6 @@ class StarUseCaseTest {
                 throw TestException()
             }
         })
-        starUseCase.run(StarInputData(unStarredPost.id, false))
+        runBlocking { starUseCase.run(StarInputData(unStarredPost.id, false)) }
     }
 }

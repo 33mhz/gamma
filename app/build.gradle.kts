@@ -60,20 +60,15 @@ android {
     minSdk = 30
     targetSdk = 37
     versionCode = currentVersionCode
-    versionName = "0.9.1"
+    versionName = "0.9.2"
     testInstrumentationRunner = "io.pnut.gamma.HiltTestRunner"
   }
   buildTypes {
     release {
       signingConfig = signingConfigs.getByName("debug")
-//      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-//      isMinifyEnabled = false
-//      optimization {
-//        enable = true
-//      }
-//      ndk {
-//        debugSymbolLevel = "FULL"
-//      }
+      isMinifyEnabled = true
+      isShrinkResources = true
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
     debug {
       enableUnitTestCoverage = true
@@ -82,7 +77,7 @@ android {
   }
   buildFeatures {
     viewBinding = true
-    dataBinding = true
+    dataBinding = false
     buildConfig = true
   }
   val keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -135,7 +130,6 @@ dependencies {
   implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
   implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion")
   implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
-  implementation("androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion")
   androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
 
   implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
@@ -148,15 +142,12 @@ dependencies {
   implementation("com.squareup.retrofit2:retrofit:3.0.0")
   implementation("com.squareup.retrofit2:converter-moshi:3.0.0")
   implementation("androidx.preference:preference-ktx:1.2.1")
-  implementation("com.github.natario1:NestedScrollCoordinatorLayout:1.0.3")
   implementation("com.github.chrisbanes:PhotoView:2.3.0")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
 
   val moshiVersion = "1.15.2"
   implementation("com.squareup.moshi:moshi:$moshiVersion")
   implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
-  implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
   ksp("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
   implementation("com.github.bumptech.glide:glide:5.0.9")
@@ -185,9 +176,6 @@ dependencies {
   implementation(platform("com.google.firebase:firebase-bom:34.17.0"))
   implementation("com.google.firebase:firebase-crashlytics")
 
-  implementation("jp.wasabeef:glide-transformations:4.3.0")
-  implementation("me.zhanghai.android.materialprogressbar:library:1.6.1")
-
   testImplementation("junit:junit:4.13.2")
   testImplementation("com.google.truth:truth:1.4.5")
   testImplementation("org.mockito:mockito-core:5.23.0")
@@ -202,9 +190,7 @@ dependencies {
   androidTestImplementation("androidx.test:core:$testVersion")
   androidTestImplementation("androidx.test:rules:$testVersion")
   androidTestImplementation("androidx.test.ext:junit:1.3.0")
-  implementation("com.github.Chrisvin:EasyReveal:1.2") {
-    exclude(group = "org.jetbrains.kotlin", module = "kotlin-android-extensions-runtime")
-  }
+
   // Kotlin
   val navVersion = "2.9.8"
   implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")

@@ -9,7 +9,7 @@ open class UpdateDefaultAccountUseCase(
     private val accountRepository: IAccountRepository,
     private val pnutRepository: IPnutRepository
 ) :
-    UseCase<UpdateDefaultAccountOutputData, UpdateDefaultAccountInputData>() {
+    SyncUseCase<UpdateDefaultAccountOutputData, UpdateDefaultAccountInputData>() {
     override fun run(params: UpdateDefaultAccountInputData): UpdateDefaultAccountOutputData {
         accountRepository.updateDefaultAccount(params.id)
         val token = accountRepository.getToken(params.id) ?: return UpdateDefaultAccountOutputData(

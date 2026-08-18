@@ -27,14 +27,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
-import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.coroutines.launch
 import io.pnut.gamma.R
 import io.pnut.gamma.broadcast.RelationshipReceiver
@@ -157,8 +155,15 @@ class ProfileFragment : BaseFragment() {
                     }
                 })
             } else {
-                Glide.with(this).load(it.content.coverImage.url)
-                    .apply(RequestOptions.bitmapTransform(BlurTransformation(20)))
+                val url = it.content.coverImage.url
+                Glide.with(this)
+                    .load(url)
+                    .thumbnail(
+                        Glide.with(this)
+                            .load(url)
+                            .sizeMultiplier(0.1f)
+                    )
+                    .centerCrop()
                     .into(binding.coverImageView)
             }
 

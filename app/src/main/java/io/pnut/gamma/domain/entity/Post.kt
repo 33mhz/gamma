@@ -42,6 +42,7 @@ data class Post(
     override val uniqueKey: String by lazy { id }
 
     @Parcelize
+    @JsonClass(generateAdapter = true)
     data class PostCount(
         var bookmarks: Int,
         var replies: Int,

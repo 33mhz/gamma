@@ -98,12 +98,14 @@ sealed class PageableItemWrapperConverter {
     sealed class StorablePost {
         abstract val type: Type
 
+        @JsonClass(generateAdapter = true)
         data class Item(val pageableItemWrapper: PageableItemWrapper.Item<Post>) :
 
             StorablePost() {
             override val type = Type.Item
         }
 
+        @JsonClass(generateAdapter = true)
         data class Pager(val pager: PageableItemWrapper.Pager<Post>) : StorablePost() {
             override val type = Type.Pager
         }
@@ -112,11 +114,13 @@ sealed class PageableItemWrapperConverter {
     sealed class StorableInteraction {
         abstract val type: Type
 
+        @JsonClass(generateAdapter = true)
         data class Item(val pageableItemWrapper: PageableItemWrapper.Item<Interaction>) :
             StorableInteraction() {
             override val type = Type.Item
         }
 
+        @JsonClass(generateAdapter = true)
         data class Pager(val pager: PageableItemWrapper.Pager<Interaction>) :
             StorableInteraction() {
             override val type = Type.Pager
@@ -127,11 +131,13 @@ sealed class PageableItemWrapperConverter {
     sealed class StorableUser {
         abstract val type: Type
 
+        @JsonClass(generateAdapter = true)
         data class Item(val pageableItemWrapper: PageableItemWrapper.Item<User>) :
             StorableUser() {
             override val type = Type.Item
         }
 
+        @JsonClass(generateAdapter = true)
         data class Pager(val pager: PageableItemWrapper.Pager<User>) :
             StorableUser() {
             override val type = Type.Pager

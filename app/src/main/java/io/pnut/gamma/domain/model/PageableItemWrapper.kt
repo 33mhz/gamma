@@ -1,5 +1,6 @@
 package io.pnut.gamma.domain.model
 
+import com.squareup.moshi.JsonClass
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.UniquePageable
 
@@ -14,6 +15,7 @@ sealed class PageableItemWrapper<DD : UniquePageable> {
 
     enum class Type { Item, Pager }
 
+    @JsonClass(generateAdapter = true)
     data class Item<D : UniquePageable>(val item: D) : PageableItemWrapper<D>() {
         override val type = Type.Item
     }
@@ -37,6 +39,7 @@ sealed class PageableItemWrapper<DD : UniquePageable> {
 //    }
 
 
+    @JsonClass(generateAdapter = true)
     data class Pager<TT : UniquePageable>(
         val maxId: String? = null,
         val minId: String? = null,

@@ -1,5 +1,6 @@
 package io.pnut.gamma.domain.usecases
 
+import kotlinx.coroutines.runBlocking
 import android.net.Uri
 import io.pnut.gamma.domain.entity.File
 import io.pnut.gamma.domain.entity.FileBody
@@ -51,7 +52,7 @@ class UploadFileUseCaseTest {
       }
     })
     val inputStream = ByteArrayInputStream("test utf8 data".toByteArray())
-    val res = useCase.run(UploadFileInputData(UriInfo(dummyUri), inputStream))
+    val res = runBlocking { useCase.run(UploadFileInputData(UriInfo(dummyUri), inputStream)) }
     assertThat(res.postOEmbedRaw.replacementFileValue.fileId).isEqualTo(file.id)
     assertThat(res.postOEmbedRaw.replacementFileValue.fileToken).isEqualTo(file.fileToken)
   }

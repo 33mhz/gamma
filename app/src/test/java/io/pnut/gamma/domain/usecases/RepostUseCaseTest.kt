@@ -1,5 +1,6 @@
 package io.pnut.gamma.domain.usecases
 
+import kotlinx.coroutines.runBlocking
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.Post
 import io.pnut.gamma.domain.model.io.RepostInputData
@@ -23,7 +24,7 @@ class RepostUseCaseTest {
             }
         }
         val repostUseCase = RepostUseCase(pnutRepositoryMock)
-        val res = repostUseCase.run(RepostInputData("1", true))
+        val res = runBlocking { repostUseCase.run(RepostInputData("1", true)) }
         assertThat(res.res.data.youReposted).isTrue()
         assertThat(res.res.data.repostOf?.id).isEqualTo("1")
     }
@@ -36,7 +37,7 @@ class RepostUseCaseTest {
             }
         }
         val repostUseCase = RepostUseCase(pnutRepositoryMock)
-        repostUseCase.run(RepostInputData("1", true))
+        runBlocking { repostUseCase.run(RepostInputData("1", true)) }
     }
 
 
@@ -48,7 +49,7 @@ class RepostUseCaseTest {
             }
         }
         val repostUseCase = RepostUseCase(pnutRepositoryMock)
-        val res = repostUseCase.run(RepostInputData("1", false))
+        val res = runBlocking { repostUseCase.run(RepostInputData("1", false)) }
         assertThat(res.res.data.youReposted).isFalse()
         assertThat(res.res.data.repostOf).isNull()
     }
@@ -61,6 +62,6 @@ class RepostUseCaseTest {
             }
         }
         val repostUseCase = RepostUseCase(pnutRepositoryMock)
-        repostUseCase.run(RepostInputData("1", false))
+        runBlocking { repostUseCase.run(RepostInputData("1", false)) }
     }
 }

@@ -2,11 +2,13 @@ package io.pnut.gamma.domain.entity
 
 import android.os.Parcelable
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 
 @Parcelize
+@JsonClass(generateAdapter = true)
 data class File(
   @Json(name = "audio_info") val audioInfo: AudioInfo? = null,
   @Json(name = "created_at") val createdAt: Date,
@@ -35,6 +37,7 @@ data class File(
     override val uniqueKey: String by lazy { id }
 
     @Parcelize
+    @JsonClass(generateAdapter = true)
     data class UploadParameters(val method: String, val url: String) : Parcelable
 
     enum class FileKind {
@@ -45,15 +48,18 @@ data class File(
     }
 
     @Parcelize
+    @JsonClass(generateAdapter = true)
     data class ImageInfo(val height: Int, val width: Int) : Parcelable
 
     @Parcelize
+    @JsonClass(generateAdapter = true)
     data class AudioInfo(
         val duration: Int,
         val bitrate: Int
     ) : Parcelable
 
     @Parcelize
+    @JsonClass(generateAdapter = true)
     data class DerivedFile(
         @Json(name = "audio_info") val audioInfo: AudioInfo? = null,
         @Json(name = "image_info") val imageInfo: ImageInfo? = null,
@@ -66,6 +72,7 @@ data class File(
     ) : Parcelable
 
     @Parcelize
+    @JsonClass(generateAdapter = true)
     data class DerivativeFiles(
         @Json(name = "core_image_200s") val coreImage200s: DerivedFile? = null,
         @Json(name = "core_image_600s") val coreimage600s: DerivedFile? = null,

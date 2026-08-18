@@ -9,8 +9,8 @@ open class SetupTokenUseCase(
     private val pnutRepository: IPnutRepository,
     private val accountRepository: IAccountRepository
 ) :
-    AsyncUseCase<SetupTokenOutputData, Unit>() {
-    override suspend fun run(params: Unit): SetupTokenOutputData {
+    SyncUseCase<SetupTokenOutputData, Unit>() {
+    override fun run(params: Unit): SetupTokenOutputData {
       Log.d("SetupTokenUseCase", "run")
 
         val account = accountRepository.getDefaultAccount() ?: return SetupTokenOutputData(

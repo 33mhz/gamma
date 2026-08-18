@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.Toolbar
-import androidx.databinding.DataBindingUtil
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.*
 import kotlinx.parcelize.Parcelize
 import androidx.appcompat.widget.PopupMenu
@@ -100,12 +100,16 @@ class SearchFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.viewModel = viewModel
+        binding = FragmentSearchBinding.inflate(inflater, container, false)
         binding.toolbar.setNavigationOnClickListener { backToPrevFragment() }
         binding.toolbar.setOnMenuItemClickListener(menuItemClickListener)
         binding.searchTypeButton.setOnClickListener { showSearchTypeMenu(it) }
+        binding.clearButton.setOnClickListener { viewModel.clear() }
+        binding.keywordEditText.doAfterTextChanged { 
+            if (viewModel.keyword.value != it.toString()) {
+                viewModel.keyword.value = it.toString()
+            }
+        }
         binding.keywordEditText.setOnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                 (event != null && event.action == android.view.KeyEvent.ACTION_DOWN &&
@@ -116,6 +120,22 @@ class SearchFragment : BaseFragment() {
                 false
             }
         }
+
+        viewModel.keyword.observe(viewLifecycleOwner) {
+            if (binding.keywordEditText.text.toString() != it) {
+                binding.keywordEditText.setText(it)
+                binding.keywordEditText.setSelection(it.length)
+            }
+        }
+
+        viewModel.searchType.observe(viewLifecycleOwner) {
+            binding.searchTypeButton.setImageResource(it.iconRes)
+        }
+
+        viewModel.clearButtonVisibility.observe(viewLifecycleOwner) {
+            binding.clearButton.visibility = it
+        }
+
         return binding.root
     }
 

@@ -5,7 +5,7 @@ import io.pnut.gamma.domain.model.io.StarOutputData
 import io.pnut.gamma.domain.repository.IPnutRepository
 
 class StarUseCase(val pnutRepository: IPnutRepository) : UseCase<StarOutputData, StarInputData>() {
-    override fun run(params: StarInputData): StarOutputData {
+    override suspend fun run(params: StarInputData): StarOutputData {
         val res = when (params.newState) {
             true -> pnutRepository.createStarPostSync(params.postId)
             false -> pnutRepository.deleteStarPostSync(params.postId)

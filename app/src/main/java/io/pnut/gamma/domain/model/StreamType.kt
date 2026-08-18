@@ -1,14 +1,19 @@
 package io.pnut.gamma.domain.model
 
 import androidx.annotation.StringRes
+import com.squareup.moshi.JsonClass
 import io.pnut.gamma.R
 
 sealed class StreamType {
     object Home: StreamType()
     object Mentions: StreamType()
+    @JsonClass(generateAdapter = true)
     data class Stars(val userId: String): StreamType()
+    @JsonClass(generateAdapter = true)
     data class Tag(val tag: String): StreamType()
+    @JsonClass(generateAdapter = true)
     data class User(val userId: String): StreamType()
+    @JsonClass(generateAdapter = true)
     data class Thread(val postId: String) : StreamType()
     sealed class Explore(@StringRes val titleRes: Int, val slug: String): StreamType() {
         object Conversations : Explore(R.string.conversations, "conversations")
@@ -19,7 +24,9 @@ sealed class StreamType {
         object Global : Explore(R.string.global, "global")
     }
 
+    @JsonClass(generateAdapter = true)
     data class Search(val keyword: String) : StreamType()
+    @JsonClass(generateAdapter = true)
     data class Posts(val ids: List<String>) : StreamType()
 
     val categoryName: String

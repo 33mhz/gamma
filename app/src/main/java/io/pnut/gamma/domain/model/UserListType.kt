@@ -1,8 +1,13 @@
 package io.pnut.gamma.domain.model
 
+import com.squareup.moshi.JsonClass
+
 sealed class UserListType {
+    @JsonClass(generateAdapter = true)
     data class Following(val userId: String) : UserListType()
+    @JsonClass(generateAdapter = true)
     data class Followers(val userId: String) : UserListType()
+    @JsonClass(generateAdapter = true)
     data class Search(val keyword: String) : UserListType()
     object Blocked : UserListType()
     object Muted : UserListType()

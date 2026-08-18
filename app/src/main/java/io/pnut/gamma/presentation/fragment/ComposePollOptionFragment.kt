@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import androidx.core.os.BundleCompat
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -82,22 +81,25 @@ class ComposePollOptionFragment : DialogFragment(), DialogInterface.OnClickListe
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.fragment_compose_poll_option,
-            view?.findViewById(R.id.container),
-            false
-        )
-        binding.lifecycleOwner = this
-        binding.viewModel = viewModel
+        binding = FragmentComposePollOptionBinding.inflate(layoutInflater)
         setupDurationViews()
         setupMaxOptionsView()
+        setupAnonymousView()
         return MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.poll_options)
             .setView(binding.root)
             .setPositiveButton(R.string.ok, this)
             .setNegativeButton(R.string.cancel, this)
             .create()
+    }
+
+    private fun setupAnonymousView() {
+        binding.composePollOptionAnonymousSwitch.let {
+            it.isChecked = viewModel.isAnonymous.value ?: false
+            it.setOnCheckedChangeListener { _, isChecked ->
+                viewModel.isAnonymous.value = isChecked
+            }
+        }
     }
 
     private fun setupMaxOptionsView() {

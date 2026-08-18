@@ -28,10 +28,7 @@ import io.pnut.gamma.domain.model.params.composed.GetPostsParam
 import io.pnut.gamma.domain.model.params.composed.GetUsersParam
 import io.pnut.gamma.domain.model.params.single.PaginationParam
 import io.pnut.gamma.util.Constants
-import io.pnut.gamma.util.LogUtil
 import io.pnut.gamma.util.MoshiSingleton
-import io.pnut.gamma.util.await
-import io.pnut.gamma.util.bodyOrThrow
 import io.pnut.gamma.BuildConfig
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -45,25 +42,23 @@ import java.util.Locale
 class PnutRepository(private val context: Context, defaultAccountToken: String? = null) :
     IPnutRepository {
     override suspend fun deleteCover(): PnutResponse<User> {
-        return defaultPnutService.deleteCover().await()
+        return defaultPnutService.deleteCover()
     }
 
     override suspend fun deleteAvatar(): PnutResponse<User> {
-        return defaultPnutService.deleteAvatar().await()
+        return defaultPnutService.deleteAvatar()
     }
 
     override suspend fun searchUsers(getSearchUsersParam: GetUsersParam): PnutResponse<List<User>> {
-        return defaultPnutService.searchUsers(getSearchUsersParam.toMap()).await()
+        return defaultPnutService.searchUsers(getSearchUsersParam.toMap())
     }
 
     override suspend fun updateCover(uri: Uri): PnutResponse<User> {
         return defaultPnutService.updateCover(createUserImageRequestBody(uri, UserImageKey.Cover))
-            .await()
     }
 
     override suspend fun updateAvatar(uri: Uri): PnutResponse<User> {
         return defaultPnutService.updateAvatar(createUserImageRequestBody(uri, UserImageKey.Avatar))
-            .await()
     }
 
     private enum class UserImageKey { Avatar, Cover }
@@ -98,283 +93,273 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         return uri.lastPathSegment
     }
 
-    override fun createFile(content: RequestBody, fileBody: FileBody): PnutResponse<io.pnut.gamma.domain.entity.File> {
+    override suspend fun createFile(content: RequestBody, fileBody: FileBody): PnutResponse<io.pnut.gamma.domain.entity.File> {
         return defaultPnutService.createFile(
             MultipartBody.Part.createFormData("content", fileBody.name, content),
             fileBody.name.toRequestBody("text/plain".toMediaTypeOrNull()),
             fileBody.kind.name.lowercase(Locale.ROOT).toRequestBody("text/plain".toMediaTypeOrNull()),
             fileBody.type.toRequestBody("text/plain".toMediaTypeOrNull()),
             "0".toRequestBody("text/plain".toMediaTypeOrNull())
-        ).execute().bodyOrThrow()
+        )
     }
 
     override suspend fun getThread(
         postId: String,
         params: GetPostsParam
     ): PnutResponse<List<Post>> {
-        return defaultPnutService.getThread(postId, params.toMap()).await()
+        return defaultPnutService.getThread(postId, params.toMap())
     }
 
     override suspend fun getPosts(ids: IDs): PnutResponse<List<Post>> {
         val params = GetPostsParam(mapOf("ids" to ids.toString()))
         params.add(io.pnut.gamma.domain.model.params.single.GeneralPostParam())
-        return defaultPnutService.getPosts(params.toMap()).await()
+        return defaultPnutService.getPosts(params.toMap())
     }
 
-    override fun createRepostSync(postId: String): PnutResponse<Post> {
-        return defaultPnutService.createRepost(postId).execute().bodyOrThrow()
+    override suspend fun createRepostSync(postId: String): PnutResponse<Post> {
+        return defaultPnutService.createRepost(postId)
     }
 
-    override fun deleteRepostSync(postId: String): PnutResponse<Post> {
-        return defaultPnutService.deleteRepost(postId).execute().bodyOrThrow()
+    override suspend fun deleteRepostSync(postId: String): PnutResponse<Post> {
+        return defaultPnutService.deleteRepost(postId)
     }
 
-    override fun createStarPostSync(postId: String): PnutResponse<Post> {
-        return defaultPnutService.createStar(postId).execute().bodyOrThrow()
+    override suspend fun createStarPostSync(postId: String): PnutResponse<Post> {
+        return defaultPnutService.createStar(postId)
     }
 
-    override fun deleteStarPostSync(postId: String): PnutResponse<Post> {
-        return defaultPnutService.deleteStar(postId).execute().bodyOrThrow()
+    override suspend fun deleteStarPostSync(postId: String): PnutResponse<Post> {
+        return defaultPnutService.deleteStar(postId)
     }
 
     override suspend fun getToken(): PnutResponse<Token> {
-        return defaultPnutService.token().await()
+        return defaultPnutService.token()
     }
 
     override suspend fun searchPosts(params: GetPostsParam): PnutResponse<List<Post>> {
-        return defaultPnutService.searchPosts(params.toMap()).await()
+        return defaultPnutService.searchPosts(params.toMap())
     }
 
     override suspend fun getTagStream(
         tag: String,
         getPostsParam: GetPostsParam
     ): PnutResponse<List<Post>> {
-        return defaultPnutService.getTaggedPosts(tag, getPostsParam.toMap()).await()
+        return defaultPnutService.getTaggedPosts(tag, getPostsParam.toMap())
     }
 
     override suspend fun verifyToken(token: String): PnutResponse<Token> {
-        return createPnutService(token).token().await()
+        return createPnutService(token).token()
     }
 
     override suspend fun getFollowing(
         userId: String,
         getUsersParam: GetUsersParam
     ): PnutResponse<List<User>> {
-        return defaultPnutService.getFollowing(userId, getUsersParam.toMap()).await()
+        return defaultPnutService.getFollowing(userId, getUsersParam.toMap())
     }
 
     override suspend fun getBlockedUsers(getUsersParam: GetUsersParam): PnutResponse<List<User>> {
-        return defaultPnutService.getBlockedUsers(getUsersParam.toMap()).await()
+        return defaultPnutService.getBlockedUsers(getUsersParam.toMap())
     }
 
     override suspend fun getMutedUsers(getUsersParam: GetUsersParam): PnutResponse<List<User>> {
-        return defaultPnutService.getMutedUsers(getUsersParam.toMap()).await()
+        return defaultPnutService.getMutedUsers(getUsersParam.toMap())
     }
 
     override suspend fun getSuggestedUsers(getUsersParam: GetUsersParam): PnutResponse<List<User>> {
-        return defaultPnutService.getSuggestedUsers(getUsersParam.toMap()).await()
+        return defaultPnutService.getSuggestedUsers(getUsersParam.toMap())
     }
 
     override suspend fun getUnifiedStream(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
-        return defaultPnutService.getUnifiedStream(getPostsParam.toMap()).await()
+        return defaultPnutService.getUnifiedStream(getPostsParam.toMap())
 
     }
 
     override suspend fun getPersonalStream(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
-        return defaultPnutService.getPersonalStream(getPostsParam.toMap()).await()
+        return defaultPnutService.getPersonalStream(getPostsParam.toMap())
     }
 
     override suspend fun getMentionStream(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
-        return defaultPnutService.getMentions(getPostsParam.toMap()).await()
+        return defaultPnutService.getMentions(getPostsParam.toMap())
     }
 
     override suspend fun getStars(
         userId: String,
         getPostsParam: GetPostsParam
     ): PnutResponse<List<Post>> {
-        return defaultPnutService.getStars(userId, getPostsParam.toMap()).await()
+        return defaultPnutService.getStars(userId, getPostsParam.toMap())
     }
 
     override suspend fun getUserPosts(
         userId: String,
         getPostsParam: GetPostsParam
     ): PnutResponse<List<Post>> {
-        return defaultPnutService.getUserPosts(userId, getPostsParam.toMap()).await()
+        return defaultPnutService.getUserPosts(userId, getPostsParam.toMap())
     }
 
     override suspend fun getExplorePosts(
         slug: String,
         getPostsParam: GetPostsParam
     ): PnutResponse<List<Post>> {
-        return defaultPnutService.getExplore(slug, getPostsParam.toMap()).await()
+        return defaultPnutService.getExplore(slug, getPostsParam.toMap())
     }
 
     override suspend fun getGlobal(getPostsParam: GetPostsParam): PnutResponse<List<Post>> {
-        return defaultPnutService.getGlobal(getPostsParam.toMap()).await()
+        return defaultPnutService.getGlobal(getPostsParam.toMap())
     }
 
     override suspend fun createPost(postBody: PostBody): PnutResponse<Post> {
-        return defaultPnutService.createPost(postBody).await()
+        return defaultPnutService.createPost(postBody)
     }
 
-    override fun createPostSync(postBody: PostBody, token: String): PnutResponse<Post> {
-        return createPnutService(token).createPost(postBody).execute().bodyOrThrow()
+    override suspend fun createPostSync(postBody: PostBody, token: String): PnutResponse<Post> {
+        return createPnutService(token).createPost(postBody)
     }
 
     override suspend fun updatePost(postId: String, postBody: PostBody): PnutResponse<Post> {
-        return defaultPnutService.editPost(postId, postBody).await()
+        return defaultPnutService.editPost(postId, postBody)
     }
 
-    override fun deletePost(postId: String): PnutResponse<Post> {
-        return defaultPnutService.deletePost(postId).execute().bodyOrThrow()
+    override suspend fun deletePost(postId: String): PnutResponse<Post> {
+        return defaultPnutService.deletePost(postId)
     }
 
-    override fun reportPost(postId: String, reason: io.pnut.gamma.domain.entity.ReportReason): PnutResponse<Unit> {
-        val res = defaultPnutService.reportPost(postId, reason.value).execute()
-        if (res.isSuccessful) {
-            return PnutResponse(PnutResponse.Meta(res.code()), Unit)
-        }
-
-        val errorBody = res.errorBody()
-        if (errorBody != null) {
-            val json = errorBody.string()
-            LogUtil.e(json)
-            throw io.pnut.gamma.util.ErrorCollections.CommunicationError.create(json)
-        }
-        throw Constants.unknownErrorException()
+    override suspend fun reportPost(postId: String, reason: io.pnut.gamma.domain.entity.ReportReason): PnutResponse<Unit> {
+        defaultPnutService.reportPost(postId, reason.value)
+        return PnutResponse(PnutResponse.Meta(200), Unit)
     }
 
     override suspend fun getUserProfile(userId: String): PnutResponse<User> {
-        return defaultPnutService.getUser(userId).await()
+        return defaultPnutService.getUser(userId)
     }
 
     override suspend fun updateMyProfile(profileBody: ProfileBody): PnutResponse<User> {
-        return defaultPnutService.putMyProfile(profileBody).await()
+        return defaultPnutService.putMyProfile(profileBody)
     }
 
     override suspend fun getFollowers(
         userId: String,
         getUsersParam: GetUsersParam
     ): PnutResponse<List<User>> {
-        return defaultPnutService.getFollowers(userId, getUsersParam.toMap()).await()
+        return defaultPnutService.getFollowers(userId, getUsersParam.toMap())
     }
 
     override suspend fun follow(userId: String): PnutResponse<User> {
-        return defaultPnutService.follow(userId).await()
+        return defaultPnutService.follow(userId)
     }
 
     override suspend fun unFollow(userId: String): PnutResponse<User> {
-        return defaultPnutService.unFollow(userId).await()
+        return defaultPnutService.unFollow(userId)
     }
 
     override suspend fun mute(userId: String): PnutResponse<User> {
-        return defaultPnutService.mute(userId).await()
+        return defaultPnutService.mute(userId)
     }
 
     override suspend fun unMute(userId: String): PnutResponse<User> {
-        return defaultPnutService.unMute(userId).await()
+        return defaultPnutService.unMute(userId)
     }
 
     override suspend fun block(userId: String): PnutResponse<User> {
-        return defaultPnutService.block(userId).await()
+        return defaultPnutService.block(userId)
     }
 
     override suspend fun unBlock(userId: String): PnutResponse<User> {
-        return defaultPnutService.unBlock(userId).await()
+        return defaultPnutService.unBlock(userId)
     }
 
     override suspend fun getChannel(channelId: String): PnutResponse<Channel> {
-        return defaultPnutService.getChannel(channelId).await()
+        return defaultPnutService.getChannel(channelId)
     }
 
     override suspend fun getSubscribedChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
-        return defaultPnutService.getSubscribedChannels(getChannelsParam.toMap()).await()
+        return defaultPnutService.getSubscribedChannels(getChannelsParam.toMap())
     }
 
     override suspend fun getPmChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
-        return defaultPnutService.getPmChannels(getChannelsParam.toMap()).await()
+        return defaultPnutService.getPmChannels(getChannelsParam.toMap())
     }
 
     override suspend fun getTopicalChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
-        return defaultPnutService.getTopicalChannels(getChannelsParam.toMap()).await()
+        return defaultPnutService.getTopicalChannels(getChannelsParam.toMap())
     }
 
     override suspend fun getExploreChannels(
         slug: String,
         getChannelsParam: GetChannelsParam
     ): PnutResponse<List<Channel>> {
-        return defaultPnutService.getExploreChannels(slug, getChannelsParam.toMap()).await()
+        return defaultPnutService.getExploreChannels(slug, getChannelsParam.toMap())
     }
 
     override suspend fun searchChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
-        return defaultPnutService.searchChannels(getChannelsParam.toMap()).await()
+        return defaultPnutService.searchChannels(getChannelsParam.toMap())
     }
 
     override suspend fun searchMessages(getChannelsParam: GetChannelsParam): PnutResponse<List<Message>> {
-        return defaultPnutService.searchMessages(getChannelsParam.toMap()).await()
+        return defaultPnutService.searchMessages(getChannelsParam.toMap())
     }
 
     override suspend fun getMessages(
         channelId: String,
         paginationParam: PaginationParam
     ): PnutResponse<List<Message>> {
-        return defaultPnutService.getChannelMessages(channelId, paginationParam.toMap()).await()
+        return defaultPnutService.getChannelMessages(channelId, paginationParam.toMap())
     }
 
     override suspend fun deleteMessage(channelId: String, messageId: String): PnutResponse<Message> {
-        return defaultPnutService.deleteMessage(channelId, messageId).await()
+        return defaultPnutService.deleteMessage(channelId, messageId)
     }
 
     override suspend fun getMessageThread(channelId: String, messageId: String): PnutResponse<List<Message>> {
-        return defaultPnutService.getMessageThread(channelId, messageId).await()
+        return defaultPnutService.getMessageThread(channelId, messageId)
     }
 
     override suspend fun createMessage(channelId: String, message: PostBody): PnutResponse<Message> {
-        return defaultPnutService.createMessage(channelId, message).await()
+        return defaultPnutService.createMessage(channelId, message)
     }
 
     override suspend fun createPmMessage(message: PmPostBody): PnutResponse<Message> {
-        return defaultPnutService.createPmMessage(message).await()
+        return defaultPnutService.createPmMessage(message)
     }
 
     override suspend fun getExistingPm(ids: IDs): PnutResponse<Channel> {
-        return defaultPnutService.getExistingPm(ids).await()
+        return defaultPnutService.getExistingPm(ids)
     }
 
     override suspend fun subscribe(channelId: String): PnutResponse<Channel> {
-        return defaultPnutService.subscribeChannel(channelId).await()
+        return defaultPnutService.subscribeChannel(channelId)
     }
 
     override suspend fun unsubscribe(channelId: String): PnutResponse<Channel> {
-        return defaultPnutService.unsubscribeChannel(channelId).await()
+        return defaultPnutService.unsubscribeChannel(channelId)
     }
 
     override suspend fun muteChannel(channelId: String): PnutResponse<Channel> {
-        return defaultPnutService.muteChannel(channelId).await()
+        return defaultPnutService.muteChannel(channelId)
     }
 
     override suspend fun unmuteChannel(channelId: String): PnutResponse<Channel> {
-        return defaultPnutService.unmuteChannel(channelId).await()
+        return defaultPnutService.unmuteChannel(channelId)
     }
 
     override suspend fun getInteractions(getInteractionsParam: GetInteractionsParam): PnutResponse<List<Interaction>> {
-        return defaultPnutService.getInteractions(getInteractionsParam.toMap()).await()
+        return defaultPnutService.getInteractions(getInteractionsParam.toMap())
     }
 
     override suspend fun getFiles(getFilesParam: GetFilesParam): PnutResponse<List<io.pnut.gamma.domain.entity.File>> {
-        return defaultPnutService.getFiles(getFilesParam.toMap()).await()
+        return defaultPnutService.getFiles(getFilesParam.toMap())
     }
 
     override suspend fun updateMarkers(markers: List<Marker>): PnutResponse<List<Marker>> {
-        return defaultPnutService.updateMarkers(markers).await()
+        return defaultPnutService.updateMarkers(markers)
     }
 
-    override fun createPoll(pollPostBody: PollPostBody): PnutResponse<Poll> {
-        return defaultPnutService.createPoll(pollPostBody).execute().bodyOrThrow()
+    override suspend fun createPoll(pollPostBody: PollPostBody): PnutResponse<Poll> {
+        return defaultPnutService.createPoll(pollPostBody)
     }
 
     override suspend fun getPoll(pollId: String, pollToken: String): PnutResponse<Poll> {
-        return defaultPnutService.getPoll(pollId, pollToken).await()
+        return defaultPnutService.getPoll(pollId, pollToken)
     }
 
     override suspend fun vote(
@@ -382,7 +367,7 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         pollToken: String,
         voteBody: VoteBody
     ): PnutResponse<Poll> {
-        return defaultPnutService.vote(pollId, pollToken, voteBody).await()
+        return defaultPnutService.vote(pollId, pollToken, voteBody)
     }
 
     private val cacheSize: Long = 1024 * 1024 * 10

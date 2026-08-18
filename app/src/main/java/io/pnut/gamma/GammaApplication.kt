@@ -18,7 +18,6 @@ import io.pnut.gamma.presentation.activity.LoginActivity
 import io.pnut.gamma.presentation.util.ThemeColorUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 
@@ -65,12 +64,10 @@ open class GammaApplication : Application(), CoroutineScope by MainScope(), Conf
   }
 
   private fun setToken(): Boolean {
-    return runBlocking {
-      SetupTokenUseCase(
-        pnutRepository,
-        accountRepository
-      ).run(Unit)
-    }.existDefaultAccount
+    return SetupTokenUseCase(
+      pnutRepository,
+      accountRepository
+    ).run(Unit).existDefaultAccount
   }
 
   fun updateTheme() {

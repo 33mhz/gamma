@@ -8,7 +8,7 @@ class LogoutUseCase(
     private val accountRepository: IAccountRepository,
     private val pnutRepository: IPnutRepository
 ) :
-    UseCase<LogoutOutputData, Unit>() {
+    SyncUseCase<LogoutOutputData, Unit>() {
     override fun run(params: Unit): LogoutOutputData {
         val currentAccount = accountRepository.getDefaultAccount() ?: return LogoutOutputData(null)
         accountRepository.deleteAccount(currentAccount.id)

@@ -10,20 +10,18 @@
     android:clickable="true"
     android:focusable="true">
 
-    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+    <ProgressBar
         android:id="@+id/pollOptionProgressBar"
-        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="32dp"
         android:max="100"
+        android:progressBackgroundTint="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:mpb_progressBackgroundTint="@android:color/transparent"
-        app:mpb_progressStyle="horizontal"
-        app:mpb_useIntrinsicPadding="false" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/pollOptionCheckBox"

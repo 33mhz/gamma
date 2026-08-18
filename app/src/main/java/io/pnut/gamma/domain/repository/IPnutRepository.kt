@@ -40,17 +40,17 @@ interface IPnutRepository {
     suspend fun getPosts(ids: io.pnut.gamma.domain.entity.IDs): PnutResponse<List<Post>>
 
     suspend fun createPost(postBody: PostBody): PnutResponse<Post>
-    fun createPostSync(postBody: PostBody, token: String): PnutResponse<Post>
+    suspend fun createPostSync(postBody: PostBody, token: String): PnutResponse<Post>
     suspend fun updatePost(postId: String, postBody: PostBody): PnutResponse<Post>
-    fun deletePost(postId: String): PnutResponse<Post>
+    suspend fun deletePost(postId: String): PnutResponse<Post>
 
-    fun reportPost(postId: String, reason: io.pnut.gamma.domain.entity.ReportReason): PnutResponse<Unit>
+    suspend fun reportPost(postId: String, reason: io.pnut.gamma.domain.entity.ReportReason): PnutResponse<Unit>
 
-    fun createStarPostSync(postId: String): PnutResponse<Post>
-    fun deleteStarPostSync(postId: String): PnutResponse<Post>
+    suspend fun createStarPostSync(postId: String): PnutResponse<Post>
+    suspend fun deleteStarPostSync(postId: String): PnutResponse<Post>
 
-    fun createRepostSync(postId: String): PnutResponse<Post>
-    fun deleteRepostSync(postId: String): PnutResponse<Post>
+    suspend fun createRepostSync(postId: String): PnutResponse<Post>
+    suspend fun deleteRepostSync(postId: String): PnutResponse<Post>
 
 
     // user
@@ -98,11 +98,11 @@ interface IPnutRepository {
     suspend fun getFiles(getFilesParam: GetFilesParam): PnutResponse<List<File>>
     suspend fun getToken(): PnutResponse<Token>
     suspend fun verifyToken(token: String): PnutResponse<Token>
-    fun createFile(content: RequestBody, fileBody: FileBody): PnutResponse<File>
+    suspend fun createFile(content: RequestBody, fileBody: FileBody): PnutResponse<File>
 
     fun updateDefaultPnutService(token: String)
 
-    fun createPoll(pollPostBody: PollPostBody): PnutResponse<Poll>
+    suspend fun createPoll(pollPostBody: PollPostBody): PnutResponse<Poll>
     suspend fun getPoll(pollId: String, pollToken: String): PnutResponse<Poll>
     suspend fun vote(pollId: String, pollToken: String, voteBody: VoteBody): PnutResponse<Poll>
 

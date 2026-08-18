@@ -1,5 +1,6 @@
 package io.pnut.gamma.domain.usecases
 
+import kotlinx.coroutines.runBlocking
 import io.pnut.gamma.domain.entity.PostBody
 import io.pnut.gamma.domain.model.Account
 import io.pnut.gamma.domain.model.io.PostInputData
@@ -22,7 +23,7 @@ class PostUseCaseTest {
     fun succeed() {
         val postBody = PostBody("body")
         val input = PostInputData(postBody, me.id)
-        val output = postUseCase.run(input)
+        val output = runBlocking { postUseCase.run(input) }
         assertThat(output.res.data.content?.text).isEqualTo("body")
     }
 
@@ -30,13 +31,13 @@ class PostUseCaseTest {
     fun failBecauseBodyIsEmpty() {
         val postBody = PostBody("")
         val input = PostInputData(postBody, me.id)
-        postUseCase.run(input)
+        runBlocking { postUseCase.run(input) }
     }
 
     @Test(expected = ErrorCollections.AccountNotFound::class)
     fun failBecauseBodyAccountNotFound() {
         val postBody = PostBody("")
         val input = PostInputData(postBody, "")
-        postUseCase.run(input)
+        runBlocking { postUseCase.run(input) }
     }
 }

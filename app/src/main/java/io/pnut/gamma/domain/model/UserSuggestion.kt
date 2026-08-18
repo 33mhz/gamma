@@ -1,7 +1,9 @@
 package io.pnut.gamma.domain.model
 
+import com.squareup.moshi.JsonClass
 import io.pnut.gamma.util.Constants
 
+@JsonClass(generateAdapter = true)
 data class UserSuggestion(
     val id: String,
     val username: String,

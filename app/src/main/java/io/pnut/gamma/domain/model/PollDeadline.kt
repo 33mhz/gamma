@@ -2,11 +2,13 @@ package io.pnut.gamma.domain.model
 
 import android.content.Context
 import android.os.Parcelable
+import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import io.pnut.gamma.R
 
 @Parcelize
+@JsonClass(generateAdapter = true)
 data class PollDeadline(
     val day: Int,
     val hour: Int,
