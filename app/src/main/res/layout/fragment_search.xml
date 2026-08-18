@@ -60,6 +60,7 @@
                         android:layout_marginEnd="@dimen/margin_regular"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
+                        android:contentDescription="@string/search"
                         android:focusable="true"
                         app:imageResource="@{viewModel.searchType.iconRes}"
                         app:tint="@color/toolbarIcon" />

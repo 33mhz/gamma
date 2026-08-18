@@ -76,6 +76,7 @@
     <string name="description_avatar_picture">Set your avatar picture</string>
     <string name="ratio_edit_cover">h,2:1</string>
     <string name="description_current_avatar_picture">Current your avatar</string>
+    <string name="take_photo">Take photo</string>
     <string name="attach_photos">Attach photos</string>
     <string name="search">Search</string>
     <string name="posts">Posts</string>

@@ -29,6 +29,7 @@ import com.bumptech.glide.Glide
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import java.io.File
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,6 +65,7 @@ import io.pnut.gamma.presentation.activity.EditPhotoActivity
 import io.pnut.gamma.presentation.util.AnimationCallback
 import io.pnut.gamma.presentation.util.BackPressedHookable
 import io.pnut.gamma.presentation.util.BindingUtil
+import io.pnut.gamma.presentation.util.CameraDelegate
 import io.pnut.gamma.presentation.util.DateUtil
 import io.pnut.gamma.presentation.util.Util
 import io.pnut.gamma.service.PostWorker
@@ -387,6 +389,11 @@ class ComposePostFragment : BaseFragment(),
         }
     }
 
+    private val cameraDelegate = CameraDelegate(this) { uri ->
+        adapter.add(UriInfo(uri))
+        viewModel.previewAttachmentsVisibility.value = View.VISIBLE
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -511,6 +518,7 @@ class ComposePostFragment : BaseFragment(),
     private fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.home -> cancelToCompose()
+            R.id.menuTakePhoto -> cameraDelegate.takePhoto()
             R.id.menuInsertPhoto -> pickMultipleMediaLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
             R.id.menuNsfw -> toggleNSFW(item)
             R.id.menuPost -> send()
@@ -740,7 +748,7 @@ class ComposePostFragment : BaseFragment(),
 
                             // Cleanup cache file
                             if (it.uri.scheme == "file") {
-                                it.uri.path?.let { path -> java.io.File(path).delete() }
+                                it.uri.path?.let { path -> File(path).delete() }
                             }
 
                             res
@@ -784,7 +792,7 @@ class ComposePostFragment : BaseFragment(),
             return try {
                 val inputStream = context.contentResolver.openInputStream(uri) ?: return null
                 val extension = context.contentResolver.getType(uri)?.split("/")?.lastOrNull() ?: "jpg"
-                val file = java.io.File(context.cacheDir, "upload_${System.currentTimeMillis()}_${(0..1000).random()}.$extension")
+                val file = File(context.cacheDir, "upload_${System.currentTimeMillis()}_${(0..1000).random()}.$extension")
                 file.outputStream().use { outputStream ->
                     inputStream.use { it.copyTo(outputStream) }
                 }
@@ -806,7 +814,7 @@ class ComposePostFragment : BaseFragment(),
                     }
                 }
             }
-            return uri.path?.let { java.io.File(it).name }
+            return uri.path?.let { File(it).name }
         }
 
         class Factory(

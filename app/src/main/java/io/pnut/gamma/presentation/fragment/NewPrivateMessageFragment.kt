@@ -21,6 +21,7 @@ import io.pnut.gamma.databinding.FragmentNewPrivateMessageBinding
 import io.pnut.gamma.domain.entity.raw.Spoiler
 import io.pnut.gamma.domain.model.UriInfo
 import io.pnut.gamma.presentation.activity.EditPhotoActivity
+import io.pnut.gamma.presentation.util.CameraDelegate
 import io.pnut.gamma.presentation.util.Util
 import io.pnut.gamma.presentation.viewmodel.NewPrivateMessageViewModel
 import io.pnut.gamma.util.Constants
@@ -229,6 +230,7 @@ class NewPrivateMessageFragment : BaseFragment(),
 
     private fun onMenuItemClick(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
+            R.id.menuTakePhoto -> cameraDelegate.takePhoto()
             R.id.menuInsertPhoto -> pickMultipleMediaLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             R.id.menuPoll -> viewModel.enablePoll.value = viewModel.enablePoll.value == false
             R.id.menuSpoiler -> setSpoiler()
@@ -310,6 +312,11 @@ class NewPrivateMessageFragment : BaseFragment(),
             uris.forEach { adapter.add(UriInfo(it)) }
             binding.thumbnailRecyclerView.visibility = View.VISIBLE
         }
+    }
+
+    private val cameraDelegate = CameraDelegate(this) { uri ->
+        adapter.add(UriInfo(uri))
+        binding.thumbnailRecyclerView.visibility = View.VISIBLE
     }
 
     private fun updatePostMenuItem() {
