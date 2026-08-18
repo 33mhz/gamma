@@ -124,23 +124,7 @@ class NewPrivateMessageFragment : BaseFragment(),
 
         suggestionAdapter = UserSuggestionAdapter { user ->
             val focusedView = if (binding.usernamesEditText.isFocused) binding.usernamesEditText else binding.textEditText
-            val text = focusedView.text?.toString().orEmpty()
-            val selectionStart = focusedView.selectionStart
-            val subText = text.substring(0, selectionStart)
-            
-            if (focusedView == binding.usernamesEditText) {
-                val lastDelimiterPos = maxOf(subText.lastIndexOf(' '), subText.lastIndexOf(','))
-                val newText = text.substring(0, lastDelimiterPos + 1) + "@" + user.username + " " + text.substring(selectionStart)
-                focusedView.setText(newText)
-                focusedView.setSelection(lastDelimiterPos + 1 + 1 + user.username.length + 1)
-            } else {
-                val lastAtPos = subText.lastIndexOf('@')
-                if (lastAtPos != -1) {
-                    val newText = text.substring(0, lastAtPos + 1) + user.username + " " + text.substring(selectionStart)
-                    focusedView.setText(newText)
-                    focusedView.setSelection(lastAtPos + 1 + user.username.length + 1)
-                }
-            }
+            Util.insertMention(focusedView, user.username, addAtSymbol = focusedView == binding.usernamesEditText)
         }
         binding.suggestionRecyclerView.adapter = suggestionAdapter
 

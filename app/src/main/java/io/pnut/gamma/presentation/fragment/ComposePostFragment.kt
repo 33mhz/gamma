@@ -444,15 +444,7 @@ class ComposePostFragment : BaseFragment(),
         }
         
         suggestionAdapter = UserSuggestionAdapter { user ->
-            val text = binding.composeTextEditText.text?.toString().orEmpty()
-            val selectionStart = binding.composeTextEditText.selectionStart
-            val subText = text.substring(0, selectionStart)
-            val lastAtPos = subText.lastIndexOf('@')
-            if (lastAtPos != -1) {
-                val newText = text.substring(0, lastAtPos + 1) + user.username + " " + text.substring(selectionStart)
-                binding.composeTextEditText.setText(newText)
-                binding.composeTextEditText.setSelection(lastAtPos + 1 + user.username.length + 1)
-            }
+            Util.insertMention(binding.composeTextEditText, user.username)
         }
         binding.suggestionRecyclerView.adapter = suggestionAdapter
 

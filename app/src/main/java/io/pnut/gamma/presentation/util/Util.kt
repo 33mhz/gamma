@@ -136,6 +136,26 @@ object Util {
 
     fun getVisibility(b: Boolean) = if (b) View.VISIBLE else View.GONE
 
+    fun insertMention(editText: android.widget.EditText, username: String, addAtSymbol: Boolean = false) {
+        val text = editText.text?.toString().orEmpty()
+        val selectionStart = editText.selectionStart
+        val subText = text.substring(0, selectionStart)
+
+        val lastPos = if (addAtSymbol) {
+            maxOf(subText.lastIndexOf(' '), subText.lastIndexOf(','))
+        } else {
+            subText.lastIndexOf('@')
+        }
+
+        if (lastPos != -1 || addAtSymbol) {
+            val insertIndex = lastPos + 1
+            val mention = if (addAtSymbol) "@$username " else "$username "
+            val newText = text.substring(0, insertIndex) + mention + text.substring(selectionStart)
+            editText.setText(newText)
+            editText.setSelection(insertIndex + mention.length)
+        }
+    }
+
     interface Scrollable {
         fun scrollToTop()
     }
