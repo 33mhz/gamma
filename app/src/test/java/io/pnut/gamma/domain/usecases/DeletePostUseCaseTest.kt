@@ -14,7 +14,7 @@ class DeletePostUseCaseTest {
   fun success() {
     val post = Posts.normalPost
     val useCase = DeletePostUseCase(object : PnutRepositoryMock() {
-      override fun deletePost(postId: String): PnutResponse<Post> {
+      override suspend fun deletePost(postId: String): PnutResponse<Post> {
         return PnutResponse(
           PnutResponse.Meta(200), post.copy(
             isDeleted = true, content = null

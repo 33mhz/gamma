@@ -41,7 +41,7 @@ class UploadFileUseCaseTest {
       fileToken = "fileToken"
     )
     val useCase = UploadFileUseCase(object : PnutRepositoryMock() {
-      override fun createFile(content: RequestBody, fileBody: FileBody): PnutResponse<File> {
+      override suspend fun createFile(content: RequestBody, fileBody: FileBody): PnutResponse<File> {
         val buffer = Buffer()
         content.writeTo(buffer)
         // TODO: Fix it

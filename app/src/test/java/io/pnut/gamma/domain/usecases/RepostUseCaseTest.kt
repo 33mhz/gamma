@@ -18,7 +18,7 @@ class RepostUseCaseTest {
     @Test
     fun succeedToRepost() {
         val pnutRepositoryMock = object : PnutRepositoryMock() {
-            override fun createRepostSync(postId: String): PnutResponse<Post> {
+            override suspend fun createRepostSync(postId: String): PnutResponse<Post> {
                 val hasRepostOfPost = Posts.normalPost.copy(repostOf = post, youReposted = true)
                 return Response.success(hasRepostOfPost)
             }
@@ -32,7 +32,7 @@ class RepostUseCaseTest {
     @Test(expected = TestException::class)
     fun failToRepost() {
         val pnutRepositoryMock = object : PnutRepositoryMock() {
-            override fun createRepostSync(postId: String): PnutResponse<Post> {
+            override suspend fun createRepostSync(postId: String): PnutResponse<Post> {
                 throw TestException()
             }
         }
@@ -44,7 +44,7 @@ class RepostUseCaseTest {
     @Test
     fun succeedToDeleteRepost() {
         val pnutRepositoryMock = object : PnutRepositoryMock() {
-            override fun deleteRepostSync(postId: String): PnutResponse<Post> {
+            override suspend fun deleteRepostSync(postId: String): PnutResponse<Post> {
                 return Response.success(Posts.normalPost)
             }
         }
@@ -57,7 +57,7 @@ class RepostUseCaseTest {
     @Test(expected = TestException::class)
     fun failToDeleteRepost() {
         val pnutRepositoryMock = object : PnutRepositoryMock() {
-            override fun deleteRepostSync(postId: String): PnutResponse<Post> {
+            override suspend fun deleteRepostSync(postId: String): PnutResponse<Post> {
                 throw TestException()
             }
         }

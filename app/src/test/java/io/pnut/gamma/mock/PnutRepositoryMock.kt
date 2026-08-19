@@ -149,7 +149,7 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun createPostSync(postBody: PostBody, token: String): PnutResponse<Post> {
+    override suspend fun createPostSync(postBody: PostBody, token: String): PnutResponse<Post> {
         return when {
             postBody.text.isEmpty() -> throw TestException()
             token.isEmpty() -> throw TestException()
@@ -170,27 +170,27 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun deletePost(postId: String): PnutResponse<Post> {
+    override suspend fun deletePost(postId: String): PnutResponse<Post> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun reportPost(postId: String, reason: io.pnut.gamma.domain.entity.ReportReason): PnutResponse<Unit> {
+    override suspend fun reportPost(postId: String, reason: io.pnut.gamma.domain.entity.ReportReason): PnutResponse<Unit> {
         TODO("not implemented")
     }
 
-    override fun createStarPostSync(postId: String): PnutResponse<Post> {
+    override suspend fun createStarPostSync(postId: String): PnutResponse<Post> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun deleteStarPostSync(postId: String): PnutResponse<Post> {
+    override suspend fun deleteStarPostSync(postId: String): PnutResponse<Post> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun createRepostSync(postId: String): PnutResponse<Post> {
+    override suspend fun createRepostSync(postId: String): PnutResponse<Post> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun deleteRepostSync(postId: String): PnutResponse<Post> {
+    override suspend fun deleteRepostSync(postId: String): PnutResponse<Post> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -392,7 +392,7 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun createFile(content: RequestBody, fileBody: FileBody): PnutResponse<File> {
+    override suspend fun createFile(content: RequestBody, fileBody: FileBody): PnutResponse<File> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -401,7 +401,7 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         // TODO: service mock?
     }
 
-    override fun createPoll(pollPostBody: PollPostBody): PnutResponse<Poll> {
+    override suspend fun createPoll(pollPostBody: PollPostBody): PnutResponse<Poll> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

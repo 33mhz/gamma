@@ -3,6 +3,7 @@ import java.io.FileInputStream
 import java.util.*
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+val hasGoogleServices = file("google-services.json").exists()
 
 plugins {
   id("com.android.application")
@@ -172,7 +173,11 @@ dependencies {
 
   implementation("com.google.android.gms:play-services-oss-licenses:17.5.1")
 
-  implementation(platform("com.google.firebase:firebase-bom:34.17.0"))
+  if (hasGoogleServices) {
+    implementation(platform("com.google.firebase:firebase-bom:34.17.0"))
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
+  }
 
   testImplementation("junit:junit:4.13.2")
   testImplementation("com.google.truth:truth:1.4.5")
@@ -206,7 +211,7 @@ dependencies {
   implementation("androidx.startup:startup-runtime:1.2.0")
 }
 
-if (file("google-services.json").exists()) {
+if (hasGoogleServices) {
   pluginManager.apply("com.google.gms.google-services")
-  pluginManager.apply("com.google.firebase:firebase-crashlytics")
+  pluginManager.apply("com.google.firebase.crashlytics")
 }
