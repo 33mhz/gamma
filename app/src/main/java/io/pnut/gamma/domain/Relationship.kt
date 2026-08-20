@@ -10,9 +10,8 @@ enum class Relationship {
     companion object {
         fun getRelationship(user: User): Relationship {
             return when {
-                user.youFollow -> Follow
-                !user.youFollow -> UnFollow
                 user.youBlocked -> Block
+                user.youFollow -> Follow
                 else -> UnFollow
             }
         }

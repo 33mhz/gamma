@@ -45,6 +45,11 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
             )
             is ListEvent.Failure -> failure(it.t)
             is ListEvent.Initialized -> initialized()
+            is ListEvent.Clear -> adapter.clear()
+            is ListEvent.Filter<*> -> {
+                @Suppress("UNCHECKED_CAST")
+                adapter.removeItemsBy(it.predicate as (T) -> Boolean)
+            }
         }
     }
 
@@ -192,6 +197,8 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
 
         data class Failure(val t: Throwable) : ListEvent()
         object Initialized : ListEvent()
+        object Clear : ListEvent()
+        data class Filter<T : UniquePageable>(val predicate: (T) -> Boolean) : ListEvent()
     }
 
     abstract class BaseListViewModel<T : UniquePageable> : ViewModel() {
@@ -251,6 +258,25 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
         }
 
         open fun storeItems() {
+        }
+
+        fun clearItems() {
+            items.clear()
+            lastPagination = null
+            storeItems()
+            listEvent.postValue(ListEvent.Clear)
+        }
+
+        fun filterItems(predicate: (T) -> Boolean) {
+            val iterator = items.iterator()
+            while (iterator.hasNext()) {
+                val wrapper = iterator.next()
+                if (wrapper is PageableItemWrapper.Item && predicate(wrapper.item)) {
+                    iterator.remove()
+                }
+            }
+            storeItems()
+            listEvent.postValue(ListEvent.Filter(predicate))
         }
     }
 

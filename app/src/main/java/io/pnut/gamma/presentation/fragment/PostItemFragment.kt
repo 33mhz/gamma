@@ -43,6 +43,8 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.broadcast.PostReceiver
+import io.pnut.gamma.broadcast.RelationshipReceiver
+import io.pnut.gamma.domain.Relationship
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.Poll
 import io.pnut.gamma.domain.entity.PollLikeValue
@@ -158,7 +160,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 
     override fun onReportPostReceive() {}
 
-    private val receiverManager by lazy {
+    protected val receiverManager by lazy {
         activity?.let { LocalBroadcastManager.getInstance(it.applicationContext) }
     }
 
@@ -1031,18 +1033,44 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         }
     }
 
-//    override fun onRefresh() {
-//        viewModel.loadNewPosts()
-//    }
+    //    override fun onRefresh() {
+    //        viewModel.loadNewPosts()
+    //    }
 
     @AndroidEntryPoint
-    class HomeStream : PostItemFragment() {
+    class HomeStream : PostItemFragment(), RelationshipReceiver.Callback {
         override val streamType = StreamType.Home
         override val generalPostParam: GeneralPostParam by lazy {
             GeneralPostParam(
                 includeDeleted = false,
                 includeDirectedPosts = !preferenceRepository.hideDirectedPosts
             )
+        }
+
+        private val relationshipReceiver by lazy {
+            RelationshipReceiver(this)
+        }
+
+        override fun onAttach(context: Context) {
+            super.onAttach(context)
+            receiverManager?.registerReceiver(
+                relationshipReceiver,
+                RelationshipReceiver.getIntentFilter()
+            )
+        }
+
+        override fun onDetach() {
+            super.onDetach()
+            receiverManager?.unregisterReceiver(relationshipReceiver)
+        }
+
+        override fun onRelationshipChanged(userId: String?, relationship: Relationship?) {
+            if (relationship == Relationship.UnFollow || relationship == Relationship.Block || relationship == Relationship.Mute) {
+                viewModel.filterItems { it.user?.id == userId }
+            } else if (relationship == Relationship.Follow || relationship == Relationship.UnMute) {
+                viewModel.clearItems()
+                viewModel.loadNewItems()
+            }
         }
     }
 

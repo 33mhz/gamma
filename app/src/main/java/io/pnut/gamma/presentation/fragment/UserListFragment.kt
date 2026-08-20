@@ -157,8 +157,11 @@ abstract class UserListFragment : BaseListFragment<User, UserViewHolder>(),
                     )
                 }.onSuccess {
                     updateUser.postValue(it.res.data)
-                    if (relationship == Relationship.Follow || relationship == Relationship.UnFollow) {
-                        RelationshipReceiver.broadcast(app)
+                    if (relationship == Relationship.Follow || relationship == Relationship.UnFollow ||
+                        relationship == Relationship.Block || relationship == Relationship.Mute ||
+                        relationship == Relationship.UnMute
+                    ) {
+                        RelationshipReceiver.broadcast(app, targetUser.id, relationship)
                     }
                 }
             }

@@ -215,6 +215,22 @@ class BaseListRecyclerViewAdapter<T : UniquePageable, V : RecyclerView.ViewHolde
         submitList(ArrayList(options.itemList))
     }
 
+    fun clear() {
+        options.itemList.clear()
+        submitList(ArrayList())
+    }
+
+    fun removeItemsBy(predicate: (T) -> Boolean) {
+        val iterator = options.itemList.iterator()
+        while (iterator.hasNext()) {
+            val wrapper = iterator.next()
+            if (wrapper is PageableItemWrapper.Item && predicate(wrapper.item)) {
+                iterator.remove()
+            }
+        }
+        submitList(ArrayList(options.itemList))
+    }
+
     fun removeItem(item: PageableItemWrapper<T>) {
         val index = options.itemList.indexOf(item)
         if (index < 0) return

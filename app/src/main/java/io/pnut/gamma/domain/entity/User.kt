@@ -74,11 +74,10 @@ data class User(
     val relationshipTextRes: Int?
         get() = me.takeIf { !it }.let {
             when {
-                youFollow -> R.string.following
-                !youFollow -> R.string.follow
                 youBlocked -> R.string.blocked
                 youMuted -> R.string.muted
-                else -> null
+                youFollow -> R.string.following
+                else -> R.string.follow
             }
         }
 

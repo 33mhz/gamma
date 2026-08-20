@@ -25,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.broadcast.ErrorReceiver
 import io.pnut.gamma.broadcast.PostReceiver
 import io.pnut.gamma.broadcast.RelationshipReceiver
+import io.pnut.gamma.domain.Relationship
 import io.pnut.gamma.databinding.AccountListBinding
 import io.pnut.gamma.databinding.ActivityMainBinding
 import io.pnut.gamma.databinding.NavigationDrawerHeaderBinding
@@ -71,7 +72,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         Snackbar.make(binding.coordinatorLayout, message, Snackbar.LENGTH_LONG).showAsError()
     }
 
-    override fun onRelationshipChanged() {
+    override fun onRelationshipChanged(userId: String?, relationship: Relationship?) {
         viewModel.refresh()
     }
 

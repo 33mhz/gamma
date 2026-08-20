@@ -494,12 +494,14 @@ class ProfileFragment : BaseFragment() {
         }
 
         fun mainAction() {
+            val user = user.value ?: return
             when {
-                user.value?.me == true -> {
+                user.me -> {
                     event.value = Event.EditProfile
                 }
-                user.value?.youFollow == false -> follow()
-                else -> unfollow()
+                user.youBlocked -> toggleBlock()
+                user.youFollow -> unfollow()
+                else -> follow()
             }
         }
 
@@ -534,9 +536,13 @@ class ProfileFragment : BaseFragment() {
                         )
                     )
                 }.onSuccess {
-                    user.postValue(it.res.data)
-                    if (relationship == Relationship.Follow || relationship == Relationship.UnFollow) {
-                        RelationshipReceiver.broadcast(app)
+                    val updatedUser = it.res.data
+                    user.postValue(updatedUser)
+                    if (relationship == Relationship.Follow || relationship == Relationship.UnFollow ||
+                        relationship == Relationship.Block || relationship == Relationship.Mute ||
+                        relationship == Relationship.UnMute
+                    ) {
+                        RelationshipReceiver.broadcast(app, updatedUser.id, relationship)
                     }
                 }
                 loading.postValue(false)
