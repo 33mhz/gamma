@@ -207,6 +207,20 @@
                 android:scaleType="center"
                 android:src="@drawable/ic_forum_black_24dp"
                 app:tint="@android:color/white" />
+
+            <ImageButton
+                android:id="@+id/broadcastButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/broadcast"
+                android:foreground="?attr/selectableItemBackground"
+                android:scaleType="center"
+                android:src="@drawable/ic_public_black_24dp"
+                android:visibility="gone"
+                app:tint="?colorPrimary"
+                tools:visibility="visible" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

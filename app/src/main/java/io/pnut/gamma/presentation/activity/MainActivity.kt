@@ -488,7 +488,8 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         }
 
         if (fragment is ChannelMessagesFragment) {
-            val intent = ComposeMessageActivity.newIntent(this, channelId = fragment.channelId, channelTitle = fragment.title)
+            val channel = (fragment.viewModel as? ChannelMessagesFragment.ChannelMessagesViewModel)?.currentChannel?.value
+            val intent = ComposeMessageActivity.newIntent(this, channelId = fragment.channelId, channelTitle = fragment.title, channel = channel)
             val options = ActivityOptions.makeSceneTransitionAnimation(this, binding.fab, getString((R.string.shared_element_compose)))
             startActivity(intent, options.toBundle())
             return

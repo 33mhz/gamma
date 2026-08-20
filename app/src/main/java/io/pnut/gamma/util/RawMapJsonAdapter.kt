@@ -2,6 +2,7 @@ package io.pnut.gamma.util
 
 import com.squareup.moshi.*
 import io.pnut.gamma.domain.entity.raw.*
+import io.pnut.gamma.domain.entity.raw.Broadcast
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
@@ -28,7 +29,8 @@ class RawMapJsonAdapterFactory : JsonAdapter.Factory {
             ChannelInvite.TYPE to ChannelInvite::class.java,
             ChatSettings.TYPE to ChatSettings::class.java,
             CrossPost.TYPE to CrossPost::class.java,
-            Language.TYPE to Language::class.java
+            Language.TYPE to Language::class.java,
+            Broadcast.TYPE to Broadcast::class.java
         )
 
         override fun fromJson(reader: JsonReader): Map<String, List<RawValue>> {

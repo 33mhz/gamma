@@ -34,7 +34,13 @@ import io.pnut.gamma.domain.repository.IPreferenceRepository
 import io.pnut.gamma.presentation.adapter.UserSuggestionAdapter
 import io.pnut.gamma.presentation.util.MentionViewModelDelegate
 import io.pnut.gamma.presentation.adapter.ComposeThumbnailAdapter
+import io.pnut.gamma.domain.entity.Channel
 import io.pnut.gamma.domain.entity.Message
+import io.pnut.gamma.domain.usecases.PostUseCase
+import io.pnut.gamma.domain.usecases.GetChannelUseCase
+import io.pnut.gamma.domain.entity.raw.Broadcast
+import io.pnut.gamma.domain.entity.raw.ChannelInvite
+import io.pnut.gamma.domain.model.io.PostInputData
 import io.pnut.gamma.domain.entity.PostBody
 import io.pnut.gamma.domain.entity.User
 import io.pnut.gamma.domain.entity.raw.OEmbed
@@ -116,7 +122,7 @@ class ComposeMessageFragment : BaseFragment(),
     }
 
     private enum class BundleKey {
-        ChannelId, ReplyTarget, InitialText, InitialPhoto, ChannelTitle
+        ChannelId, ReplyTarget, InitialText, InitialPhoto, ChannelTitle, Channel
     }
 
     private enum class DialogKey {
@@ -164,6 +170,7 @@ class ComposeMessageFragment : BaseFragment(),
 
     private val counterObserver = Observer<Int> {
         updateSendMenuItem()
+        updateBroadcastMenuItem()
     }
 
     private fun updateSendMenuItem() {
@@ -171,6 +178,16 @@ class ComposeMessageFragment : BaseFragment(),
         val count = viewModel.counter.value ?: 0
         val enabled = (0 <= count) && count < viewModel.maxLength
         menuItem.isEnabled = enabled
+    }
+
+    private fun updateBroadcastMenuItem() {
+        val menuItem = findMenuItemWithinRightMenu(R.id.menuBroadcast) ?: return
+        val canBroadcast = viewModel.canBroadcast.value == true
+        val broadcastEnabled = viewModel.broadcastEnabled.value == true
+        menuItem.isVisible = canBroadcast
+        menuItem.isEnabled = broadcastEnabled
+        menuItem.isChecked = viewModel.isBroadcastRequested.value == true
+        Util.setTintForCheckableMenuItem(requireContext(), menuItem)
     }
 
     private fun findMenuItemWithinRightMenu(menuId: Int): MenuItem? {
@@ -207,6 +224,7 @@ class ComposeMessageFragment : BaseFragment(),
         updateNsfwMenuItem()
         updateSpoilerMenuItem()
         updatePollMenuItem()
+        updateBroadcastMenuItem()
     }
 
     private val viewModel: ComposeMessageViewModel by lazy {
@@ -214,6 +232,7 @@ class ComposeMessageFragment : BaseFragment(),
             this,
             ComposeMessageViewModel.Factory(
                 channelId,
+                channel,
                 replyTarget,
                 mentionToMyself,
                 initialText,
@@ -221,6 +240,8 @@ class ComposeMessageFragment : BaseFragment(),
                 uploadFileUseCase,
                 createMessageUseCase,
                 createPollUseCase,
+                postUseCase,
+                getChannelUseCase,
                 cacheDao,
                 accountRepository,
                 preferenceRepository
@@ -230,6 +251,10 @@ class ComposeMessageFragment : BaseFragment(),
 
     private val channelId: String by lazy {
         arguments?.getString(BundleKey.ChannelId.name).orEmpty()
+    }
+
+    private val channel: Channel? by lazy {
+        arguments?.let { BundleCompat.getParcelable(it, BundleKey.Channel.name, Channel::class.java) }
     }
 
     private val replyTarget: Message? by lazy {
@@ -252,6 +277,12 @@ class ComposeMessageFragment : BaseFragment(),
 
     @Inject
     lateinit var createPollUseCase: CreatePollUseCase
+
+    @Inject
+    lateinit var postUseCase: PostUseCase
+
+    @Inject
+    lateinit var getChannelUseCase: GetChannelUseCase
 
     @Inject
     lateinit var cacheDao: CacheDao
@@ -382,6 +413,15 @@ class ComposeMessageFragment : BaseFragment(),
 
         viewModel.loading.observe(viewLifecycleOwner, loadingObserver)
         viewModel.status.observe(viewLifecycleOwner, statusObserver)
+        viewModel.canBroadcast.observe(viewLifecycleOwner) {
+            updateBroadcastMenuItem()
+        }
+        viewModel.broadcastEnabled.observe(viewLifecycleOwner) {
+            updateBroadcastMenuItem()
+        }
+        viewModel.isBroadcastRequested.observe(viewLifecycleOwner) {
+            updateBroadcastMenuItem()
+        }
 
         adapter = ComposeThumbnailAdapter(viewModel.media.toMutableList(), thumbnailAdapterListener)
         viewModel.previewAttachmentsVisibility.observe(viewLifecycleOwner) {
@@ -494,8 +534,16 @@ class ComposeMessageFragment : BaseFragment(),
             R.id.menuPost -> send()
             R.id.menuSpoiler -> setSpoiler()
             R.id.menuPoll -> enablePoll()
+            R.id.menuBroadcast -> toggleBroadcast(item)
         }
         return true
+    }
+
+    private fun toggleBroadcast(item: MenuItem) {
+        val nextValue = !item.isChecked
+        item.isChecked = nextValue
+        Util.setTintForCheckableMenuItem(requireContext(), item)
+        viewModel.isBroadcastRequested.value = nextValue
     }
 
     private fun enablePoll() {
@@ -551,6 +599,7 @@ class ComposeMessageFragment : BaseFragment(),
 
     class ComposeMessageViewModel(
         private val channelId: String,
+        channelArg: Channel?,
         replyTargetArg: Message?,
         mentionToMyself: Boolean,
         initialText: String? = null,
@@ -558,6 +607,8 @@ class ComposeMessageFragment : BaseFragment(),
         private val uploadFileUseCase: UploadFileUseCase,
         private val createMessageUseCase: CreateMessageUseCase,
         private val createPollUseCase: CreatePollUseCase,
+        private val postUseCase: PostUseCase,
+        private val getChannelUseCase: GetChannelUseCase,
         cacheDao: CacheDao,
         accountRepository: IAccountRepository,
         preferenceRepository: IPreferenceRepository
@@ -594,6 +645,18 @@ class ComposeMessageFragment : BaseFragment(),
             maxLength - text.codePointCount(0, text.length)
         }
         val counterStr: LiveData<String> = counter.map { it.toString() }
+
+        val channel = MutableLiveData<Channel?>().apply { value = channelArg }
+        val canBroadcast: LiveData<Boolean> = channel.map {
+            it != null && it.type != io.pnut.gamma.domain.model.ChannelType.PM.value &&
+                    (it.acl.read.public || it.acl.read.anyUser)
+        }
+        val isBroadcastRequested = MutableLiveData<Boolean>().apply { value = false }
+        val broadcastEnabled: LiveData<Boolean> = text.map {
+            val length = it?.codePointCount(0, it.length) ?: 0
+            length <= Constants.MAX_POST_TEXT_LENGTH
+        }
+
         val previewAttachmentsVisibility = MutableLiveData<Int>().apply { value = View.GONE }
         val computedInitialText by lazy {
             val replyTargetUserUsername = replyTargetArg?.username
@@ -610,6 +673,19 @@ class ComposeMessageFragment : BaseFragment(),
 
         init {
             text.value = computedInitialText
+            if (channelArg == null) {
+                fetchChannel()
+            }
+        }
+
+        private fun fetchChannel() {
+            viewModelScope.launch {
+                runCatching {
+                    getChannelUseCase.run(channelId)
+                }.onSuccess {
+                    channel.value = it.data
+                }
+            }
         }
 
         fun showAccountList() = event.emit((Event.ShowAccountList))
@@ -617,6 +693,7 @@ class ComposeMessageFragment : BaseFragment(),
         fun sendMessage(context: Context, adapterItems: List<UriInfo>, pollPostBody: PollPostBody?) {
             val text = text.value ?: return
             val isNsfw = nsfw.value ?: false
+            val broadcast = isBroadcastRequested.value == true
 
             viewModelScope.launch {
                 loading.value = true
@@ -661,6 +738,19 @@ class ComposeMessageFragment : BaseFragment(),
 
                     replacementFileRawList.forEach {
                         raw.getOrPut(OEmbed.TYPE) { mutableListOf() }.add(it)
+                    }
+
+                    if (broadcast) {
+                        status.value = context.getString(R.string.creating_post)
+                        val postRaw = raw.toMutableMap()
+                        postRaw.getOrPut(ChannelInvite.TYPE) { mutableListOf() }.add(ChannelInvite(channelId, null))
+                        val postBody = PostBody(text, isNsfw = isNsfw, raw = postRaw.toMap())
+                        val postRes = withContext(Dispatchers.IO) {
+                            postUseCase.run(PostInputData(postBody, currentUserIdLiveData.value.orEmpty()))
+                        }
+                        
+                        val broadcastItem = Broadcast(postRes.res.data.id, "https://posts.pnut.io/${postRes.res.data.id}")
+                        raw.getOrPut(Broadcast.TYPE) { mutableListOf() }.add(broadcastItem)
                     }
 
                     val messageBody = PostBody(text, replyTarget.value?.id, isNsfw = isNsfw, raw = raw.toMap())
@@ -713,6 +803,7 @@ class ComposeMessageFragment : BaseFragment(),
 
         class Factory(
             private val channelId: String,
+            private val channel: Channel?,
             private val replyTarget: Message?,
             private val mentionToMyself: Boolean,
             private val initialText: String? = null,
@@ -720,6 +811,8 @@ class ComposeMessageFragment : BaseFragment(),
             private val uploadFileUseCase: UploadFileUseCase,
             private val createMessageUseCase: CreateMessageUseCase,
             private val createPollUseCase: CreatePollUseCase,
+            private val postUseCase: PostUseCase,
+            private val getChannelUseCase: GetChannelUseCase,
             private val cacheDao: CacheDao,
             private val accountRepository: IAccountRepository,
             private val preferenceRepository: IPreferenceRepository
@@ -729,6 +822,7 @@ class ComposeMessageFragment : BaseFragment(),
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return ComposeMessageViewModel(
                     channelId,
+                    channel,
                     replyTarget,
                     mentionToMyself,
                     initialText,
@@ -736,6 +830,8 @@ class ComposeMessageFragment : BaseFragment(),
                     uploadFileUseCase,
                     createMessageUseCase,
                     createPollUseCase,
+                    postUseCase,
+                    getChannelUseCase,
                     cacheDao,
                     accountRepository,
                     preferenceRepository
@@ -750,7 +846,8 @@ class ComposeMessageFragment : BaseFragment(),
             initialText: String? = null,
             initialPhoto: ArrayList<UriInfo>? = null,
             replyTarget: Message? = null,
-            channelTitle: String? = null
+            channelTitle: String? = null,
+            channel: Channel? = null
         ) = ComposeMessageFragment().apply {
             arguments = Bundle().apply {
                 putString(BundleKey.ChannelId.name, channelId)
@@ -758,6 +855,7 @@ class ComposeMessageFragment : BaseFragment(),
                 putParcelableArrayList(BundleKey.InitialPhoto.name, initialPhoto)
                 putParcelable(BundleKey.ReplyTarget.name, replyTarget)
                 putString(BundleKey.ChannelTitle.name, channelTitle)
+                putParcelable(BundleKey.Channel.name, channel)
             }
         }
     }

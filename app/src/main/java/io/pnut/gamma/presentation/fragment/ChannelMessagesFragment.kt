@@ -1,5 +1,6 @@
 package io.pnut.gamma.presentation.fragment
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.MutableLiveData
@@ -14,18 +15,23 @@ import io.pnut.gamma.databinding.ListWithToolbarBinding
 import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.User
+import io.pnut.gamma.domain.entity.raw.Broadcast
 import io.pnut.gamma.domain.entity.raw.OEmbed
 import androidx.lifecycle.lifecycleScope
 import io.pnut.gamma.domain.model.PageableItemWrapper
 import io.pnut.gamma.presentation.activity.ComposeMessageActivity
 import io.pnut.gamma.domain.model.ThumbAndFull
+import io.pnut.gamma.domain.model.params.composed.GetPostsParam
+import io.pnut.gamma.domain.model.StreamType
 import io.pnut.gamma.domain.model.io.GetMessagesInputData
+import io.pnut.gamma.domain.model.io.GetPostInputData
 import io.pnut.gamma.domain.model.params.single.PaginationParam
 import io.pnut.gamma.domain.repository.IAccountRepository
 import io.pnut.gamma.domain.entity.Channel
 import io.pnut.gamma.domain.usecases.DeleteMessageUseCase
 import io.pnut.gamma.domain.usecases.GetChannelUseCase
 import io.pnut.gamma.domain.usecases.GetMessagesUseCase
+import io.pnut.gamma.domain.usecases.GetPostUseCase
 import io.pnut.gamma.presentation.activity.PhotoViewActivity
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
 import io.pnut.gamma.presentation.adapter.MessageViewHolder
@@ -89,6 +95,9 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
 
     @Inject
     lateinit var deleteMessageUseCase: DeleteMessageUseCase
+
+    @Inject
+    lateinit var getPostUseCase: GetPostUseCase
 
     @Inject
     lateinit var accountRepository: IAccountRepository
@@ -222,11 +231,19 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
             viewHolder.threadButton.setOnClickListener {
                 showThread(item)
             }
+            
+            val broadcast = item.raw?.get(Broadcast.TYPE)?.firstOrNull() as? Broadcast
+            viewHolder.broadcastButton.visibility = getVisibility(broadcast != null)
+            viewHolder.broadcastButton.imageTintList = ColorStateList.valueOf(Util.getPrimaryColor(context))
+            viewHolder.broadcastButton.setOnClickListener {
+                broadcast?.let { showPostThread(it.id) }
+            }
         }
     }
 
     private fun showReplyCompose(message: Message) {
-        val intent = ComposeMessageActivity.newIntent(requireContext(), channelId = channelId, replyTarget = message)
+        val channel = (viewModel as? ChannelMessagesViewModel)?.currentChannel?.value
+        val intent = ComposeMessageActivity.newIntent(requireContext(), channelId = channelId, replyTarget = message, channel = channel)
         startActivity(intent)
     }
 
@@ -238,6 +255,19 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
     private fun showThread(message: Message) {
         val fragment = MessageThreadFragment.newInstance(channelId, message)
         addFragment(fragment, "MessageThread_${message.threadId}")
+    }
+
+    private fun showPostThread(postId: String) {
+        lifecycleScope.launch {
+            try {
+                val res = getPostUseCase.run(GetPostInputData(StreamType.Posts(listOf(postId)), GetPostsParam()))
+                res.res.data.firstOrNull()?.let { post ->
+                    val fragment = ThreadFragment.newInstance(post)
+                    addFragment(fragment, "Thread_$postId")
+                }
+            } catch (_: Exception) {
+            }
+        }
     }
 
     private fun getVisibility(b: Boolean): Int = if (b) View.VISIBLE else View.GONE

@@ -13,6 +13,7 @@ import com.google.android.material.transition.platform.MaterialArcMotion
 import com.google.android.material.transition.platform.MaterialContainerTransform
 import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import io.pnut.gamma.R
+import io.pnut.gamma.domain.entity.Channel
 import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.model.UriInfo
 import io.pnut.gamma.presentation.fragment.ComposeMessageFragment
@@ -34,7 +35,8 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, 
             initialText = intent.getStringExtra(IntentKey.InitialText.name),
             initialPhoto = IntentCompat.getParcelableArrayListExtra(intent, IntentKey.InitialPhoto.name, UriInfo::class.java),
             replyTarget = IntentCompat.getParcelableExtra(intent, IntentKey.ReplyTarget.name, Message::class.java),
-            channelTitle = intent.getStringExtra(IntentKey.ChannelTitle.name)
+            channelTitle = intent.getStringExtra(IntentKey.ChannelTitle.name),
+            channel = IntentCompat.getParcelableExtra(intent, IntentKey.Channel.name, Channel::class.java)
         )
     }
 
@@ -116,7 +118,7 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, 
     }
 
     private enum class IntentKey {
-        ChannelId, InitialText, InitialPhoto, ReplyTarget, IsNewPm, Usernames, ChannelTitle
+        ChannelId, InitialText, InitialPhoto, ReplyTarget, IsNewPm, Usernames, ChannelTitle, Channel
     }
 
     companion object {
@@ -126,13 +128,15 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, 
             initialText: String? = null,
             initialPhoto: ArrayList<UriInfo>? = null,
             replyTarget: Message? = null,
-            channelTitle: String? = null
+            channelTitle: String? = null,
+            channel: Channel? = null
         ) = Intent(context, ComposeMessageActivity::class.java).also {
             it.putExtra(IntentKey.ChannelId.name, channelId)
             it.putExtra(IntentKey.InitialText.name, initialText)
             it.putExtra(IntentKey.InitialPhoto.name, initialPhoto)
             it.putExtra(IntentKey.ReplyTarget.name, replyTarget)
             it.putExtra(IntentKey.ChannelTitle.name, channelTitle)
+            it.putExtra(IntentKey.Channel.name, channel)
         }
 
         fun newIntentForNewPm(context: Context, usernames: ArrayList<String>? = null) = Intent(context, ComposeMessageActivity::class.java).also {
