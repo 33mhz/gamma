@@ -167,6 +167,21 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
         viewHolder.itemView.alpha = if (isDeleted) 0.5f else 1f
 
         item.user?.let { user ->
+            viewHolder.userTypeIconImageView.apply {
+                when (user.type) {
+                    User.AccountType.BOT -> {
+                        visibility = View.VISIBLE
+                        setImageResource(R.drawable.ic_robot_24dp)
+                    }
+                    User.AccountType.FEED -> {
+                        visibility = View.VISIBLE
+                        setImageResource(R.drawable.ic_newspaper_24dp)
+                    }
+                    else -> {
+                        visibility = View.GONE
+                    }
+                }
+            }
             viewHolder.screenNameTextView.text = user.name
             viewHolder.handleNameTextView.text = context.getString(R.string.user_name_format, user.username)
             val avatarUrl = User.getAvatarUrl(user, User.AvatarSize.Small)

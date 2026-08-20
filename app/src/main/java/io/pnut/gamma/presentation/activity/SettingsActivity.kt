@@ -23,6 +23,7 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
 import com.google.android.gms.oss.licenses.v2.OssLicensesMenuActivity
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -245,6 +246,14 @@ class SettingsActivity : BaseActivity(),
                     }
                     true
                 }
+            }
+
+            val showAvatarPref = findPreference(R.string.pref_show_avatar_key) as? SwitchPreferenceCompat
+            val shapeOfAvatarPref = findPreference(R.string.pref_shape_of_avatar_key)
+            shapeOfAvatarPref?.isVisible = showAvatarPref?.isChecked == true
+            showAvatarPref?.setOnPreferenceChangeListener { _, newValue ->
+                shapeOfAvatarPref?.isVisible = newValue as Boolean
+                true
             }
         }
     }

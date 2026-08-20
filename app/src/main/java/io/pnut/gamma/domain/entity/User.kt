@@ -71,7 +71,7 @@ data class User(
     val me = followsYou && youFollow && !youCanFollow
 
     @IgnoredOnParcel
-    val relationshipTextRes: Int?
+    val relationshipTextRes: Int
         get() = me.takeIf { !it }.let {
             when {
                 youBlocked -> R.string.blocked

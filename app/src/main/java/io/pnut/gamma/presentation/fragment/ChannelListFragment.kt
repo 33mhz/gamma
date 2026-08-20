@@ -108,6 +108,21 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
         viewHolder.binding.descriptionTextView.visibility = if (description.isNullOrBlank()) View.GONE else View.VISIBLE
 
         val user = item.recentMessage?.user ?: item.user
+        viewHolder.binding.userTypeIconImageView.apply {
+            when (user?.type) {
+                User.AccountType.BOT -> {
+                    visibility = View.VISIBLE
+                    setImageResource(R.drawable.ic_robot_24dp)
+                }
+                User.AccountType.FEED -> {
+                    visibility = View.VISIBLE
+                    setImageResource(R.drawable.ic_newspaper_24dp)
+                }
+                else -> {
+                    visibility = View.GONE
+                }
+            }
+        }
         viewHolder.binding.messageAuthorHandleTextView.text = user?.username?.let { "@$it" }
         viewHolder.binding.messageAuthorNameTextView.text = user?.name
         val hasUser = user != null

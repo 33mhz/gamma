@@ -15,6 +15,7 @@ import io.pnut.gamma.presentation.view.LinkableTextView
 
 class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val avatarImageView: ImageView = itemView.findViewById(R.id.avatarImageView)
+    val userTypeIconImageView: ImageView = itemView.findViewById(R.id.userTypeIconImageView)
     val screenNameTextView: TextView = itemView.findViewById(R.id.screenNameTextView)
     val handleNameTextView: TextView = itemView.findViewById(R.id.handleNameTextView)
     val relativeTimeTextView: TextView = itemView.findViewById(R.id.relativeTimeTextView)

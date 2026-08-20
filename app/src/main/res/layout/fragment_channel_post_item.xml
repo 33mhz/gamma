@@ -82,11 +82,25 @@
                 tools:ignore="ContentDescription"
                 tools:src="@tools:sample/avatars" />
 
+            <ImageView
+                android:id="@+id/userTypeIconImageView"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_marginStart="@dimen/margin_half"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/messageAuthorHandleTextView"
+                app:layout_constraintStart_toEndOf="@+id/avatarImageView"
+                app:layout_constraintTop_toTopOf="@+id/messageAuthorHandleTextView"
+                app:tint="@color/colorGrayLight"
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/ic_robot_24dp"
+                tools:visibility="visible" />
+
             <TextView
                 android:id="@+id/messageAuthorHandleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_half"
+                android:layout_marginStart="@dimen/margin_quoter"
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
@@ -95,7 +109,8 @@
                 app:layout_constraintEnd_toStartOf="@+id/messageAuthorNameTextView"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintStart_toEndOf="@+id/avatarImageView"
+                app:layout_constraintStart_toEndOf="@+id/userTypeIconImageView"
+                app:layout_goneMarginStart="@dimen/margin_half"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="\@username" />
 
@@ -130,7 +145,9 @@
                 android:maxLines="2"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/messageAuthorHandleTextView"
+                app:layout_constraintStart_toEndOf="@+id/avatarImageView"
+                app:layout_goneMarginStart="@dimen/margin_half"
+                android:layout_marginStart="@dimen/margin_half"
                 app:layout_constraintTop_toBottomOf="@+id/messageAuthorHandleTextView"
                 tools:text="@tools:sample/lorem" />
 

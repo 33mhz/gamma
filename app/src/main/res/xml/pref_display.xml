@@ -4,6 +4,10 @@
     android:key="@string/pref_display_key"
     android:title="@string/display">
     <PreferenceCategory android:title="@string/pref_header_general">
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:key="@string/pref_show_avatar_key"
+            app:title="@string/pref_show_avatar_title" />
         <DropDownPreference
             app:defaultValue="@string/pref_shape_of_avatar_key_default_value"
             app:entries="@array/shape_of_avatar"

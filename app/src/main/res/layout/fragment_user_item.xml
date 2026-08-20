@@ -30,15 +30,30 @@
             tools:src="@tools:sample/avatars"
             tools:ignore="ContentDescription" />
 
+        <ImageView
+            android:id="@+id/userTypeIconImageView"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="@dimen/margin_regular"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/screenNameTextView"
+            app:layout_constraintStart_toEndOf="@id/avatarImageView"
+            app:layout_constraintTop_toTopOf="@id/screenNameTextView"
+            app:tint="@color/colorGrayLight"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_robot_24dp"
+            tools:visibility="visible" />
+
         <TextView
             android:id="@+id/screenNameTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_regular"
+            android:layout_marginStart="@dimen/margin_quoter"
             app:layout_constraintEnd_toStartOf="@id/actionButton"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-            app:layout_constraintStart_toEndOf="@+id/avatarImageView"
+            app:layout_constraintStart_toEndOf="@+id/userTypeIconImageView"
             app:layout_constraintTop_toBottomOf="@id/relationshipTextView"
+            app:layout_goneMarginStart="@dimen/margin_regular"
             tools:text="@tools:sample/first_names" />
 
         <TextView
@@ -46,7 +61,8 @@
             android:layout_width="0dp"
             app:layout_constraintEnd_toStartOf="@id/actionButton"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@+id/screenNameTextView"
+            android:layout_marginStart="@dimen/margin_regular"
+            app:layout_constraintStart_toEndOf="@id/avatarImageView"
             app:layout_constraintTop_toBottomOf="@id/screenNameTextView"
             tools:text="@tools:sample/full_names" />
 
@@ -58,7 +74,6 @@
             android:text="@string/follows_you"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
             app:layout_constraintStart_toEndOf="@id/avatarImageView"
-            app:layout_constraintTop_toBottomOf="@id/screenNameTextView"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.button.MaterialButton
@@ -78,10 +93,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_quoter"
+            android:layout_marginStart="@dimen/margin_regular"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/screenNameTextView"
+            app:layout_constraintStart_toEndOf="@+id/avatarImageView"
             app:layout_constraintTop_toBottomOf="@+id/handleNameTextView"
             tools:text="@tools:sample/lorem[10]" />
     </androidx.constraintlayout.widget.ConstraintLayout>

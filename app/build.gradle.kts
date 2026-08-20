@@ -60,7 +60,7 @@ android {
     minSdk = 30
     targetSdk = 37
     versionCode = currentVersionCode
-    versionName = "0.9.3"
+    versionName = "0.10.0"
     testInstrumentationRunner = "io.pnut.gamma.HiltTestRunner"
   }
   buildTypes {

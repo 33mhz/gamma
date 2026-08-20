@@ -401,6 +401,22 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
     ) {
         val context = viewHolder.itemView.context
         val isDeleted = item.isDeleted == true
+        val user = item.mainPost.user
+        viewHolder.userTypeIconImageView.apply {
+            when (user?.type) {
+                User.AccountType.BOT -> {
+                    visibility = View.VISIBLE
+                    setImageResource(R.drawable.ic_robot_24dp)
+                }
+                User.AccountType.FEED -> {
+                    visibility = View.VISIBLE
+                    setImageResource(R.drawable.ic_newspaper_24dp)
+                }
+                else -> {
+                    visibility = View.GONE
+                }
+            }
+        }
         viewHolder.postItemForegroundView.alpha = if (isDeleted) 0.5f else 1f
         val bgColor =
             if (isDeleted) context.getColor(R.color.colorWindowBackground) else Util.getPrimaryColor(
@@ -830,6 +846,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             }
         }
         val screenNameTextView: TextView = itemView.findViewById(R.id.screenNameTextView)
+        val userTypeIconImageView: ImageView = itemView.findViewById(R.id.userTypeIconImageView)
         val bodyTextView: LinkableTextView = itemView.findViewById(R.id.bodyTextView)
         val dateTextView: TextView = itemView.findViewById(R.id.relativeTimeTextView)
         val handleNameTextView: TextView = itemView.findViewById(R.id.handleNameTextView)

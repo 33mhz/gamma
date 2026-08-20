@@ -13,6 +13,7 @@ interface IPreferenceRepository {
     val darkMode: ThemeColorUtil.DarkMode
     val darkModeStr: String
     val avatarSwipe: Boolean
+    val showAvatar: Boolean
     val loadingSize: Int
     val thresholdOfAutoPager: Int
     val unifiedStream: Boolean

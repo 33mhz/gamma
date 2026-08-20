@@ -20,13 +20,19 @@ import io.pnut.gamma.domain.model.preference.ShapeOfAvatar
 object BindingUtil {
     @JvmStatic
     fun glideAvatarSrc(view: ImageView, url: String?) {
+        val preferenceRepository = (view.context.applicationContext as GammaApplication).preferenceRepository
+        if (!preferenceRepository.showAvatar) {
+            view.visibility = View.GONE
+            return
+        }
+
+        view.visibility = View.VISIBLE
         if (url.isNullOrEmpty()) {
             view.setImageDrawable(null)
             return
         }
 
         val currentDrawable = view.drawable
-        val preferenceRepository = (view.context.applicationContext as GammaApplication).preferenceRepository
         val shape = preferenceRepository.shapeOfAvatar
 
         if (view is ShapeableImageView) {

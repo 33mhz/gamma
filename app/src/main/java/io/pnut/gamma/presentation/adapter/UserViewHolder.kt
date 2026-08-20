@@ -21,6 +21,7 @@ class UserViewHolder(mView: View) :
     private val binding = FragmentUserItemBinding.bind(mView)
     private val avatarView: ImageView = binding.avatarImageView
     private val screenNameTextView: TextView = binding.screenNameTextView
+    private val userTypeIconImageView: ImageView = binding.userTypeIconImageView
     private val handleNameTextView: TextView = binding.handleNameTextView
     private val bodyTextView: LinkableTextView = binding.bodyTextView
     private val relationshipTextView: TextView = binding.relationshipTextView
@@ -34,6 +35,21 @@ class UserViewHolder(mView: View) :
 
     fun bind(user: User, listener: Callback) {
         BindingUtil.glideAvatarSrc(avatarView, user.content.avatarImage.url)
+        userTypeIconImageView.apply {
+            when (user.type) {
+                User.AccountType.BOT -> {
+                    visibility = View.VISIBLE
+                    setImageResource(R.drawable.ic_robot_24dp)
+                }
+                User.AccountType.FEED -> {
+                    visibility = View.VISIBLE
+                    setImageResource(R.drawable.ic_newspaper_24dp)
+                }
+                else -> {
+                    visibility = View.GONE
+                }
+            }
+        }
         screenNameTextView.text = user.username
         handleNameTextView.text = user.name
         bodyTextView.apply {

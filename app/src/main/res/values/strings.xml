@@ -305,6 +305,8 @@
     <string name="pref_hide_copy_mentions_title">Hide copy mentions</string>
     <string name="pref_hide_copy_mentions_summary">Copy mentions are prepended by /.</string>
     <string name="pref_shape_of_avatar_title">Avatar shape</string>
+    <string name="pref_show_avatar_title">Show avatars</string>
+    <string name="pref_show_avatar_key">show_avatar</string>
     <string name="pref_shape_of_avatar_key">shape_of_avatar</string>
     <string name="pref_shape_of_avatar_key_default_value">0</string>
     <string name="cache">Cache</string>
