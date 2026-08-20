@@ -24,7 +24,7 @@ class CameraDelegate(
 
     fun takePhoto() {
         val context = fragment.requireContext()
-        val photoFile = File(context.cacheDir, "camera_${System.currentTimeMillis()}.jpg")
+        val photoFile = File(context.cacheDir, "camera_${System.currentTimeMillis()}.jpg").canonicalFile
         val uri = FileProvider.getUriForFile(
             context,
             "io.pnut.gamma.fileprovider",
