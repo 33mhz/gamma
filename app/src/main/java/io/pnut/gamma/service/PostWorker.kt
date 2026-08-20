@@ -172,14 +172,14 @@ class PostWorker @AssistedInject constructor(
         }
         
         val responseIntent =
-            resultIntent.getOrDefault(ErrorIntent.createErrorIntent(resultIntent.exceptionOrNull()))
+            resultIntent.getOrElse { ErrorIntent.createErrorIntent(applicationContext, it) }
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(responseIntent)
         
         return Result.success()
     }
 
     private fun sendErrorBroadcast(t: Throwable): Result {
-        val intent = ErrorIntent.createErrorIntent(t)
+        val intent = ErrorIntent.createErrorIntent(applicationContext, t)
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
         return Result.failure()
     }

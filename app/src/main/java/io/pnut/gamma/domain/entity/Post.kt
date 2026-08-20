@@ -34,7 +34,7 @@ data class Post(
     @Json(name = "you_reposted") var youReposted: Boolean? = null,
     @Json(name = "pagination_id") override var paginationId: String? = null,
     @Json(name = "user_id") val rawUserId: String? = null,
-    @Json(name = "raw") var raw: Map<String, List<RawValue>>? = null,
+    var raw: Map<String, List<RawValue>>? = null,
     @Json(name = "bookmarked_by") val bookmarkedBy: List<User>? = null,
     @Json(name = "reposted_by") val repostedBy: List<User>? = null
 ) : UniquePageable, Parcelable {

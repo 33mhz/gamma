@@ -282,10 +282,7 @@ class ComposePostFragment : BaseFragment(),
             Event.ShowAccountList -> showAccountList()
             is Event.Success -> listener?.onFinish()
             is Event.Failed -> {
-                val message = when (val throwable = it.t) {
-                    is ErrorCollections -> throwable.getErrorMessage(requireContext())
-                    else -> throwable.localizedMessage ?: getString(R.string.communication_error)
-                }
+                val message = ErrorCollections.getErrorMessage(requireContext(), it.t)
                 com.google.android.material.snackbar.Snackbar.make(binding.root, message, com.google.android.material.snackbar.Snackbar.LENGTH_LONG).showAsError()
             }
         }

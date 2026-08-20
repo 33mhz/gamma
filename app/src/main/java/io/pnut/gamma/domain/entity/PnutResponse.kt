@@ -8,6 +8,7 @@ data class PnutResponse<T>(val meta: Meta, val data: T) {
     @JsonClass(generateAdapter = true)
     data class Meta(
         val code: Int,
+        @Json(name = "error_message") val errorMessage: String? = null,
         @Json(name = "min_id") val minId: String? = null,
         @Json(name = "max_id") val maxId: String? = null,
         val more: Boolean? = null,

@@ -28,7 +28,7 @@ data class Message(
     @Json(name = "is_nsfw") val isNsfw: Boolean? = false,
     val content: BaseContent?,
     @Json(name = "pagination_id") override var paginationId: String? = null,
-    @Json(name = "raw") var raw: Map<String, List<RawValue>>? = null
+    var raw: Map<String, List<RawValue>>? = null
 
 ) : Parcelable, UniquePageable {
     @IgnoredOnParcel

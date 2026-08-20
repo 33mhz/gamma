@@ -127,10 +127,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
     }
 
     private fun showErrorSnackBar(t: Throwable) {
-        val message: String = when (t) {
-            is ErrorCollections.CommunicationError -> t.getMessage(context)
-            else -> t.localizedMessage
-        }
+        val message: String = ErrorCollections.getErrorMessage(requireContext(), t)
         Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).showAsError()
     }
 

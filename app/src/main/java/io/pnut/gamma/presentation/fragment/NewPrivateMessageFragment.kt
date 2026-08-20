@@ -146,11 +146,7 @@ class NewPrivateMessageFragment : BaseFragment(),
                     navigateToChannel(event.channelId, event.title, ArrayList(event.usernames))
                 }
                 is NewPrivateMessageViewModel.Event.Error -> {
-                    val message = if (event.throwable is ErrorCollections) {
-                        event.throwable.getErrorMessage(requireContext())
-                    } else {
-                        event.throwable.message ?: "Error"
-                    }
+                    val message = ErrorCollections.getErrorMessage(requireContext(), event.throwable)
                     binding.usernamesLayout.error = message
                 }
             }
