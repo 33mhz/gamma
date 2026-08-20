@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -203,7 +202,7 @@ class NewPrivateMessageFragment : BaseFragment(),
     private fun onMenuItemClick(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.menuTakePhoto -> cameraDelegate.takePhoto()
-            R.id.menuInsertPhoto -> pickMultipleMediaLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            R.id.menuInsertPhoto -> pickMultipleMediaLauncher.launch(Constants.SUPPORTED_IMAGE_TYPES)
             R.id.menuPoll -> viewModel.enablePoll.value = viewModel.enablePoll.value == false
             R.id.menuSpoiler -> setSpoiler()
             R.id.menuNsfw -> toggleNSFW()
@@ -279,7 +278,7 @@ class NewPrivateMessageFragment : BaseFragment(),
         }
     }
 
-    private val pickMultipleMediaLauncher = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
+    private val pickMultipleMediaLauncher = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
         if (uris.isNotEmpty()) {
             adapter.addAll(uris.map { UriInfo(it) })
             binding.thumbnailRecyclerView.visibility = View.VISIBLE

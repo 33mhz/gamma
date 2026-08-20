@@ -11,9 +11,7 @@ import android.view.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.IntentCompat
 import androidx.core.widget.doAfterTextChanged
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -22,6 +20,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
 import kotlinx.coroutines.*
 import io.pnut.gamma.R
+import io.pnut.gamma.util.Constants
 import io.pnut.gamma.databinding.FragmentEditProfileBinding
 import io.pnut.gamma.domain.entity.User
 import io.pnut.gamma.domain.model.io.GetProfileInputData
@@ -148,11 +147,11 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
     }
 
     private fun changeCover() {
-        pickCoverMediaLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+        pickCoverMediaLauncher.launch(Constants.SUPPORTED_IMAGE_TYPES)
     }
 
     private fun changeAvatar() {
-        pickAvatarMediaLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+        pickAvatarMediaLauncher.launch(Constants.SUPPORTED_IMAGE_TYPES)
     }
 
     private val savingObserver = Observer<Boolean> {
@@ -217,14 +216,14 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
         }
     }
 
-    private val pickCoverMediaLauncher = registerForActivityResult(PickVisualMedia()) { uri ->
+    private val pickCoverMediaLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
             val newIntent = EditPhotoActivity.newIntent(requireContext(), uri)
             coverLauncher.launch(newIntent)
         }
     }
 
-    private val pickAvatarMediaLauncher = registerForActivityResult(PickVisualMedia()) { uri ->
+    private val pickAvatarMediaLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
             val newIntent = EditPhotoActivity.newIntentSquareMode(requireContext(), uri)
             avatarLauncher.launch(newIntent)

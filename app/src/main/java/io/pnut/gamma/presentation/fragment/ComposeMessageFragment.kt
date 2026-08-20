@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.BundleCompat
 import androidx.core.view.ViewCompat
@@ -393,7 +392,7 @@ class ComposeMessageFragment : BaseFragment(),
         }
     }
 
-    private val pickMultipleMediaLauncher = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
+    private val pickMultipleMediaLauncher = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
         if (uris.isNotEmpty()) {
             adapter.addAll(uris.map { UriInfo(it) })
             viewModel.previewAttachmentsVisibility.value = View.VISIBLE
@@ -529,7 +528,7 @@ class ComposeMessageFragment : BaseFragment(),
         when (item.itemId) {
             R.id.home -> cancelToCompose()
             R.id.menuTakePhoto -> cameraDelegate.takePhoto()
-            R.id.menuInsertPhoto -> pickMultipleMediaLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            R.id.menuInsertPhoto -> pickMultipleMediaLauncher.launch(Constants.SUPPORTED_IMAGE_TYPES)
             R.id.menuNsfw -> toggleNSFW(item)
             R.id.menuPost -> send()
             R.id.menuSpoiler -> setSpoiler()

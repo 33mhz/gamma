@@ -15,9 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -375,7 +373,7 @@ class ComposePostFragment : BaseFragment(),
         }
     }
 
-    private val pickMultipleMediaLauncher = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
+    private val pickMultipleMediaLauncher = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
         if (uris.isNotEmpty()) {
             adapter.addAll(uris.map { UriInfo(it) })
             viewModel.previewAttachmentsVisibility.value = View.VISIBLE
@@ -504,7 +502,7 @@ class ComposePostFragment : BaseFragment(),
         when (item.itemId) {
             R.id.home -> cancelToCompose()
             R.id.menuTakePhoto -> cameraDelegate.takePhoto()
-            R.id.menuInsertPhoto -> pickMultipleMediaLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+            R.id.menuInsertPhoto -> pickMultipleMediaLauncher.launch(Constants.SUPPORTED_IMAGE_TYPES)
             R.id.menuNsfw -> toggleNSFW(item)
             R.id.menuPost -> send()
             R.id.menuLongPost -> composeLongPost()

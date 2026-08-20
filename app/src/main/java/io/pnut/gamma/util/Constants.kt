@@ -8,4 +8,5 @@ object Constants {
     fun unknownErrorException() = Exception(UNKNOWN_ERROR)
     const val API_BASE_URL = "https://api.pnut.io/v1/"
     const val PLAY_STORE_URL: String = "market://details?id=io.pnut.gamma"
+    val SUPPORTED_IMAGE_TYPES = arrayOf("image/jpeg", "image/png", "image/gif")
 }
