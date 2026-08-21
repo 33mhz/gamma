@@ -111,6 +111,13 @@ class ProfileFragment : BaseFragment() {
         viewModel.event.observe(this, eventObserver)
         viewModel.user.observe(this, userObserver)
         viewModel.fetchingUser.observe(this, fetchingUserObserve)
+
+        if (viewModel.user.value == null) {
+            arguments?.let { bundle ->
+                val user: User? = BundleCompat.getParcelable(bundle, BundleKey.User.name, User::class.java)
+                viewModel.user.value = user
+            }
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -124,10 +131,8 @@ class ProfileFragment : BaseFragment() {
             if (iconUrl != null && iconUrl.isNotBlank()) {
                 fixTransition(iconUrl)
             }
-            val user: User? = BundleCompat.getParcelable(bundle, BundleKey.User.name, User::class.java)
 //            val iconTransitionName = bundle.getString(BundleKey.IconTransitionName.name)
 //            binding.circleImageView.transitionName = iconTransitionName
-            viewModel.user.value = user
         }
 
         viewModel.user.observe(viewLifecycleOwner) {
@@ -415,10 +420,11 @@ class ProfileFragment : BaseFragment() {
                 else -> ""
             }
         }
-        val usernameWithAt: LiveData<String> = user.map { "@${it?.username}" }
+        val usernameWithAt: LiveData<String> = user.map { if (it?.username == null) "" else "@${it.username}" }
         val since: LiveData<CharSequence?> = user.map {
+            if (it == null) return@map ""
             val calendar = Calendar.getInstance()
-            if (it != null) calendar.time = it.createdAt
+            calendar.time = it.createdAt
             DateFormat.format("yyyy/MM/dd", calendar)
         }
         val relation: LiveData<Int> = user.map {
