@@ -199,6 +199,11 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
     private fun handlePostMoreMenu(menuItem: MenuItem) {
         val post = selectedPost ?: return
         when (menuItem.itemId) {
+            R.id.menuProfile -> {
+                val user = post.mainPost.user ?: return
+                val fragment = ProfileFragment.newInstance(user.id, user.getAvatarUrl(), user)
+                navigateTo(fragment, user.id)
+            }
             R.id.menuShare -> showShareMenu(post)
             R.id.menuReport -> showReportDialog(post)
         }
@@ -454,7 +459,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
                 ?: getString(R.string.this_post_has_deleted)
 
         val url = item.mainPost.user?.getAvatarUrl(User.AvatarSize.Large).orEmpty()
-        BindingUtil.glideAvatarSrc(viewHolder.avatarView, url)
+        BindingUtil.loadAvatar(viewHolder.avatarView, item.mainPost.user, User.AvatarSize.Large)
         viewHolder.avatarView.clipToOutline = true
         val iconTransition = getString(R.string.icon_transition)
         val iconTransitionName =

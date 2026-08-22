@@ -8,6 +8,11 @@
             app:defaultValue="true"
             app:key="@string/pref_show_avatar_key"
             app:title="@string/pref_show_avatar_title" />
+        <SwitchPreferenceCompat
+            app:defaultValue="@bool/pref_hide_feed_bot_avatar_default_value"
+            app:dependency="@string/pref_show_avatar_key"
+            app:key="@string/pref_hide_feed_bot_avatar_key"
+            app:title="@string/pref_hide_feed_bot_avatar_title" />
         <DropDownPreference
             app:defaultValue="@string/pref_shape_of_avatar_key_default_value"
             app:entries="@array/shape_of_avatar"

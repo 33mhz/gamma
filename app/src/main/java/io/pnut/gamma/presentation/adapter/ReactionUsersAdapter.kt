@@ -33,7 +33,7 @@ class ReactionUsersAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val user = reactionUsers[position]
-        BindingUtil.glideAvatarSrc(holder.avatarView, user.getAvatarUrl(User.AvatarSize.Normal))
+        BindingUtil.loadAvatar(holder.avatarView, user, User.AvatarSize.Normal)
         holder.avatarView.setOnClickListener {
             listener.onUserClick(user)
         }

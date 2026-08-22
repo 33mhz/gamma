@@ -81,7 +81,7 @@ data class User(
             }
         }
 
-    enum class AvatarSize(val size: Int) { Mini(24), Small(48), Normal(64), Large(96) }
+    enum class AvatarSize(val size: Int) { Mini(24), Small(48), Normal(64), Large(96), ExtraLarge(128) }
 
     fun getAvatarUrl(avatarSize: AvatarSize? = AvatarSize.Normal) = getAvatarUrl(this, avatarSize)
 

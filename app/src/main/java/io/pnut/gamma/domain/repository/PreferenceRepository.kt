@@ -3,6 +3,7 @@ package io.pnut.gamma.domain.repository
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import io.pnut.gamma.domain.entity.User
 import io.pnut.gamma.domain.model.preference.ShapeOfAvatar
 import io.pnut.gamma.presentation.util.ThemeColorUtil
 import io.pnut.gamma.R
@@ -68,6 +69,12 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
     override val showAvatar: Boolean
         get() = sharedPreferences.getBoolean(context.getString(R.string.pref_show_avatar_key), true)
 
+    override val hideFeedBotAvatar: Boolean
+        get() = sharedPreferences.getBoolean(
+            context.getString(R.string.pref_hide_feed_bot_avatar_key),
+            res.getBoolean(R.bool.pref_hide_feed_bot_avatar_default_value)
+        )
+
     override val loadingSize: Int
         get() = sharedPreferences.getInt(
             context.getString(R.string.pref_loading_size_key),
@@ -126,6 +133,14 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
             context.getString(R.string.pref_suggest_user_follows_key),
             true
         )
+
+    override fun shouldShowAvatar(userType: User.AccountType?, isStream: Boolean): Boolean {
+        if (!showAvatar) return false
+        if (isStream && hideFeedBotAvatar && (userType == User.AccountType.FEED || userType == User.AccountType.BOT)) {
+            return false
+        }
+        return true
+    }
 
     override fun hasExceededWelcomeFollowed(userId: String): Boolean {
         return sharedPreferences.getBoolean(

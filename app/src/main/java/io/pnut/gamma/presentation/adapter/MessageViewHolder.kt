@@ -25,6 +25,7 @@ class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val deleteButton: ImageButton = itemView.findViewById(R.id.deleteButton)
     val threadButton: ImageButton = itemView.findViewById(R.id.threadButton)
     val broadcastButton: ImageButton = itemView.findViewById(R.id.broadcastButton)
+    val moreButton: ImageButton = itemView.findViewById(R.id.moreButton)
 
     val nsfwMaskLayout: FrameLayout = itemView.findViewById(R.id.nsfwMaskLayout)
     val showNsfwButton: MaterialButton = itemView.findViewById(R.id.showNsfwButton)

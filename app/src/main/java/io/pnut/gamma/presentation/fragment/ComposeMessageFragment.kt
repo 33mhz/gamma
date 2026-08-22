@@ -448,7 +448,7 @@ class ComposeMessageFragment : BaseFragment(),
         
         viewModel.replyTarget.observe(viewLifecycleOwner) { target ->
             target?.let {
-                BindingUtil.glideAvatarSrc(binding.replyAvatarImageView, it.avatarUrl)
+                BindingUtil.loadAvatar(binding.replyAvatarImageView, it.user, User.AvatarSize.Small)
                 binding.replyScreenNameTextView.text = it.username
                 binding.replyNameTextView.text = it.name
                 binding.replyDateTextView.text = DateUtil.getShortDateStr(requireContext(), it.createdAt)
@@ -457,7 +457,7 @@ class ComposeMessageFragment : BaseFragment(),
         }
 
         viewModel.myAccountAvatarUrl.observe(viewLifecycleOwner) {
-            BindingUtil.glideAvatarSrc(binding.myAccountAvatarImageView, it)
+            BindingUtil.glideAvatarSrc(binding.myAccountAvatarImageView, it, isStream = false)
         }
         
         binding.myAccountAvatarImageView.setOnClickListener {

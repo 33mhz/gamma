@@ -15,13 +15,31 @@ import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.shape.ShapeAppearanceModel
 import io.pnut.gamma.GammaApplication
 import io.pnut.gamma.R
+import io.pnut.gamma.domain.entity.User
 import io.pnut.gamma.domain.model.preference.ShapeOfAvatar
 
 object BindingUtil {
     @JvmStatic
-    fun glideAvatarSrc(view: ImageView, url: String?) {
+    @JvmOverloads
+    fun loadAvatar(
+        view: ImageView,
+        user: User?,
+        size: User.AvatarSize? = null,
+        isStream: Boolean = true
+    ) {
+        glideAvatarSrc(view, user?.getAvatarUrl(size), user?.type, isStream)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun glideAvatarSrc(
+        view: ImageView,
+        url: String?,
+        userType: User.AccountType? = null,
+        isStream: Boolean = true
+    ) {
         val preferenceRepository = (view.context.applicationContext as GammaApplication).preferenceRepository
-        if (!preferenceRepository.showAvatar) {
+        if (!preferenceRepository.shouldShowAvatar(userType, isStream)) {
             view.visibility = View.GONE
             return
         }

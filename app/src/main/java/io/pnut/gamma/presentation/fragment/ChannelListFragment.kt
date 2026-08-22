@@ -131,7 +131,7 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
 
         user?.let { u ->
             val avatarUrl = User.getAvatarUrl(u, User.AvatarSize.Small)
-            BindingUtil.glideAvatarSrc(viewHolder.binding.avatarImageView, avatarUrl)
+            BindingUtil.loadAvatar(viewHolder.binding.avatarImageView, u, User.AvatarSize.Small)
             viewHolder.binding.avatarImageView.setOnClickListener {
                 val fragment = ProfileFragment.newInstance(u.id, avatarUrl, u)
                 navigateTo(fragment, u.id)

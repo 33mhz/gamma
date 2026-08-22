@@ -242,6 +242,18 @@
                 android:visibility="gone"
                 app:tint="?colorPrimary"
                 tools:visibility="visible" />
+
+            <ImageButton
+                android:id="@+id/moreButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/more"
+                android:foreground="?attr/selectableItemBackground"
+                android:scaleType="center"
+                android:src="@drawable/ic_more_horiz_black_24dp"
+                app:tint="@android:color/white" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

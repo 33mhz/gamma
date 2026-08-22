@@ -89,7 +89,7 @@ class SearchMessagesFragment : BaseListFragment<Message, MessageViewHolder>(),
             viewHolder.screenNameTextView.text = user.name
             viewHolder.handleNameTextView.text = context.getString(R.string.user_name_format, user.username)
             val avatarUrl = User.getAvatarUrl(user, User.AvatarSize.Small)
-            BindingUtil.glideAvatarSrc(viewHolder.avatarImageView, avatarUrl)
+            BindingUtil.loadAvatar(viewHolder.avatarImageView, user, User.AvatarSize.Small)
             viewHolder.avatarImageView.setOnClickListener {
                 val fragment = ProfileFragment.newInstance(user.id, avatarUrl, user)
                 navigateTo(fragment, user.id)

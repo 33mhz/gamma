@@ -3,4 +3,5 @@
     <bool name="pref_use_unified_stream_default_value">true</bool>
     <bool name="pref_hide_directed_posts_default_value">false</bool>
     <bool name="pref_hide_copy_mentions_default_value">false</bool>
+    <bool name="pref_hide_feed_bot_avatar_default_value">false</bool>
 </resources>

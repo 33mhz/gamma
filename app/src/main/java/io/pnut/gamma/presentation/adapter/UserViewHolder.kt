@@ -34,7 +34,7 @@ class UserViewHolder(mView: View) :
     }
 
     fun bind(user: User, listener: Callback) {
-        BindingUtil.glideAvatarSrc(avatarView, user.content.avatarImage.url)
+        BindingUtil.loadAvatar(avatarView, user, User.AvatarSize.Normal)
         userTypeIconImageView.apply {
             when (user.type) {
                 User.AccountType.BOT -> {
@@ -57,7 +57,7 @@ class UserViewHolder(mView: View) :
             setOnTouchListener(entityListener)
         }
         relationshipTextView.visibility = Util.getVisibility(!user.me && user.followsYou)
-        val relationshipText = user.relationshipTextRes?.let { context.getString(it) }
+        val relationshipText = user.relationshipTextRes.let { context.getString(it) }
         actionButton.text = relationshipText
         actionButton.setOnClickListener {
             listener.onActionButtonClick(user)

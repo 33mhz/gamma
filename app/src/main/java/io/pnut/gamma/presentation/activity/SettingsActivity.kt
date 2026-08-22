@@ -248,12 +248,21 @@ class SettingsActivity : BaseActivity(),
                 }
             }
 
-            val showAvatarPref = findPreference(R.string.pref_show_avatar_key) as? SwitchPreferenceCompat
-            val shapeOfAvatarPref = findPreference(R.string.pref_shape_of_avatar_key)
-            shapeOfAvatarPref?.isVisible = showAvatarPref?.isChecked == true
-            showAvatarPref?.setOnPreferenceChangeListener { _, newValue ->
-                shapeOfAvatarPref?.isVisible = newValue as Boolean
-                true
+            (findPreference(R.string.pref_show_avatar_key) as? SwitchPreferenceCompat)?.let { showAvatarPref ->
+                val dependents = listOf(
+                    findPreference(R.string.pref_shape_of_avatar_key),
+                    findPreference(R.string.pref_hide_feed_bot_avatar_key)
+                )
+
+                val updateVisibility = { visible: Boolean ->
+                    dependents.forEach { it?.isVisible = visible }
+                }
+
+                updateVisibility(showAvatarPref.isChecked)
+                showAvatarPref.setOnPreferenceChangeListener { _, newValue ->
+                    updateVisibility(newValue as Boolean)
+                    true
+                }
             }
         }
     }

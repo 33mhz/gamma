@@ -417,7 +417,7 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
                     headerBinding.navigationDrawerScreenNameTextView.text = getString(R.string.user_name_format, it.username)
 
                     BindingUtil.glideSrc(headerBinding.navigationDrawerHeaderImageView, it.content.coverImage.url)
-                    BindingUtil.glideAvatarSrc(headerBinding.navigationDrawerAvatarImageView, it.content.avatarImage.url)
+                    BindingUtil.loadAvatar(headerBinding.navigationDrawerAvatarImageView, it, User.AvatarSize.Normal, isStream = false)
 
                     if (it.counts.following >= 5) {
                         preferenceRepository.setExceededWelcomeFollowed(it.id, true)

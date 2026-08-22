@@ -2,6 +2,8 @@ package io.pnut.gamma.presentation.fragment
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -50,7 +52,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder>(),
     BaseListRecyclerViewAdapter.IBaseList<Message, MessageViewHolder>,
-    DeleteMessageDialogFragment.Callback, Util.DrawerContentFragment, ThumbnailViewPagerAdapter.Listener {
+    DeleteMessageDialogFragment.Callback, SimpleBottomSheetMenuFragment.Callback,
+    Util.DrawerContentFragment, ThumbnailViewPagerAdapter.Listener {
 
     override val menuItemId: Int
         get() = if (isPm) R.id.privateMessages else R.id.channels
@@ -185,7 +188,7 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
             viewHolder.screenNameTextView.text = user.name
             viewHolder.handleNameTextView.text = context.getString(R.string.user_name_format, user.username)
             val avatarUrl = User.getAvatarUrl(user, User.AvatarSize.Small)
-            BindingUtil.glideAvatarSrc(viewHolder.avatarImageView, avatarUrl)
+            BindingUtil.loadAvatar(viewHolder.avatarImageView, user, User.AvatarSize.Small)
             viewHolder.avatarImageView.setOnClickListener {
                 val fragment = ProfileFragment.newInstance(user.id, avatarUrl, user)
                 navigateTo(fragment, user.id)
@@ -252,6 +255,44 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
             viewHolder.broadcastButton.imageTintList = ColorStateList.valueOf(Util.getPrimaryColor(context))
             viewHolder.broadcastButton.setOnClickListener {
                 broadcast?.let { showPostThread(it.id) }
+            }
+
+            viewHolder.moreButton.setOnClickListener {
+                showMoreMenu(item)
+            }
+        }
+    }
+
+    private var selectedMessage: Message? = null
+
+    private fun showMoreMenu(message: Message) {
+        selectedMessage = message
+        val fragment = SimpleBottomSheetMenuFragment.newInstance(R.menu.post_item_more)
+        fragment.show(childFragmentManager, DialogKey.More.name)
+    }
+
+    private enum class DialogKey { More }
+
+    override fun onMenuShow(menu: Menu, tag: String?) {
+        if (tag == DialogKey.More.name) {
+            menu.findItem(R.id.menuShare)?.isVisible = false
+            menu.findItem(R.id.menuReport)?.isVisible = false
+        }
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem, tag: String?) {
+        when (tag) {
+            DialogKey.More.name -> handleMessageMoreMenu(menuItem)
+        }
+    }
+
+    private fun handleMessageMoreMenu(menuItem: MenuItem) {
+        val message = selectedMessage ?: return
+        when (menuItem.itemId) {
+            R.id.menuProfile -> {
+                val user = message.user ?: return
+                val fragment = ProfileFragment.newInstance(user.id, User.getAvatarUrl(user), user)
+                navigateTo(fragment, user.id)
             }
         }
     }

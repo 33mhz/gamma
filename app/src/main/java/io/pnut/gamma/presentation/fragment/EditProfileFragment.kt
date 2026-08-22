@@ -272,7 +272,7 @@ class EditProfileFragment : SimpleBottomSheetMenuFragment.Callback,
             BindingUtil.glideSrc(binding.viewCoverImage, it)
         }
         viewModel.avatarUri.observe(viewLifecycleOwner) {
-            BindingUtil.glideAvatarSrc(binding.viewCurrentAvatarImage, it)
+            BindingUtil.glideAvatarSrc(binding.viewCurrentAvatarImage, it, isStream = false)
         }
 
         binding.viewNameEditText.doAfterTextChanged {

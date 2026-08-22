@@ -1,6 +1,7 @@
 package io.pnut.gamma.domain.repository
 
 import android.content.SharedPreferences
+import io.pnut.gamma.domain.entity.User
 import io.pnut.gamma.domain.model.preference.ShapeOfAvatar
 import io.pnut.gamma.presentation.util.ThemeColorUtil
 
@@ -14,6 +15,7 @@ interface IPreferenceRepository {
     val darkModeStr: String
     val avatarSwipe: Boolean
     val showAvatar: Boolean
+    val hideFeedBotAvatar: Boolean
     val loadingSize: Int
     val thresholdOfAutoPager: Int
     val unifiedStream: Boolean
@@ -23,6 +25,7 @@ interface IPreferenceRepository {
     val hideCopyMentions: Boolean
     val usernameAutocomplete: Boolean
     val suggestUserFollows: Boolean
+    fun shouldShowAvatar(userType: User.AccountType?, isStream: Boolean): Boolean
     fun hasExceededWelcomeFollowed(userId: String): Boolean
     fun setExceededWelcomeFollowed(userId: String, exceeded: Boolean)
 }

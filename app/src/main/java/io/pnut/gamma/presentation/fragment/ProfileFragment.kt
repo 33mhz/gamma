@@ -186,7 +186,7 @@ class ProfileFragment : BaseFragment() {
             }
         }
         viewModel.iconUrl.observe(viewLifecycleOwner) {
-            BindingUtil.glideAvatarSrc(binding.circleImageView, it)
+            BindingUtil.loadAvatar(binding.circleImageView, viewModel.user.value, User.AvatarSize.ExtraLarge, isStream = false)
         }
         viewModel.usernameWithAt.observe(viewLifecycleOwner) {
             binding.screenNameTextView.text = it
