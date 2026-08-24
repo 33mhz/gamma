@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import androidx.core.content.IntentCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import io.pnut.gamma.domain.Relationship
 
@@ -16,7 +17,7 @@ class RelationshipReceiver(private val listener: Callback) : BroadcastReceiver()
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == ACTION_RELATIONSHIP_CHANGED) {
             val userId = intent.getStringExtra(EXTRA_USER_ID)
-            val relationship = intent.getSerializableExtra(EXTRA_RELATIONSHIP) as? Relationship
+            val relationship = IntentCompat.getSerializableExtra(intent, EXTRA_RELATIONSHIP, Relationship::class.java)
             listener.onRelationshipChanged(userId, relationship)
         }
     }

@@ -17,7 +17,9 @@ import io.pnut.gamma.domain.usecases.SetupTokenUseCase
 import io.pnut.gamma.presentation.activity.LoginActivity
 import io.pnut.gamma.presentation.util.ThemeColorUtil
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.asExecutor
 import javax.inject.Inject
 
 
@@ -45,7 +47,7 @@ open class GammaApplication : Application(), CoroutineScope by MainScope(), Conf
     updateTheme()
     preferenceRepository.onRegisterChangePreference(preferenceChangeListener)
     runCatching {
-      val config = BundledEmojiCompatConfig(this)
+      val config = BundledEmojiCompatConfig(this, Dispatchers.IO.asExecutor())
         .setReplaceAll(true)
       EmojiCompat.init(config)
     }
