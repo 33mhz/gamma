@@ -15,6 +15,7 @@ import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.Poll
 import io.pnut.gamma.domain.entity.PollPostBody
 import io.pnut.gamma.domain.entity.Post
+import io.pnut.gamma.domain.entity.StarBody
 import io.pnut.gamma.domain.entity.PostBody
 import io.pnut.gamma.domain.entity.PmPostBody
 import io.pnut.gamma.domain.entity.ProfileBody
@@ -124,8 +125,8 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         return defaultPnutService.deleteRepost(postId)
     }
 
-    override suspend fun createStarPostSync(postId: String): PnutResponse<Post> {
-        return defaultPnutService.createStar(postId)
+    override suspend fun createStarPostSync(postId: String, note: String?): PnutResponse<Post> {
+        return defaultPnutService.createStar(postId, StarBody(note))
     }
 
     override suspend fun deleteStarPostSync(postId: String): PnutResponse<Post> {

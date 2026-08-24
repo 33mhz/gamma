@@ -36,7 +36,8 @@ data class Post(
     @Json(name = "user_id") val rawUserId: String? = null,
     var raw: Map<String, List<RawValue>>? = null,
     @Json(name = "bookmarked_by") val bookmarkedBy: List<User>? = null,
-    @Json(name = "reposted_by") val repostedBy: List<User>? = null
+    @Json(name = "reposted_by") val repostedBy: List<User>? = null,
+    var note: String? = null,
 ) : UniquePageable, Parcelable {
     @IgnoredOnParcel
     override val uniqueKey: String by lazy { id }

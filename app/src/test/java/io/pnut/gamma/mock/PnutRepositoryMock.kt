@@ -178,7 +178,7 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         TODO("not implemented")
     }
 
-    override suspend fun createStarPostSync(postId: String): PnutResponse<Post> {
+    override suspend fun createStarPostSync(postId: String, note: String?): PnutResponse<Post> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

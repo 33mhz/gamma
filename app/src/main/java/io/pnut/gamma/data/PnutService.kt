@@ -14,6 +14,7 @@ import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.Poll
 import io.pnut.gamma.domain.entity.PollPostBody
 import io.pnut.gamma.domain.entity.Post
+import io.pnut.gamma.domain.entity.StarBody
 import io.pnut.gamma.domain.entity.ProfileBody
 import io.pnut.gamma.domain.entity.Token
 import io.pnut.gamma.domain.entity.User
@@ -61,7 +62,7 @@ interface PnutService {
     suspend fun getThread(@Path("postId") postId: String, @QueryMap params: Map<String, String>): PnutResponse<List<Post>>
 
     @PUT("posts/{postId}/bookmark?include_post_raw=1")
-    suspend fun createStar(@Path("postId") postId: String, @Body note: String = ""): PnutResponse<Post>
+    suspend fun createStar(@Path("postId") postId: String, @Body body: StarBody = StarBody()): PnutResponse<Post>
 
     @DELETE("posts/{postId}/bookmark?include_post_raw=1")
     suspend fun deleteStar(@Path("postId") postId: String): PnutResponse<Post>

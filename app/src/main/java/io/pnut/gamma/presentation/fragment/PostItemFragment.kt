@@ -96,7 +96,8 @@ import kotlin.math.abs
 abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostViewHolder>(),
     BaseListRecyclerViewAdapter.IBaseList<Post, PostItemFragment.PostViewHolder>,
     ThumbnailViewPagerAdapter.Listener, DeletePostDialogFragment.Callback,
-    SimpleBottomSheetMenuFragment.Callback, PostReceiver.Callback {
+    SimpleBottomSheetMenuFragment.Callback, PostReceiver.Callback,
+    StarNoteDialogFragment.Callback {
     override fun onClickSegmentListener(
         viewHolder: BaseListRecyclerViewAdapter.SegmentViewHolder,
         itemWrapper: PageableItemWrapper.Pager<Post>
@@ -116,7 +117,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         val post = item.item
         post.poll = getPoll.poll
         post.pollOptionsAdapter?.setPollDetail(getPoll.poll)
-        adapter.updateItem(PageableItemWrapper.Item(post))
+        updatePost(post)
         viewModel.storeItems()
     }
     private val wifiManager by lazy {
@@ -145,18 +146,35 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
     }
 
     override fun onStarReceive(post: Post) {
-        adapter.updateItem(PageableItemWrapper.Item(post))
-    }
-
-    private fun updatePost(post: PageableItemWrapper<Post>) {
-        adapter.updateItem(post)
+        if (post.youBookmarked == false && streamType is StreamType.Stars) {
+            adapter.removeItemsBy { it.mainPost.id == post.id }
+        } else {
+            updatePost(post)
+        }
     }
 
     override fun onRepostReceive(post: Post) {
-        adapter.updateItem(PageableItemWrapper.Item(post))
+        updatePost(post)
     }
 
-    override fun onDeletePostReceive(post: Post) {}
+    private fun updatePost(post: Post) {
+        val items = viewModel.items
+        items.forEachIndexed { index, wrapper ->
+            if (wrapper is PageableItemWrapper.Item && wrapper.item.mainPost.id == post.id) {
+                val updatedPost = if (wrapper.item.id == post.id) {
+                    post
+                } else {
+                    wrapper.item.copy(repostOf = post)
+                }
+                items[index] = PageableItemWrapper.Item(updatedPost)
+                adapter.notifyItemChanged(index)
+            }
+        }
+    }
+
+    override fun onDeletePostReceive(post: Post) {
+        adapter.removeItemsBy { it.mainPost.id == post.id }
+    }
 
     override fun onReportPostReceive() {}
 
@@ -266,7 +284,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 
     override fun ok(position: Int, post: Post) {
         context?.let { PostWorker.enqueueDeletePost(it, post.id) }
-        adapter.removeItem(PageableItemWrapper.Item(post))
+        adapter.removeItemsBy { it.mainPost.id == post.id }
     }
 
     override fun cancel() {}
@@ -395,7 +413,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         fragment.show(childFragmentManager, DialogKey.More.name)
     }
 
-    private enum class DialogKey { Compose, DeletePost, More, LongPost }
+    private enum class DialogKey { Compose, DeletePost, More, LongPost, StarNote }
 
 
     override fun onBindViewHolder(
@@ -469,6 +487,14 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         viewHolder.bodyTextView.text =
             item.mainPost.content?.getSpannableStringBuilder(context)
                 ?: getString(R.string.this_post_has_deleted)
+
+        val starNote = item.mainPost.note
+        viewHolder.starNoteTextView.visibility = getVisibility(
+            !starNote.isNullOrBlank() &&
+                    item.mainPost.showContents &&
+                    item.mainPost.youBookmarked == true
+        )
+        viewHolder.starNoteTextView.text = starNote
 
         val url = item.mainPost.user?.getAvatarUrl(User.AvatarSize.Large).orEmpty()
         BindingUtil.loadAvatar(viewHolder.avatarView, item.mainPost.user, User.AvatarSize.Large)
@@ -706,6 +732,15 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             it.setOnClickListener {
                 toggleStar(item, viewHolder.bindingAdapterPosition)
             }
+            it.setOnLongClickListener {
+                if (item.mainPost.youBookmarked == false && !item.isDeletedNonNull) {
+                    val dialog = StarNoteDialogFragment.newInstance(viewHolder.bindingAdapterPosition)
+                    dialog.show(childFragmentManager, DialogKey.StarNote.name)
+                    true
+                } else {
+                    false
+                }
+            }
             it.setImageResource(starDrawableRes)
         }
         viewHolder.starStateView.visibility =
@@ -760,6 +795,22 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         // TODO: revert state when raised error
         // star "this post"
         item.mainPost.youBookmarked = newState
+        if (!newState) {
+            item.mainPost.note = null
+            if (streamType is StreamType.Stars) {
+                adapter.removeItemsBy { it.mainPost.id == item.mainPost.id }
+                return
+            }
+        }
+        adapter.notifyItemChanged(adapterPosition)
+    }
+
+    override fun onAddStarWithNote(note: String, adapterPosition: Int) {
+        val itemWrapper = viewModel.items.getOrNull(adapterPosition) ?: return
+        val item = (itemWrapper as? PageableItemWrapper.Item)?.item ?: return
+        context?.let { PostWorker.enqueueStar(it, item.mainPost.id, true, note) }
+        item.mainPost.youBookmarked = true
+        item.mainPost.note = note
         adapter.notifyItemChanged(adapterPosition)
     }
 
@@ -876,6 +927,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         val screenNameTextView: TextView = itemView.findViewById(R.id.screenNameTextView)
         val userTypeIconImageView: ImageView = itemView.findViewById(R.id.userTypeIconImageView)
         val bodyTextView: LinkableTextView = itemView.findViewById(R.id.bodyTextView)
+        val starNoteTextView: TextView = itemView.findViewById(R.id.starNoteTextView)
         val dateTextView: TextView = itemView.findViewById(R.id.relativeTimeTextView)
         val handleNameTextView: TextView = itemView.findViewById(R.id.handleNameTextView)
         val repostedByTextView: TextView = itemView.findViewById(R.id.repostedByTextView)

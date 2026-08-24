@@ -66,7 +66,7 @@ class PostWorker @AssistedInject constructor(
         }
     }
 
-    private enum class IntentKey { PostBody, PostId, NewState, ReportReason, AccountId }
+    private enum class IntentKey { PostBody, PostId, NewState, ReportReason, AccountId, Note }
     enum class ResultIntentKey { Post }
 
     override suspend fun doWork(): Result {
@@ -124,8 +124,9 @@ class PostWorker @AssistedInject constructor(
             Actions.Star.getActionName() -> {
                 val postId = inputData.getString(IntentKey.PostId.name) ?: return Result.failure()
                 val newState = inputData.getBoolean(IntentKey.NewState.name, true)
+                val note = inputData.getString(IntentKey.Note.name)
                 runCatching {
-                    val postOutputData = starUseCase.run(StarInputData(postId, newState))
+                    val postOutputData = starUseCase.run(StarInputData(postId, newState, note))
                     createResultIntent(action).putExtra(
                         ResultIntentKey.Post.name,
                         postOutputData.res.data
@@ -219,11 +220,12 @@ class PostWorker @AssistedInject constructor(
             WorkManager.getInstance(context).enqueue(request)
         }
 
-        fun enqueueStar(context: Context, postId: String, newState: Boolean) {
+        fun enqueueStar(context: Context, postId: String, newState: Boolean, note: String? = null) {
             val data = Data.Builder()
                 .putString(ACTION_KEY, Actions.Star.getActionName())
                 .putString(IntentKey.PostId.name, postId)
                 .putBoolean(IntentKey.NewState.name, newState)
+                .putString(IntentKey.Note.name, note)
                 .build()
             val request = OneTimeWorkRequestBuilder<PostWorker>()
                 .setInputData(data)

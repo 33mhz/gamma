@@ -18,21 +18,21 @@ class StarUseCaseTest {
     @Test
     fun succeedToStar() {
         val starUseCase = StarUseCase(object : PnutRepositoryMock() {
-            override fun createStarPostSync(postId: String): PnutResponse<Post> {
+            override suspend fun createStarPostSync(postId: String, note: String?): PnutResponse<Post> {
                 return PnutResponse(
                     PnutResponse.Meta(200),
-                    unStarredPost.copy(youBookmarked = true)
+                    unStarredPost.copy(youBookmarked = true, note = note)
                 )
             }
         })
-        val starOutputData = runBlocking { starUseCase.run(StarInputData(unStarredPost.id, true)) }
-        assertThat(starOutputData.res.data).isEqualTo(unStarredPost.copy(youBookmarked = true))
+        val starOutputData = runBlocking { starUseCase.run(StarInputData(unStarredPost.id, true, "test note")) }
+        assertThat(starOutputData.res.data).isEqualTo(unStarredPost.copy(youBookmarked = true, note = "test note"))
     }
 
     @Test(expected = TestException::class)
     fun failToStar() {
         val starUseCase = StarUseCase(object : PnutRepositoryMock() {
-            override fun createStarPostSync(postId: String): PnutResponse<Post> {
+            override suspend fun createStarPostSync(postId: String, note: String?): PnutResponse<Post> {
                 throw TestException()
             }
         })
