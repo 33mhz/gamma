@@ -36,7 +36,8 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, 
             initialPhoto = IntentCompat.getParcelableArrayListExtra(intent, IntentKey.InitialPhoto.name, UriInfo::class.java),
             replyTarget = IntentCompat.getParcelableExtra(intent, IntentKey.ReplyTarget.name, Message::class.java),
             channelTitle = intent.getStringExtra(IntentKey.ChannelTitle.name),
-            channel = IntentCompat.getParcelableExtra(intent, IntentKey.Channel.name, Channel::class.java)
+            channel = IntentCompat.getParcelableExtra(intent, IntentKey.Channel.name, Channel::class.java),
+            replyAll = intent.getBooleanExtra(IntentKey.ReplyAll.name, true)
         )
     }
 
@@ -118,7 +119,7 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, 
     }
 
     private enum class IntentKey {
-        ChannelId, InitialText, InitialPhoto, ReplyTarget, IsNewPm, Usernames, ChannelTitle, Channel
+        ChannelId, InitialText, InitialPhoto, ReplyTarget, IsNewPm, Usernames, ChannelTitle, Channel, ReplyAll
     }
 
     companion object {
@@ -129,7 +130,8 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, 
             initialPhoto: ArrayList<UriInfo>? = null,
             replyTarget: Message? = null,
             channelTitle: String? = null,
-            channel: Channel? = null
+            channel: Channel? = null,
+            replyAll: Boolean = true
         ) = Intent(context, ComposeMessageActivity::class.java).also {
             it.putExtra(IntentKey.ChannelId.name, channelId)
             it.putExtra(IntentKey.InitialText.name, initialText)
@@ -137,6 +139,7 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, 
             it.putExtra(IntentKey.ReplyTarget.name, replyTarget)
             it.putExtra(IntentKey.ChannelTitle.name, channelTitle)
             it.putExtra(IntentKey.Channel.name, channel)
+            it.putExtra(IntentKey.ReplyAll.name, replyAll)
         }
 
         fun newIntentForNewPm(context: Context, usernames: ArrayList<String>? = null) = Intent(context, ComposeMessageActivity::class.java).also {

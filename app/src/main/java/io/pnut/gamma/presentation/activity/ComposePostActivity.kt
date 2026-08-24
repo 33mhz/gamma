@@ -27,7 +27,8 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
         ComposePostFragment.newInstance(
             initialText = intent.getStringExtra(IntentKey.InitialText.name),
             initialPhoto = IntentCompat.getParcelableArrayListExtra(intent, IntentKey.InitialPhoto.name, UriInfo::class.java),
-            replyTarget = IntentCompat.getParcelableExtra(intent, IntentKey.ReplyTarget.name, Post::class.java)
+            replyTarget = IntentCompat.getParcelableExtra(intent, IntentKey.ReplyTarget.name, Post::class.java),
+            replyAll = intent.getBooleanExtra(IntentKey.ReplyAll.name, true)
         )
     }
 
@@ -93,7 +94,7 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
     }
 
     private enum class IntentKey {
-        InitialText, InitialPhoto, ReplyTarget
+        InitialText, InitialPhoto, ReplyTarget, ReplyAll
     }
 
     companion object {
@@ -101,11 +102,13 @@ class ComposePostActivity : BaseActivity(), ComposePostFragment.Callback {
             context: Context,
             initialText: String? = null,
             initialPhoto: ArrayList<UriInfo>? = null,
-            replyTarget: Post? = null
+            replyTarget: Post? = null,
+            replyAll: Boolean = true
         ) = Intent(context, ComposePostActivity::class.java).also {
             it.putExtra(IntentKey.InitialText.name, initialText)
             it.putExtra(IntentKey.InitialPhoto.name, initialPhoto)
             it.putExtra(IntentKey.ReplyTarget.name, replyTarget)
+            it.putExtra(IntentKey.ReplyAll.name, replyAll)
         }
     }
 

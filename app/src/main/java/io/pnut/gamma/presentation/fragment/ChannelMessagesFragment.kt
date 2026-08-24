@@ -236,9 +236,20 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
         viewHolder.foregroundActionsLayout.visibility = if (isExpanded) View.VISIBLE else View.GONE
         
         if (isExpanded) {
-            viewHolder.replyButton.setOnClickListener {
+            val recipients = getReplyRecipients(item)
+            val replyIcon = if (recipients.size > 1) R.drawable.ic_reply_all_black_24dp else R.drawable.ic_reply_black_24dp
+            viewHolder.replyButton.setImageResource(replyIcon)
+
+            val onReplyClick = View.OnClickListener {
                 showReplyCompose(item)
             }
+            val onReplyLongClick = View.OnLongClickListener {
+                showReplyCompose(item, replyAll = false)
+                true
+            }
+
+            viewHolder.replyButton.setOnClickListener(onReplyClick)
+            viewHolder.replyButton.setOnLongClickListener(onReplyLongClick)
             
             val isMyMessage = item.user?.id == accountRepository.getStoredIds().firstOrNull()
             viewHolder.deleteButton.visibility = if (isMyMessage) View.VISIBLE else View.GONE
@@ -297,10 +308,21 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
         }
     }
 
-    private fun showReplyCompose(message: Message) {
+    private fun showReplyCompose(message: Message, replyAll: Boolean = true) {
         val channel = (viewModel as? ChannelMessagesViewModel)?.currentChannel?.value
-        val intent = ComposeMessageActivity.newIntent(requireContext(), channelId = channelId, replyTarget = message, channel = channel)
+        val intent = ComposeMessageActivity.newIntent(requireContext(), channelId = channelId, replyTarget = message, channel = channel, replyAll = replyAll)
         startActivity(intent)
+    }
+
+    private fun getReplyRecipients(message: Message): List<String> {
+        val replyTargetUserUsername = message.username
+        val mentions = message.content?.entities?.mentions?.map { it.text }?.toMutableList() ?: mutableListOf()
+        if (replyTargetUserUsername != null) {
+            mentions.add(0, replyTargetUserUsername)
+        }
+        val currentUsername = accountRepository.getDefaultAccount()?.screenName
+        return mentions.distinctBy { it.lowercase() }
+            .filterNot { it.equals(currentUsername, ignoreCase = true) }
     }
 
     private fun confirmDeleteMessage(position: Int, message: Message) {

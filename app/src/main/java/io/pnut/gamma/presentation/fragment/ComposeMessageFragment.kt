@@ -121,7 +121,7 @@ class ComposeMessageFragment : BaseFragment(),
     }
 
     private enum class BundleKey {
-        ChannelId, ReplyTarget, InitialText, InitialPhoto, ChannelTitle, Channel
+        ChannelId, ReplyTarget, InitialText, InitialPhoto, ChannelTitle, Channel, ReplyAll
     }
 
     private enum class DialogKey {
@@ -233,7 +233,7 @@ class ComposeMessageFragment : BaseFragment(),
                 channelId,
                 channel,
                 replyTarget,
-                mentionToMyself,
+                replyAll,
                 initialText,
                 currentUserId,
                 uploadFileUseCase,
@@ -258,6 +258,9 @@ class ComposeMessageFragment : BaseFragment(),
 
     private val replyTarget: Message? by lazy {
         arguments?.let { BundleCompat.getParcelable(it, BundleKey.ReplyTarget.name, Message::class.java) }
+    }
+    private val replyAll: Boolean by lazy {
+        arguments?.getBoolean(BundleKey.ReplyAll.name, true) ?: true
     }
 
     private var _binding: FragmentComposePostBinding? = null
@@ -331,9 +334,6 @@ class ComposeMessageFragment : BaseFragment(),
         getCurrentAccountUseCase.run(Unit).account?.id.orEmpty()
     }
 
-    private val mentionToMyself: Boolean by lazy {
-        replyTarget != null && replyTarget?.userId == currentUserId
-    }
     private val initialText by lazy {
         arguments?.getString(BundleKey.InitialText.name)
     }
@@ -600,7 +600,7 @@ class ComposeMessageFragment : BaseFragment(),
         private val channelId: String,
         channelArg: Channel?,
         replyTargetArg: Message?,
-        mentionToMyself: Boolean,
+        replyAll: Boolean,
         initialText: String? = null,
         currentUserId: String,
         private val uploadFileUseCase: UploadFileUseCase,
@@ -659,8 +659,23 @@ class ComposeMessageFragment : BaseFragment(),
         val previewAttachmentsVisibility = MutableLiveData<Int>().apply { value = View.GONE }
         val computedInitialText by lazy {
             val replyTargetUserUsername = replyTargetArg?.username
+            val mentions = replyTargetArg?.content?.entities?.mentions?.map { it.text }?.toMutableList() ?: mutableListOf()
+            if (replyTargetUserUsername != null) {
+                mentions.add(0, replyTargetUserUsername)
+            }
+            
+            val currentUsername = accountRepository.getDefaultAccount()?.screenName
+            val uniqueMentions = mentions.distinctBy { it.lowercase() }
+                .filterNot { it.equals(currentUsername, ignoreCase = true) }
+
             when {
-                replyTargetUserUsername != null && !mentionToMyself -> "@$replyTargetUserUsername "
+                uniqueMentions.isNotEmpty() -> {
+                    if (replyAll) {
+                        uniqueMentions.joinToString(" ") { "@$it" } + " "
+                    } else {
+                        "@${uniqueMentions.first()} "
+                    }
+                }
                 initialText != null -> "$initialText "
                 else -> ""
             }
@@ -804,7 +819,7 @@ class ComposeMessageFragment : BaseFragment(),
             private val channelId: String,
             private val channel: Channel?,
             private val replyTarget: Message?,
-            private val mentionToMyself: Boolean,
+            private val replyAll: Boolean,
             private val initialText: String? = null,
             private val currentUserId: String,
             private val uploadFileUseCase: UploadFileUseCase,
@@ -823,7 +838,7 @@ class ComposeMessageFragment : BaseFragment(),
                     channelId,
                     channel,
                     replyTarget,
-                    mentionToMyself,
+                    replyAll,
                     initialText,
                     currentUserId,
                     uploadFileUseCase,
@@ -846,7 +861,8 @@ class ComposeMessageFragment : BaseFragment(),
             initialPhoto: ArrayList<UriInfo>? = null,
             replyTarget: Message? = null,
             channelTitle: String? = null,
-            channel: Channel? = null
+            channel: Channel? = null,
+            replyAll: Boolean = true,
         ) = ComposeMessageFragment().apply {
             arguments = Bundle().apply {
                 putString(BundleKey.ChannelId.name, channelId)
@@ -855,6 +871,7 @@ class ComposeMessageFragment : BaseFragment(),
                 putParcelable(BundleKey.ReplyTarget.name, replyTarget)
                 putString(BundleKey.ChannelTitle.name, channelTitle)
                 putParcelable(BundleKey.Channel.name, channel)
+                putBoolean(BundleKey.ReplyAll.name, replyAll)
             }
         }
     }

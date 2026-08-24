@@ -434,13 +434,25 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         viewHolder.avatarView.isEnabled = !isDeleted
 
         updateStarView(viewHolder, item)
-        viewHolder.actionReplyImageView.setOnClickListener {
+
+        val recipients = getReplyRecipients(item)
+        val replyIcon = if (recipients.size > 1) R.drawable.ic_reply_all_black_24dp else R.drawable.ic_reply_black_24dp
+        viewHolder.actionReplyImageView.setImageResource(replyIcon)
+        viewHolder.replyButton.setImageResource(replyIcon)
+
+        val onReplyClick = View.OnClickListener {
             showReplyCompose(item)
         }
+        val onReplyLongClick = View.OnLongClickListener {
+            showReplyCompose(item, replyAll = false)
+            true
+        }
+
+        viewHolder.actionReplyImageView.setOnClickListener(onReplyClick)
+        viewHolder.actionReplyImageView.setOnLongClickListener(onReplyLongClick)
         viewHolder.replyButton.isEnabled = !isDeleted
-        viewHolder.replyButton.setOnClickListener {
-            showReplyCompose(item)
-        }
+        viewHolder.replyButton.setOnClickListener(onReplyClick)
+        viewHolder.replyButton.setOnLongClickListener(onReplyLongClick)
 
         updateRepostView(viewHolder, item)
 
@@ -726,9 +738,20 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         adapter.notifyItemChanged(adapterPosition)
     }
 
-    private fun showReplyCompose(item: Post) {
-        val intent = ComposePostActivity.newIntent(requireContext(), replyTarget = item)
+    private fun showReplyCompose(item: Post, replyAll: Boolean = true) {
+        val intent = ComposePostActivity.newIntent(requireContext(), replyTarget = item, replyAll = replyAll)
         startActivity(intent)
+    }
+
+    private fun getReplyRecipients(post: Post): List<String> {
+        val replyTargetUserUsername = post.mainPost.username
+        val mentions = post.mainPost.content?.entities?.mentions?.map { it.text }?.toMutableList() ?: mutableListOf()
+        if (replyTargetUserUsername != null) {
+            mentions.add(0, replyTargetUserUsername)
+        }
+        val currentUsername = accountRepository.getDefaultAccount()?.screenName
+        return mentions.distinctBy { it.lowercase() }
+            .filterNot { it.equals(currentUsername, ignoreCase = true) }
     }
 
     private fun toggleStar(item: Post, adapterPosition: Int) {

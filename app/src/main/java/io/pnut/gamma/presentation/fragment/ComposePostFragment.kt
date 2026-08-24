@@ -126,7 +126,7 @@ class ComposePostFragment : BaseFragment(),
     }
 
     private enum class BundleKey {
-        ReplyTarget, InitialText, InitialPhoto
+        ReplyTarget, InitialText, InitialPhoto, ReplyAll
     }
 
     private enum class DialogKey {
@@ -233,7 +233,7 @@ class ComposePostFragment : BaseFragment(),
             this,
             ComposePostViewModel.Factory(
                 replyTarget,
-                mentionToMyself,
+                replyAll,
                 initialText,
                 currentUserId,
                 uploadFileUseCase,
@@ -248,6 +248,9 @@ class ComposePostFragment : BaseFragment(),
 
     private val replyTarget: Post? by lazy {
         arguments?.let { BundleCompat.getParcelable(it, BundleKey.ReplyTarget.name, Post::class.java) }
+    }
+    private val replyAll: Boolean by lazy {
+        arguments?.getBoolean(BundleKey.ReplyAll.name, true) ?: true
     }
 
     private var _binding: FragmentComposePostBinding? = null
@@ -315,9 +318,6 @@ class ComposePostFragment : BaseFragment(),
         getCurrentAccountUseCase.run(Unit).account?.id.orEmpty()
     }
 
-    private val mentionToMyself: Boolean by lazy {
-        replyTarget != null && replyTarget?.userId == currentUserId
-    }
     private val initialText by lazy {
         arguments?.getString(BundleKey.InitialText.name)
     }
@@ -570,7 +570,7 @@ class ComposePostFragment : BaseFragment(),
 
     class ComposePostViewModel(
         replyTargetArg: Post?,
-        mentionToMyself: Boolean,
+        replyAll: Boolean,
         initialText: String? = null,
         currentUserId: String,
         private val uploadFileUseCase: UploadFileUseCase,
@@ -616,8 +616,23 @@ class ComposePostFragment : BaseFragment(),
         val previewAttachmentsVisibility = MutableLiveData<Int>().apply { value = View.GONE }
         val computedInitialText by lazy {
             val replyTargetUserUsername = replyTargetArg?.username
+            val mentions = replyTargetArg?.content?.entities?.mentions?.map { it.text }?.toMutableList() ?: mutableListOf()
+            if (replyTargetUserUsername != null) {
+                mentions.add(0, replyTargetUserUsername)
+            }
+            
+            val currentUsername = accountRepository.getDefaultAccount()?.screenName
+            val uniqueMentions = mentions.distinctBy { it.lowercase() }
+                .filterNot { it.equals(currentUsername, ignoreCase = true) }
+
             when {
-                replyTargetUserUsername != null && !mentionToMyself -> "@$replyTargetUserUsername "
+                uniqueMentions.isNotEmpty() -> {
+                    if (replyAll) {
+                        uniqueMentions.joinToString(" ") { "@$it" } + " "
+                    } else {
+                        "@${uniqueMentions.first()} "
+                    }
+                }
                 initialText != null -> "$initialText "
                 else -> ""
             }
@@ -738,7 +753,7 @@ class ComposePostFragment : BaseFragment(),
 
         class Factory(
             private val replyTarget: Post?,
-            private val mentionToMyself: Boolean,
+            private val replyAll: Boolean,
             private val initialText: String? = null,
             private val currentUserId: String,
             private val uploadFileUseCase: UploadFileUseCase,
@@ -753,7 +768,7 @@ class ComposePostFragment : BaseFragment(),
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return ComposePostViewModel(
                     replyTarget,
-                    mentionToMyself,
+                    replyAll,
                     initialText,
                     currentUserId,
                     uploadFileUseCase,
@@ -771,12 +786,14 @@ class ComposePostFragment : BaseFragment(),
         fun newInstance(
             initialText: String? = null,
             initialPhoto: ArrayList<UriInfo>? = null,
-            replyTarget: Post? = null
+            replyTarget: Post? = null,
+            replyAll: Boolean = true
         ) = ComposePostFragment().apply {
             arguments = Bundle().apply {
                 putString(BundleKey.InitialText.name, initialText)
                 putParcelableArrayList(BundleKey.InitialPhoto.name, initialPhoto)
                 putParcelable(BundleKey.ReplyTarget.name, replyTarget)
+                putBoolean(BundleKey.ReplyAll.name, replyAll)
             }
         }
     }
