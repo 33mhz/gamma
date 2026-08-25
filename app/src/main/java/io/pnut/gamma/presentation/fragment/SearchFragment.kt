@@ -67,7 +67,7 @@ class SearchFragment : BaseFragment() {
             is Event.Search -> {
                 hideKeyboard()
                 updatePagerInfo(it.keyword)
-                showSearchResult(it.searchType, it.keyword)
+                showSearchResult(it.searchType, it.keyword, it.categories)
                 updateMenu(it.searchType)
             }
             is Event.Clear -> {
@@ -88,6 +88,14 @@ class SearchFragment : BaseFragment() {
         } else {
             val initialTypeOrdinal = arguments?.getInt(BundleKey.InitialType.name, SearchType.Post.ordinal) ?: SearchType.Post.ordinal
             viewModel.searchType.value = SearchType.entries[initialTypeOrdinal]
+            val initialKeyword = arguments?.getString(BundleKey.InitialKeyword.name)
+            val initialCategories = arguments?.getString(BundleKey.InitialCategories.name)
+
+            if (initialKeyword != null || initialCategories != null) {
+                viewModel.keyword.value = initialKeyword ?: ""
+                viewModel.categories.value = initialCategories
+                viewModel.search(initialCategories)
+            }
         }
     }
 
@@ -136,7 +144,34 @@ class SearchFragment : BaseFragment() {
             binding.clearButton.visibility = it
         }
 
+        viewModel.categories.observe(viewLifecycleOwner) { categories ->
+            updateCategoriesChips(categories)
+        }
+
         return binding.root
+    }
+
+    private fun updateCategoriesChips(categories: String?) {
+        val showChips = viewModel.searchType.value == SearchType.Chat && !categories.isNullOrEmpty()
+        binding.categoriesChipGroup.visibility = if (showChips) View.VISIBLE else View.GONE
+        binding.categoriesChipGroup.removeAllViews()
+
+        if (showChips) {
+            categories.split(",").filter { it.isNotBlank() }.forEach { category ->
+                val chip = com.google.android.material.chip.Chip(requireContext())
+                chip.text = category.trim().replaceFirstChar { it.uppercase() }
+                chip.isCloseIconVisible = true
+                chip.setOnCloseIconClickListener {
+                    val current = viewModel.categories.value ?: ""
+                    val updated = current.split(",")
+                        .filter { it.trim() != category.trim() }
+                        .joinToString(",")
+                    viewModel.categories.value = updated.ifEmpty { null }
+                    viewModel.search(viewModel.categories.value)
+                }
+                binding.categoriesChipGroup.addView(chip)
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -188,18 +223,25 @@ class SearchFragment : BaseFragment() {
         popup.setOnMenuItemClickListener { item ->
             val type = SearchType.entries[item.itemId]
             viewModel.searchType.value = type
+            updateCategoriesChips(viewModel.categories.value)
             if (viewModel.firstSearch.value == true) {
-                viewModel.search()
+                viewModel.search(viewModel.categories.value)
             }
             true
         }
         popup.show()
     }
 
-    private fun showSearchResult(searchType: SearchType, keyword: String) {
+    private fun showSearchResult(searchType: SearchType, keyword: String, categories: String? = null) {
         val fragment = when (searchType) {
             SearchType.Post -> PostItemFragment.SearchPostsFragment.newInstance(keyword)
-            SearchType.Chat -> ChannelListFragment.SearchChannelsFragment.newInstance(keyword)
+            SearchType.Chat -> {
+                if (!categories.isNullOrEmpty()) {
+                    ChannelListFragment.SearchChannelsFragment.newInstance(keyword, categories)
+                } else {
+                    ChannelListFragment.SearchChannelsFragment.newInstance(keyword)
+                }
+            }
             SearchType.User -> UserListFragment.SearchUserListFragment.newInstance(keyword)
             SearchType.PrivateMessage -> SearchMessagesFragment.newInstance(keyword)
         }
@@ -222,7 +264,7 @@ class SearchFragment : BaseFragment() {
     data class PagerInfo(val time: Long, val keyword: String) : Parcelable
 
     private enum class StateKey { PagerInfo }
-    private enum class BundleKey { InitialType }
+    private enum class BundleKey { InitialType, InitialKeyword, InitialCategories }
 
     private var pagerInfo: PagerInfo = PagerInfo(System.currentTimeMillis(), "")
 
@@ -239,12 +281,13 @@ class SearchFragment : BaseFragment() {
     }
 
     sealed class Event {
-        data class Search(val keyword: String, val searchType: SearchType) : Event()
+        data class Search(val keyword: String, val searchType: SearchType, val categories: String? = null) : Event()
         object Clear : Event()
     }
 
     class SearchViewModel : ViewModel() {
         val keyword = MutableLiveData<String>().apply { value = "" }
+        val categories = MutableLiveData<String?>().apply { value = null }
         var lastKeyword: String = ""
         val event = SingleLiveEvent<Event>()
         var firstSearch = MutableLiveData<Boolean>().apply { value = false }
@@ -257,14 +300,17 @@ class SearchFragment : BaseFragment() {
             }
         }
 
-        fun search() = keyword.value?.takeIf { it.isNotEmpty() }?.let {
+        fun search(categoriesArg: String? = null) {
+            val k = keyword.value ?: ""
             firstSearch.value = true
-            lastKeyword = it
-            event.emit(Event.Search(it, searchType.value ?: SearchType.Post))
+            lastKeyword = k
+            val cats = categoriesArg ?: categories.value
+            event.emit(Event.Search(k, searchType.value ?: SearchType.Post, cats))
         }
 
         fun clear() {
             keyword.value = ""
+            categories.value = null
             firstSearch.value = false
             event.emit(Event.Clear)
         }
@@ -275,9 +321,11 @@ class SearchFragment : BaseFragment() {
     }
 
     companion object {
-        fun newInstance(initialType: SearchType = SearchType.Post) = SearchFragment().apply {
+        fun newInstance(initialType: SearchType = SearchType.Post, initialKeyword: String? = null, initialCategories: String? = null) = SearchFragment().apply {
             arguments = Bundle().apply {
                 putInt(BundleKey.InitialType.name, initialType.ordinal)
+                putString(BundleKey.InitialKeyword.name, initialKeyword)
+                putString(BundleKey.InitialCategories.name, initialCategories)
             }
         }
     }

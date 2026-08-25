@@ -79,6 +79,14 @@ class ChannelInfoDialogFragment : BottomSheetDialogFragment() {
             chatSettings.categories.forEach { category ->
                 val chip = Chip(requireContext())
                 chip.text = category.value.replaceFirstChar { it.uppercase() }
+                chip.setOnClickListener {
+                    val fragment = SearchFragment.newInstance(
+                        initialType = SearchFragment.SearchType.Chat,
+                        initialCategories = category.value
+                    )
+                    navigateTo(fragment, "search_category_${category.value}")
+                    dismiss()
+                }
                 binding.categoriesChipGroup.addView(chip)
             }
         }
