@@ -286,12 +286,12 @@ class SearchFragment : BaseFragment() {
     }
 
     class SearchViewModel : ViewModel() {
-        val keyword = MutableLiveData<String>().apply { value = "" }
-        val categories = MutableLiveData<String?>().apply { value = null }
+        val keyword = MutableLiveData("")
+        val categories: MutableLiveData<String?> = MutableLiveData(null)
         var lastKeyword: String = ""
         val event = SingleLiveEvent<Event>()
-        var firstSearch = MutableLiveData<Boolean>().apply { value = false }
-        val searchType = MutableLiveData<SearchType>().apply { value = SearchType.Post }
+        var firstSearch = MutableLiveData(false)
+        val searchType = MutableLiveData(SearchType.Post)
 
         class Factory : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -310,6 +310,7 @@ class SearchFragment : BaseFragment() {
 
         fun clear() {
             keyword.value = ""
+            @Suppress("NullSafeMutableLiveData")
             categories.value = null
             firstSearch.value = false
             event.emit(Event.Clear)
