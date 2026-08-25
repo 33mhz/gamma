@@ -273,6 +273,13 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         return defaultPnutService.getChannel(channelId)
     }
 
+    override suspend fun getSubscribers(
+        channelId: String,
+        getUsersParam: GetUsersParam
+    ): PnutResponse<List<User>> {
+        return defaultPnutService.getSubscribers(channelId, getUsersParam.toMap())
+    }
+
     override suspend fun getSubscribedChannels(getChannelsParam: GetChannelsParam): PnutResponse<List<Channel>> {
         return defaultPnutService.getSubscribedChannels(getChannelsParam.toMap())
     }

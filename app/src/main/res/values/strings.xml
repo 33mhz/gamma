@@ -341,6 +341,7 @@
     <string name="public_room">Public Room</string>
     <string name="private_room">Private Room</string>
     <string name="subscribers">Subscribers</string>
+    <string name="subscribers_with_id">Room %1$s\'s subscribers</string>
     <string name="created_at">Created</string>
     <string name="channel_info">Channel info</string>
     <string name="room">Room %s</string>

@@ -8,6 +8,8 @@ sealed class UserListType {
     @JsonClass(generateAdapter = true)
     data class Followers(val userId: String) : UserListType()
     @JsonClass(generateAdapter = true)
+    data class Subscribers(val channelId: String) : UserListType()
+    @JsonClass(generateAdapter = true)
     data class Search(val keyword: String) : UserListType()
     object Blocked : UserListType()
     object Muted : UserListType()
@@ -18,6 +20,7 @@ sealed class UserListType {
             val identifier = when (this) {
                 is Followers -> userId
                 is Following -> userId
+                is Subscribers -> channelId
                 is Search -> keyword
                 else -> "me"
             }

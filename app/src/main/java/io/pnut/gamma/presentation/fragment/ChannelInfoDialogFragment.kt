@@ -19,6 +19,7 @@ import io.pnut.gamma.domain.model.io.MuteChannelInputData
 import io.pnut.gamma.domain.usecases.GetChannelUseCase
 import io.pnut.gamma.domain.usecases.SubscribeChannelUseCase
 import io.pnut.gamma.domain.usecases.MuteChannelUseCase
+import io.pnut.gamma.presentation.util.navigateTo
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
@@ -91,7 +92,13 @@ class ChannelInfoDialogFragment : BottomSheetDialogFragment() {
             )
         }
 
-        binding.subscribersTextView.text = channel.counts.subscribers?.toString() ?: "0"
+        binding.subscribersTextView.text = channel.counts.subscribers?.toString()
+        binding.subscribersTextView.isVisible = channel.counts.subscribers != null
+        binding.subscribersContainer.setOnClickListener {
+            val fragment = SubscriberListFragment.newInstance(channel.id, channel.counts.subscribers)
+            navigateTo(fragment, "subscribers")
+            dismiss()
+        }
         binding.messagesTextView.text = String.format(Locale.US, "%,d", channel.counts.messages)
         binding.createdTextView.text = DateFormat.format(getString(R.string.date_format_yyyy_mm_dd), channel.createdAt)
 

@@ -13,6 +13,7 @@ class GetUsersUseCase(private val pnutRepository: IPnutRepository) :
         val res = when (val userListType = params.userListType) {
             is UserListType.Followers -> pnutRepository.getFollowers(userListType.userId, params.getUsersParam)
             is UserListType.Following -> pnutRepository.getFollowing(userListType.userId, params.getUsersParam)
+            is UserListType.Subscribers -> pnutRepository.getSubscribers(userListType.channelId, params.getUsersParam)
             is UserListType.Search -> pnutRepository.searchUsers(
                 GetUsersParam(params.getUsersParam.toMap()).apply {
                     add(SearchUserParam(userListType.keyword))

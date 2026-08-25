@@ -162,6 +162,9 @@ interface PnutService {
     @GET("channels/{channelId}?include_channel_raw=1")
     suspend fun getChannel(@Path("channelId") channelId: String): PnutResponse<Channel>
 
+    @GET("channels/{channelId}/subscribers")
+    suspend fun getSubscribers(@Path("channelId") channelId: String, @QueryMap pagination: Map<String, String>): PnutResponse<List<User>>
+
     @GET("channels/{channelId}/messages?include_deleted=0&include_message_raw=1")
     suspend fun getChannelMessages(@Path("channelId") channelId: String, @QueryMap paging: Map<String, String>): PnutResponse<List<Message>>
 
