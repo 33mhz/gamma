@@ -186,6 +186,8 @@
     <string name="share_search_posts_rss_url">Share search posts RSS</string>
     <string name="advanced_options">Advanced options</string>
     <string name="revised">Revised</string>
+    <string name="view_original_post">View original post</string>
+    <string name="original_post_header">Original post %s</string>
     <string name="format_time">%1$tH:%1$tM:%1$tS</string>
     <string name="cannot_load_file">Cannot load file</string>
     <string name="account_not_found">User not found</string>

@@ -139,6 +139,13 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override suspend fun getRevisions(
+        postId: String,
+        params: GetPostsParam
+    ): PnutResponse<List<Post>> {
+        return success { emptyList() }
+    }
+
     override suspend fun getPosts(ids: io.pnut.gamma.domain.entity.IDs): PnutResponse<List<Post>> {
         return success {
             ids.ids.mapNotNull { pnutMemoryDb.posts[it] }
@@ -303,6 +310,13 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
     }
 
     override suspend fun getChannel(channelId: String): PnutResponse<Channel> {
+        TODO("not implemented")
+    }
+
+    override suspend fun getSubscribers(
+        channelId: String,
+        getUsersParam: GetUsersParam
+    ): PnutResponse<List<User>> {
         TODO("not implemented")
     }
 

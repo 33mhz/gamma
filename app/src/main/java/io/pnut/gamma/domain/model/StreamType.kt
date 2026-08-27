@@ -29,6 +29,9 @@ sealed class StreamType {
     @JsonClass(generateAdapter = true)
     data class Posts(val ids: List<String>) : StreamType()
 
+    @JsonClass(generateAdapter = true)
+    data class Revisions(val postId: String) : StreamType()
+
     val categoryName: String
         get() = when (this) {
             is Explore -> this::class.java.simpleName
@@ -40,5 +43,6 @@ sealed class StreamType {
             is Thread -> "${this::class.java.simpleName}/$postId"
             is Search -> "${this::class.java.simpleName}/$keyword"
             is Posts -> "${this::class.java.simpleName}/${ids.hashCode()}"
+            is Revisions -> "${this::class.java.simpleName}/$postId"
         }
 }

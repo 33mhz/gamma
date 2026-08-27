@@ -88,7 +88,7 @@ interface PnutService {
     suspend fun getPosts(@QueryMap params: Map<String, String>): PnutResponse<List<Post>>
 
     @GET("posts/{postId}/revisions")
-    suspend fun getRevision(@Path("postId") postId: String): PnutResponse<List<Post>>
+    suspend fun getRevisions(@Path("postId") postId: String): PnutResponse<List<Post>>
 
     // user/post resources
 

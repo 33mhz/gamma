@@ -9,6 +9,11 @@
         android:icon="@drawable/ic_share_black_24dp"
         android:title="@string/share" />
     <item
+        android:id="@+id/menuViewRevisions"
+        android:icon="@drawable/ic_outline_create_24dp"
+        android:title="@string/view_original_post"
+        android:visible="false" />
+    <item
         android:id="@+id/menuReport"
         android:icon="@drawable/ic_report_black_24dp"
         android:title="@string/report" />

@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
@@ -44,6 +45,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import io.pnut.gamma.broadcast.PostReceiver
 import io.pnut.gamma.broadcast.RelationshipReceiver
+import io.pnut.gamma.databinding.ListWithToolbarBinding
 import io.pnut.gamma.domain.Relationship
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.Poll
@@ -205,6 +207,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             if (myIds.contains(post.user?.id)) {
                 menu.findItem(R.id.menuReport)?.isVisible = false
             }
+            menu.findItem(R.id.menuViewRevisions)?.isVisible = post.mainPost.isRevised == true
         }
     }
 
@@ -224,6 +227,10 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             }
             R.id.menuShare -> showShareMenu(post)
             R.id.menuReport -> showReportDialog(post)
+            R.id.menuViewRevisions -> {
+                val fragment = PostRevisionsFragment.newInstance(post.mainPost.id)
+                navigateTo(fragment, "revisions_${post.mainPost.id}")
+            }
         }
     }
 
@@ -1192,6 +1199,40 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             fun newInstance(keyword: String) = SearchPostsFragment().apply {
                 arguments = Bundle().apply {
                     putString(BundleKey.Keyword.name, keyword)
+                }
+            }
+        }
+    }
+
+    @AndroidEntryPoint
+    class PostRevisionsFragment : PostItemFragment() {
+        private val postId by lazy {
+            arguments?.getString(BundleKey.PostId.name, "").orEmpty()
+        }
+
+        private enum class BundleKey { PostId }
+
+        override val streamType by lazy {
+            StreamType.Revisions(postId)
+        }
+
+        override fun getFragmentLayout(): Int = R.layout.list_with_toolbar
+        override fun getRecyclerView(view: View): RecyclerView = ListWithToolbarBinding.bind(view).itemList
+        override fun getSwipeRefreshLayout(view: View): SwipeRefreshLayout = ListWithToolbarBinding.bind(view).swipeRefreshLayout
+
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+            val binding = ListWithToolbarBinding.bind(view)
+            binding.toolbar.setNavigationOnClickListener {
+                backToPrevFragment()
+            }
+            binding.toolbar.title = getString(R.string.original_post_header, postId)
+        }
+
+        companion object {
+            fun newInstance(postId: String) = PostRevisionsFragment().apply {
+                arguments = Bundle().apply {
+                    putString(BundleKey.PostId.name, postId)
                 }
             }
         }
