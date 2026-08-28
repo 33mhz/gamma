@@ -173,10 +173,13 @@ class NewPrivateMessageFragment : BaseFragment(),
         }
 
         val prepopulatedUsernames = arguments?.getStringArrayList("usernames")
-        if (prepopulatedUsernames != null) {
+        if (!prepopulatedUsernames.isNullOrEmpty()) {
             val usernamesText = prepopulatedUsernames.joinToString(", ") { "@$it" }
             binding.usernamesEditText.setText(usernamesText)
             binding.lookupButton.visibility = View.GONE
+            binding.usernamesEditText.isFocusable = false
+            binding.usernamesEditText.isFocusableInTouchMode = false
+            binding.usernamesEditText.isCursorVisible = false
         }
 
         viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
@@ -317,8 +320,13 @@ class NewPrivateMessageFragment : BaseFragment(),
     }
 
     fun focusToEditText() {
-        binding.usernamesEditText.requestFocus()
-        Util.showKeyboard(binding.usernamesEditText)
+        val target = if (!arguments?.getStringArrayList("usernames").isNullOrEmpty()) {
+            binding.textEditText
+        } else {
+            binding.usernamesEditText
+        }
+        target.requestFocus()
+        Util.showKeyboard(target)
     }
 
     override fun onDestroyView() {
