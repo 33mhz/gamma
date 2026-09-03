@@ -9,7 +9,10 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -105,10 +108,7 @@ class NewPrivateMessageFragment : BaseFragment(),
             val usernameText = it?.toString() ?: ""
             viewModel.usernames.value = usernameText
             binding.usernamesLayout.error = null
-            val hasUsernames = usernameText.isNotEmpty()
-            binding.textLayout.isVisible = hasUsernames
-            binding.counterTextView.isVisible = hasUsernames
-            binding.bottomToolbar.isVisible = hasUsernames
+            updateVisibility()
             updatePostMenuItem()
             viewModel.onTextChanged(usernameText, binding.usernamesEditText.selectionStart, requireAtSymbol = false)
         }
@@ -137,6 +137,18 @@ class NewPrivateMessageFragment : BaseFragment(),
 
         binding.lookupButton.setOnClickListener {
             viewModel.onLookup(requireContext())
+        }
+
+        binding.inviteChip.setOnCloseIconClickListener {
+            viewModel.inviteChannelId.value = null
+        }
+
+        viewModel.inviteChannelId.observe(viewLifecycleOwner) { channelId ->
+            binding.inviteChip.isVisible = channelId != null
+            if (channelId != null) {
+                binding.inviteChip.text = getString(R.string.invite_to_room, channelId)
+            }
+            updateVisibility()
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -182,6 +194,10 @@ class NewPrivateMessageFragment : BaseFragment(),
             binding.usernamesEditText.isCursorVisible = false
         }
 
+        arguments?.getString("invite_channel_id")?.let {
+            viewModel.inviteChannelId.value = it
+        }
+
         viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
             binding.loadingLayout.isVisible = isLoading
             binding.lookupButton.isEnabled = !isLoading
@@ -190,6 +206,28 @@ class NewPrivateMessageFragment : BaseFragment(),
 
         binding.thumbnailRecyclerView.adapter = adapter
         syncMenuState()
+        updateVisibility()
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+            v.updatePadding(
+                left = systemBars.left,
+                top = systemBars.top,
+                right = systemBars.right,
+                bottom = maxOf(systemBars.bottom, ime.bottom)
+            )
+            insets
+        }
+    }
+
+    private fun updateVisibility() {
+        val hasUsernames = viewModel.usernames.value?.isNotEmpty() == true
+        val hasInvite = viewModel.inviteChannelId.value != null
+        val showMessageInput = hasUsernames || hasInvite
+        binding.textLayout.isVisible = showMessageInput
+        binding.counterTextView.isVisible = showMessageInput
+        binding.bottomToolbar.isVisible = showMessageInput
     }
 
     private fun syncMenuState() {
@@ -335,9 +373,10 @@ class NewPrivateMessageFragment : BaseFragment(),
     }
 
     companion object {
-        fun newInstance(usernames: ArrayList<String>? = null) = NewPrivateMessageFragment().apply {
+        fun newInstance(usernames: ArrayList<String>? = null, inviteChannelId: String? = null) = NewPrivateMessageFragment().apply {
             arguments = Bundle().apply {
                 putStringArrayList("usernames", usernames)
+                putString("invite_channel_id", inviteChannelId)
             }
         }
     }

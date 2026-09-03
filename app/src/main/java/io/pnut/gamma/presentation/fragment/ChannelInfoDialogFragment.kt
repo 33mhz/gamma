@@ -19,6 +19,7 @@ import io.pnut.gamma.domain.model.io.MuteChannelInputData
 import io.pnut.gamma.domain.usecases.GetChannelUseCase
 import io.pnut.gamma.domain.usecases.SubscribeChannelUseCase
 import io.pnut.gamma.domain.usecases.MuteChannelUseCase
+import io.pnut.gamma.presentation.activity.ComposeMessageActivity
 import io.pnut.gamma.presentation.util.navigateTo
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -118,6 +119,13 @@ class ChannelInfoDialogFragment : BottomSheetDialogFragment() {
         binding.muteSwitch.isChecked = channel.youMuted
         binding.muteSwitch.setOnClickListener {
             toggleMute()
+        }
+
+        binding.inviteButton.isVisible = !isPm && (channel.acl.write.anyUser || channel.acl.read.anyUser)
+        binding.inviteButton.setOnClickListener {
+            val intent = ComposeMessageActivity.newIntentForNewPm(requireContext(), inviteChannelId = channel.id)
+            startActivity(intent)
+            dismiss()
         }
     }
 

@@ -20,6 +20,7 @@ class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val handleNameTextView: TextView = itemView.findViewById(R.id.handleNameTextView)
     val relativeTimeTextView: TextView = itemView.findViewById(R.id.relativeTimeTextView)
     val bodyTextView: LinkableTextView = itemView.findViewById(R.id.bodyTextView)
+    val goToChannelButton: MaterialButton = itemView.findViewById(R.id.goToChannelButton)
     val foregroundActionsLayout: LinearLayout = itemView.findViewById(R.id.foregroundActionsLayout)
     val replyButton: ImageButton = itemView.findViewById(R.id.replyButton)
     val deleteButton: ImageButton = itemView.findViewById(R.id.deleteButton)

@@ -1,6 +1,10 @@
 package io.pnut.gamma.presentation.fragment
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -11,6 +15,7 @@ import io.pnut.gamma.R
 import io.pnut.gamma.domain.entity.Message
 import io.pnut.gamma.domain.entity.PnutResponse
 import io.pnut.gamma.domain.entity.User
+import io.pnut.gamma.domain.entity.raw.ChannelInvite
 import io.pnut.gamma.domain.entity.raw.OEmbed
 import io.pnut.gamma.domain.model.PageableItemWrapper
 import io.pnut.gamma.domain.model.ThumbAndFull
@@ -114,9 +119,31 @@ class SearchMessagesFragment : BaseListFragment<Message, MessageViewHolder>(),
         viewHolder.contentsWrapperLayout.visibility = if (item.showContents) View.VISIBLE else View.GONE
 
         viewHolder.bodyTextView.text = item.content?.getSpannableStringBuilder(context)
+        
+        val raw = item.raw
+        val invite = ChannelInvite.getChannelInvite(raw)
+        viewHolder.goToChannelButton.visibility = if (invite != null) View.VISIBLE else View.GONE
+        if (invite != null) {
+            val channelLabel = invite.name ?: invite.channelId
+            val prefix = if (invite.name != null) { getString(R.string.go_to) } else { getString(R.string.channel) + " " + getString(R.string.go_to) }
+            val text = "$prefix $channelLabel"
+            val spannable = SpannableString(text)
+            spannable.setSpan(
+                StyleSpan(Typeface.ITALIC),
+                prefix.length + 1,
+                text.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            viewHolder.goToChannelButton.text = spannable
+            viewHolder.goToChannelButton.setOnClickListener {
+                val fragment =
+                    ChannelMessagesFragment.newInstance(invite.channelId, channelLabel, null, null)
+                navigateTo(fragment, invite.channelId)
+            }
+        }
+
         viewHolder.relativeTimeTextView.text = DateUtil.getShortDateStr(context, item.createdAt)
 
-        val raw = item.raw
         val photos = OEmbed.Photo.getPhotos(raw)
         if (photos.isNotEmpty()) {
             viewHolder.thumbnailViewPagerFrameLayout.visibility = View.VISIBLE

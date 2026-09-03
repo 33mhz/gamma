@@ -155,6 +155,18 @@
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                     tools:text="@tools:sample/lorem" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/goToChannelButton"
+                    style="@style/Button.Outlined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_forum_black_24dp"
+                    tools:text="Go to channel"
+                    tools:visibility="visible" />
+
                 <FrameLayout
                     android:id="@+id/thumbnailViewPagerFrameLayout"
                     android:layout_width="match_parent"

@@ -258,6 +258,9 @@
     <string name="creating_post">Creating post…</string>
     <string name="creating_message">Creating message…</string>
 
+    <string name="invite_user">Invite User</string>
+    <string name="invite_to_room">Invite to room %s</string>
+
     <string name="new_private_message">New Private Message</string>
     <string name="usernames_hint">Usernames</string>
     <string name="message_hint">Message</string>

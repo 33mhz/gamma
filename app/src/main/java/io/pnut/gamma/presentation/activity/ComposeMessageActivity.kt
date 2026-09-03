@@ -48,7 +48,8 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, 
         if (savedInstanceState == null) {
             val fragment = if (isNewPm) {
                 val usernames = intent.getStringArrayListExtra(IntentKey.Usernames.name)
-                NewPrivateMessageFragment.newInstance(usernames)
+                val inviteChannelId = intent.getStringExtra(IntentKey.InviteChannelId.name)
+                NewPrivateMessageFragment.newInstance(usernames, inviteChannelId)
             } else {
                 composeMessageFragment
             }
@@ -119,7 +120,7 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, 
     }
 
     private enum class IntentKey {
-        ChannelId, InitialText, InitialPhoto, ReplyTarget, IsNewPm, Usernames, ChannelTitle, Channel, ReplyAll
+        ChannelId, InitialText, InitialPhoto, ReplyTarget, IsNewPm, Usernames, ChannelTitle, Channel, ReplyAll, InviteChannelId
     }
 
     companion object {
@@ -142,9 +143,10 @@ class ComposeMessageActivity : BaseActivity(), ComposeMessageFragment.Callback, 
             it.putExtra(IntentKey.ReplyAll.name, replyAll)
         }
 
-        fun newIntentForNewPm(context: Context, usernames: ArrayList<String>? = null) = Intent(context, ComposeMessageActivity::class.java).also {
+        fun newIntentForNewPm(context: Context, usernames: ArrayList<String>? = null, inviteChannelId: String? = null) = Intent(context, ComposeMessageActivity::class.java).also {
             it.putExtra(IntentKey.IsNewPm.name, true)
             it.putStringArrayListExtra(IntentKey.Usernames.name, usernames)
+            it.putExtra(IntentKey.InviteChannelId.name, inviteChannelId)
         }
     }
 

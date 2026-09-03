@@ -13,6 +13,7 @@ import io.pnut.gamma.data.db.dao.CacheDao
 import io.pnut.gamma.domain.entity.IDs
 import io.pnut.gamma.domain.entity.PmPostBody
 import io.pnut.gamma.domain.entity.PollPostBody
+import io.pnut.gamma.domain.entity.raw.ChannelInvite
 import io.pnut.gamma.domain.entity.raw.OEmbed
 import io.pnut.gamma.domain.entity.raw.PollNotice
 import io.pnut.gamma.domain.entity.raw.RawValue
@@ -67,6 +68,7 @@ class NewPrivateMessageViewModel @Inject constructor(
 
     val nsfw = MutableLiveData(false)
     val enablePoll = MutableLiveData(false)
+    val inviteChannelId = MutableLiveData<String?>(null)
     val spoiler = MutableLiveData<Spoiler?>(null)
     var media: List<UriInfo> = emptyList()
 
@@ -142,6 +144,11 @@ class NewPrivateMessageViewModel @Inject constructor(
 
                 replacementFileRawList.forEach {
                     raw.getOrPut(OEmbed.TYPE) { mutableListOf() }.add(it)
+                }
+
+                inviteChannelId.value?.let {
+                    raw.getOrPut(ChannelInvite.TYPE) { mutableListOf() }
+                        .add(ChannelInvite(it, null))
                 }
 
                 val messageBody = PmPostBody(
