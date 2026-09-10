@@ -46,6 +46,7 @@ import io.pnut.gamma.presentation.adapter.ThumbnailViewPagerAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import io.pnut.gamma.presentation.util.BindingUtil
+import io.pnut.gamma.presentation.util.embed.EmbedManager
 import io.pnut.gamma.presentation.util.DateUtil
 import io.pnut.gamma.presentation.util.EntityOnTouchListener
 import io.pnut.gamma.presentation.util.navigateTo
@@ -258,6 +259,13 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
             viewHolder.thumbnailViewPagerFrameLayout.visibility = View.GONE
             viewHolder.thumbnailViewPager.adapter = null
         }
+
+        val embeds = if (preferenceRepository.embedYoutube) {
+            val urls = item.content?.entities?.links?.map { it.url } ?: emptyList()
+            EmbedManager.parse(urls)
+        } else emptyList()
+
+        EmbedManager.bindEmbeds(viewHolder.embedContainer, embeds, item.nsfwMask)
 
         val isExpanded = previousViewHolderItem?.message == item
         viewHolder.foregroundActionsLayout.visibility = if (isExpanded) View.VISIBLE else View.GONE

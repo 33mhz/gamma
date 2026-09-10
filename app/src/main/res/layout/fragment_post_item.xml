@@ -230,6 +230,14 @@
                         tools:text="Go to channel"
                         tools:visibility="visible" />
 
+                    <LinearLayout
+                        android:id="@+id/embedContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
                     <FrameLayout
                         android:id="@+id/thumbnailViewPagerFrameLayout"
                         android:layout_width="match_parent"

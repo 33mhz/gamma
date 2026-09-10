@@ -28,4 +28,5 @@ interface IPreferenceRepository {
     fun shouldShowAvatar(userType: User.AccountType?, isStream: Boolean): Boolean
     fun hasExceededWelcomeFollowed(userId: String): Boolean
     fun setExceededWelcomeFollowed(userId: String, exceeded: Boolean)
+    val embedYoutube: Boolean
 }

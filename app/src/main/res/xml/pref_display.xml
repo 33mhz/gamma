@@ -32,4 +32,11 @@
             android:title="@string/change_theme_color"
             app:widgetLayout="@layout/primary_color_preview" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_header_embeds">
+        <SwitchPreferenceCompat
+            app:defaultValue="@bool/pref_embed_youtube_default_value"
+            app:key="@string/pref_embed_youtube_key"
+            app:summary="@string/pref_embed_youtube_summary"
+            app:title="@string/pref_embed_youtube_title" />
+    </PreferenceCategory>
 </PreferenceScreen>

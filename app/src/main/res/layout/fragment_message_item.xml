@@ -143,10 +143,12 @@
                 android:layout_marginStart="@dimen/margin_regular"
                 android:layout_marginEnd="@dimen/margin_regular"
                 android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/avatarImageView"
                 app:layout_goneMarginStart="@dimen/margin_regular"
-                app:layout_constraintTop_toBottomOf="@+id/screenNameTextView">
+                app:layout_constraintTop_toBottomOf="@+id/screenNameTextView"
+                app:layout_constraintVertical_bias="0">
 
                 <io.pnut.gamma.presentation.view.LinkableTextView
                     android:id="@+id/bodyTextView"
@@ -165,6 +167,14 @@
                     android:visibility="gone"
                     app:icon="@drawable/ic_forum_black_24dp"
                     tools:text="Go to channel"
+                    tools:visibility="visible" />
+
+                <LinearLayout
+                    android:id="@+id/embedContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
                     tools:visibility="visible" />
 
                 <FrameLayout

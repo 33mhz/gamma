@@ -85,6 +85,7 @@ import io.pnut.gamma.presentation.util.EntityOnTouchListener
 import io.pnut.gamma.presentation.util.navigateTo
 import io.pnut.gamma.presentation.util.PostTouchHelperCallback
 import io.pnut.gamma.presentation.util.Util
+import io.pnut.gamma.presentation.util.embed.EmbedManager
 import io.pnut.gamma.presentation.view.LinkableTextView
 import io.pnut.gamma.service.PostWorker
 import io.pnut.gamma.util.LogUtil
@@ -565,6 +566,14 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             viewHolder.thumbnailViewPagerFrameLayout.visibility = View.GONE
             viewHolder.thumbnailViewPager.adapter = null
         }
+
+        val embeds = if (preferenceRepository.embedYoutube) {
+            val urls = item.mainPost.content?.entities?.links?.map { it.url } ?: emptyList()
+            EmbedManager.parse(urls)
+        } else emptyList()
+
+        EmbedManager.bindEmbeds(viewHolder.embedContainer, embeds, item.mainPost.nsfwMask)
+
         viewHolder.detailInfoLayout.visibility = getVisibility(isMainItem)
         val replyCount = item.mainPost.counts.replies
         val replyText =
@@ -970,6 +979,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         var isMainItem: Boolean = false
         val showLongPostButton: MaterialButton = itemView.findViewById(R.id.showLongPostButton)
         val goToChannelButton: MaterialButton = itemView.findViewById(R.id.goToChannelButton)
+        val embedContainer: LinearLayout = itemView.findViewById(R.id.embedContainer)
         val revisedIconImageView: ImageView = itemView.findViewById(R.id.revisedIconImageView)
         val swipeActionsLayout: FrameLayout = itemView.findViewById(R.id.swipeActionsLayout)
         val absoluteDateTextView: TextView = itemView.findViewById(R.id.absoluteDateTextView)

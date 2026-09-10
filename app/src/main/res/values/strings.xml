@@ -332,12 +332,16 @@
     <string name="pref_hide_directed_posts_key">hide_directed_posts</string>
     <string name="pref_hide_directed_posts_title">Hide posts directed at people you do not follow</string>
     <string name="pref_hide_directed_posts_summary">Posts are directed at a user if they start with a mention.</string>
+    <string name="pref_embed_youtube_key">embed_youtube</string>
+    <string name="pref_embed_youtube_title">Fetch YouTube embeds</string>
+    <string name="pref_embed_youtube_summary">Show thumbnail previews</string>
     <string name="pref_stream_key">pref_stream</string>
     <string name="pref_stream_title">Stream</string>
     <string name="pref_general_header_title_key">pref_general_header_title_key</string>
     <string name="pref_license_key">pref_license_key</string>
     <string name="pref_header_app">App</string>
     <string name="pref_header_general">General</string>
+    <string name="pref_header_embeds">Load Embeds</string>
     <string name="pref_version_key">pref_version_key</string>
     <string name="gamma_version">Gamma version</string>
     <string name="license">License</string>

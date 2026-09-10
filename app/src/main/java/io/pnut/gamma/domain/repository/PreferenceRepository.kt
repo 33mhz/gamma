@@ -155,4 +155,9 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
             exceeded
         ).apply()
     }
+    override val embedYoutube: Boolean
+        get() = sharedPreferences.getBoolean(
+            context.getString(R.string.pref_embed_youtube_key),
+            res.getBoolean(R.bool.pref_embed_youtube_default_value)
+        )
 }

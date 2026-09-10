@@ -55,4 +55,6 @@ open class PreferenceRepositoryMock : IPreferenceRepository {
 
   override fun setExceededWelcomeFollowed(userId: String, exceeded: Boolean) {
   }
+  override val embedYoutube: Boolean
+    get() = true
 }
