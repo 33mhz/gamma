@@ -70,7 +70,7 @@ class HaulerView @JvmOverloads constructor(
         if (isDragEnabled.not()) {
             return super.onNestedPreScroll(target, dx, dy, consumed)
         }
-        // if we're in a drag gesture and the user reverses up the we should take those events
+        // if we're in a drag gesture and the user reverses we should take those events
         val draggingDownInProgress = draggingDown && dy > 0
         val draggingUpInProgress = draggingUp && dy < 0
         if (draggingDownInProgress || draggingUpInProgress) {

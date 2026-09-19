@@ -60,7 +60,7 @@ android {
     minSdk = 30
     targetSdk = 37
     versionCode = currentVersionCode
-    versionName = "0.13.0"
+    versionName = "1.0.0"
     testInstrumentationRunner = "io.pnut.gamma.HiltTestRunner"
   }
   buildTypes {
@@ -171,7 +171,7 @@ dependencies {
 
   implementation("com.github.CanHub:Android-Image-Cropper:4.5.0")
 
-  implementation("com.google.android.gms:play-services-oss-licenses:17.5.1")
+  implementation("com.google.android.gms:play-services-oss-licenses:17.5.2")
 
   if (hasGoogleServices) {
     implementation(platform("com.google.firebase:firebase-bom:34.17.0"))
@@ -184,7 +184,7 @@ dependencies {
   testImplementation("org.mockito:mockito-core:5.23.0")
   testImplementation("org.mockito.kotlin:mockito-kotlin:6.3.0")
   androidTestImplementation("org.mockito:mockito-android:5.23.0")
-  testImplementation("org.robolectric:robolectric:4.16.1")
+  testImplementation("org.robolectric:robolectric:4.17")
   val espressoVersion = "3.7.0"
   androidTestImplementation("androidx.test.espresso:espresso-core:$espressoVersion")
   androidTestImplementation("androidx.test.espresso:espresso-intents:$espressoVersion")
@@ -195,11 +195,11 @@ dependencies {
   androidTestImplementation("androidx.test.ext:junit:1.3.0")
 
   // Kotlin
-  val navVersion = "2.9.8"
+  val navVersion = "2.10.1"
   implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
   implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
 
-  val roomVersion = "2.8.4"
+  val roomVersion = "2.8.5"
   implementation("androidx.room:room-runtime:$roomVersion")
   implementation("androidx.room:room-ktx:$roomVersion")
   ksp("androidx.room:room-compiler:$roomVersion")

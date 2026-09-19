@@ -75,7 +75,7 @@ data class File(
     @JsonClass(generateAdapter = true)
     data class DerivativeFiles(
         @Json(name = "core_image_200s") val coreImage200s: DerivedFile? = null,
-        @Json(name = "core_image_600s") val coreimage600s: DerivedFile? = null,
+        @Json(name = "core_image_600s") val coreImage600s: DerivedFile? = null,
         @Json(name = "core_image_960r") val coreImage960r: DerivedFile? = null
     ) : Parcelable
 }
