@@ -177,6 +177,23 @@ open class PnutRepositoryMock(private val pnutMockData: PnutMockData = PnutMockD
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override suspend fun updatePostSync(postId: String, postBody: PostBody, token: String): PnutResponse<Post> {
+        return when {
+            postBody.text.isEmpty() -> throw TestException()
+            token.isEmpty() -> throw TestException()
+            else -> success {
+                Post(
+                    createdAt = Date(),
+                    id = postId,
+                    source = Clients.testClient,
+                    threadId = "1",
+                    counts = Post.PostCount(0, 0, 0, 0),
+                    content = BaseContent(text = postBody.text)
+                )
+            }
+        }
+    }
+
     override suspend fun deletePost(postId: String): PnutResponse<Post> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

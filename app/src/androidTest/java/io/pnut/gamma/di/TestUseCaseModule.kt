@@ -50,6 +50,8 @@ object TestUseCaseModule {
 
     @Provides
     @Singleton
+    @Provides
+    @Singleton
     fun provideStarUseCase(): StarUseCase = Mockito.mock(StarUseCase::class.java)
 
     @Provides

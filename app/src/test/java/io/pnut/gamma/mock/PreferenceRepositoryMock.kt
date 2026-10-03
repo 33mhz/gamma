@@ -1,6 +1,7 @@
 package io.pnut.gamma.mock
 
 import android.content.SharedPreferences
+import io.pnut.gamma.domain.entity.User
 import io.pnut.gamma.domain.model.preference.ShapeOfAvatar
 import io.pnut.gamma.domain.repository.IPreferenceRepository
 import io.pnut.gamma.presentation.util.ThemeColorUtil
@@ -57,4 +58,9 @@ open class PreferenceRepositoryMock : IPreferenceRepository {
   }
   override val embedYoutube: Boolean
     get() = true
+  override val showAvatar: Boolean
+    get() = true
+  override val hideFeedBotAvatar: Boolean
+    get() = false
+  override fun shouldShowAvatar(userType: User.AccountType?, isStream: Boolean): Boolean = true
 }

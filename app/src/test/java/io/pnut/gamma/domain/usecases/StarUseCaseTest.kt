@@ -42,7 +42,7 @@ class StarUseCaseTest {
     @Test
     fun succeedToUnStar() {
         val starUseCase = StarUseCase(object : PnutRepositoryMock() {
-            override fun deleteStarPostSync(postId: String): PnutResponse<Post> {
+            override suspend fun deleteStarPostSync(postId: String): PnutResponse<Post> {
                 return PnutResponse(PnutResponse.Meta(200), starredPost.copy(youBookmarked = false))
             }
         })
@@ -53,7 +53,7 @@ class StarUseCaseTest {
     @Test(expected = TestException::class)
     fun failToUnStar() {
         val starUseCase = StarUseCase(object : PnutRepositoryMock() {
-            override fun deleteStarPostSync(postId: String): PnutResponse<Post> {
+            override suspend fun deleteStarPostSync(postId: String): PnutResponse<Post> {
                 throw TestException()
             }
         })
