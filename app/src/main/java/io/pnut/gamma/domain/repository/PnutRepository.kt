@@ -228,6 +228,10 @@ class PnutRepository(private val context: Context, defaultAccountToken: String? 
         return defaultPnutService.editPost(postId, postBody)
     }
 
+    override suspend fun updatePostSync(postId: String, postBody: PostBody, token: String): PnutResponse<Post> {
+        return createPnutService(token).editPost(postId, postBody)
+    }
+
     override suspend fun deletePost(postId: String): PnutResponse<Post> {
         return defaultPnutService.deletePost(postId)
     }

@@ -481,6 +481,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         viewHolder.replyButton.setOnLongClickListener(onReplyLongClick)
 
         updateRepostView(viewHolder, item)
+        updateEditView(viewHolder, item)
 
         val hasConversation =
             item.mainPost.replyTo != null || item.mainPost.counts.replies > 0
@@ -730,6 +731,26 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         viewHolder.repostCountTextView.text = repostText
     }
 
+    private fun updateEditView(viewHolder: PostViewHolder, item: Post) {
+        val isMyPost = item.mainPost.user?.me == true
+        val diffMillis = System.currentTimeMillis() - item.mainPost.createdAt.time
+        val isLessThan5Minutes = diffMillis < 5 * 60 * 1000L
+        val isNotRevised = item.mainPost.isRevised != true
+        val canEdit = isMyPost && isLessThan5Minutes && isNotRevised && !item.isDeletedNonNull
+
+        viewHolder.editButton.visibility = getVisibility(canEdit)
+        if (canEdit) {
+            viewHolder.editButton.setOnClickListener {
+                showEditCompose(item.mainPost)
+            }
+        }
+    }
+
+    private fun showEditCompose(post: Post) {
+        val intent = ComposePostActivity.newIntent(requireContext(), editTarget = post)
+        startActivity(intent)
+    }
+
     private fun updateStarView(viewHolder: PostViewHolder, item: Post) {
         val starDrawableRes =
             if (item.mainPost.youBookmarked == true) R.drawable.ic_star_black_24dp else R.drawable.ic_star_border_black_24dp
@@ -974,6 +995,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
         val replyButton: ImageButton = itemView.findViewById(R.id.replyButton)
         val starButton: ImageButton = itemView.findViewById(R.id.starButton)
         val repostButton: ImageButton = itemView.findViewById(R.id.repostButton)
+        val editButton: ImageButton = itemView.findViewById(R.id.editButton)
         val threadButton: ImageButton = itemView.findViewById(R.id.threadButton)
         val moreButton: ImageButton = itemView.findViewById(R.id.moreButton)
         var isMainItem: Boolean = false

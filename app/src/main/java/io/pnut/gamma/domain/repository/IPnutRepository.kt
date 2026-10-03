@@ -43,6 +43,7 @@ interface IPnutRepository {
     suspend fun createPost(postBody: PostBody): PnutResponse<Post>
     suspend fun createPostSync(postBody: PostBody, token: String): PnutResponse<Post>
     suspend fun updatePost(postId: String, postBody: PostBody): PnutResponse<Post>
+    suspend fun updatePostSync(postId: String, postBody: PostBody, token: String): PnutResponse<Post>
     suspend fun deletePost(postId: String): PnutResponse<Post>
 
     suspend fun reportPost(postId: String, reason: io.pnut.gamma.domain.entity.ReportReason): PnutResponse<Unit>

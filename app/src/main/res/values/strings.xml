@@ -16,6 +16,7 @@
     <string name="trending">Trending</string>
     <string name="global">Global</string>
     <string name="compose_post">Compose post</string>
+    <string name="revise_post">Revise post</string>
     <string name="post">Post</string>
     <string name="app_description">pnut.io client for Android.</string>
     <string name="login_with_pnut">Login</string>
@@ -256,7 +257,10 @@
     <string name="uploading_images">Uploading images…</string>
     <string name="creating_poll">Creating poll…</string>
     <string name="creating_post">Creating post…</string>
+    <string name="updating_post">Updating post…</string>
     <string name="creating_message">Creating message…</string>
+    <string name="edit">Edit</string>
+    <string name="edit_post">Edit post</string>
 
     <string name="invite_user">Invite User</string>
     <string name="invite_to_room">Invite to room %s</string>

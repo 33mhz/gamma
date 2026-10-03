@@ -540,6 +540,20 @@
                 app:tint="@android:color/white" />
 
             <ImageButton
+                android:id="@+id/editButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/edit"
+                android:foreground="?attr/selectableItemBackground"
+                android:scaleType="center"
+                android:src="@drawable/ic_edit_square_black_24dp"
+                android:visibility="gone"
+                app:tint="@android:color/white"
+                tools:visibility="visible" />
+
+            <ImageButton
                 android:id="@+id/threadButton"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"

@@ -51,11 +51,13 @@ import io.pnut.gamma.domain.model.Account
 import io.pnut.gamma.domain.model.UriInfo
 import io.pnut.gamma.domain.model.io.CreatePollInputData
 import io.pnut.gamma.domain.model.io.PostInputData
+import io.pnut.gamma.domain.model.io.UpdatePostInputData
 import io.pnut.gamma.domain.model.io.UploadFileInputData
 import io.pnut.gamma.domain.usecases.CreatePollUseCase
 import io.pnut.gamma.domain.usecases.GetAccountListUseCase
 import io.pnut.gamma.domain.usecases.GetCurrentAccountUseCase
 import io.pnut.gamma.domain.usecases.PostUseCase
+import io.pnut.gamma.domain.usecases.UpdatePostUseCase
 import io.pnut.gamma.domain.usecases.UploadFileUseCase
 import io.pnut.gamma.presentation.activity.EditPhotoActivity
 import io.pnut.gamma.presentation.util.AnimationCallback
@@ -126,7 +128,7 @@ class ComposePostFragment : BaseFragment(),
     }
 
     private enum class BundleKey {
-        ReplyTarget, InitialText, InitialPhoto, ReplyAll
+        ReplyTarget, InitialText, InitialPhoto, ReplyAll, EditTarget
     }
 
     private enum class DialogKey {
@@ -238,10 +240,12 @@ class ComposePostFragment : BaseFragment(),
                 currentUserId,
                 uploadFileUseCase,
                 postUseCase,
+                updatePostUseCase,
                 createPollUseCase,
                 cacheDao,
                 accountRepository,
-                preferenceRepository
+                preferenceRepository,
+                editTarget,
             )
         )[ComposePostViewModel::class.java]
     }
@@ -251,6 +255,9 @@ class ComposePostFragment : BaseFragment(),
     }
     private val replyAll: Boolean by lazy {
         arguments?.getBoolean(BundleKey.ReplyAll.name, true) ?: true
+    }
+    private val editTarget: Post? by lazy {
+        arguments?.let { BundleCompat.getParcelable(it, BundleKey.EditTarget.name, Post::class.java) }
     }
 
     private var _binding: FragmentComposePostBinding? = null
@@ -266,6 +273,9 @@ class ComposePostFragment : BaseFragment(),
 
     @Inject
     lateinit var postUseCase: PostUseCase
+
+    @Inject
+    lateinit var updatePostUseCase: UpdatePostUseCase
 
     @Inject
     lateinit var createPollUseCase: CreatePollUseCase
@@ -416,6 +426,14 @@ class ComposePostFragment : BaseFragment(),
         binding.viewLeftActionMenuView.setOnMenuItemClickListener(::onMenuItemClick)
         binding.viewRightActionMenuView.setOnMenuItemClickListener(::onMenuItemClick)
 
+        if (editTarget != null) {
+            findMenuItemWithinLeftMenu(R.id.menuTakePhoto)?.isEnabled = false
+            findMenuItemWithinLeftMenu(R.id.menuInsertPhoto)?.isEnabled = false
+            findMenuItemWithinLeftMenu(R.id.menuPoll)?.isEnabled = false
+            findMenuItemWithinLeftMenu(R.id.menuSpoiler)?.isEnabled = false
+            findMenuItemWithinLeftMenu(R.id.menuLongPost)?.isEnabled = false
+        }
+
         viewModel.replyTargetVisibility.observe(viewLifecycleOwner) {
             binding.replyTargetCardView.visibility = it
         }
@@ -482,11 +500,11 @@ class ComposePostFragment : BaseFragment(),
     }
 
     private fun setupToolbar() {
-        binding.toolbar.title =
-            if (replyTarget != null)
-                getString(R.string.compose_reply_title_template, replyTarget?.username)
-            else
-                getString(R.string.compose_post)
+        binding.toolbar.title = when {
+            editTarget != null -> getString(R.string.revise_post)
+            replyTarget != null -> getString(R.string.compose_reply_title_template, replyTarget?.username)
+            else -> getString(R.string.compose_post)
+        }
         binding.toolbar.setOnMenuItemClickListener(::onMenuItemClick)
         binding.toolbar.setNavigationOnClickListener {
             cancelToCompose()
@@ -575,10 +593,12 @@ class ComposePostFragment : BaseFragment(),
         currentUserId: String,
         private val uploadFileUseCase: UploadFileUseCase,
         private val postUseCase: PostUseCase,
+        private val updatePostUseCase: UpdatePostUseCase,
         private val createPollUseCase: CreatePollUseCase,
         cacheDao: CacheDao,
         accountRepository: IAccountRepository,
-        preferenceRepository: IPreferenceRepository
+        preferenceRepository: IPreferenceRepository,
+        private val editTarget: Post? = null,
     ) : ViewModel() {
         private val mentionDelegate = MentionViewModelDelegate(cacheDao, accountRepository, preferenceRepository, viewModelScope)
         val suggestions = mentionDelegate.suggestions
@@ -597,10 +617,10 @@ class ComposePostFragment : BaseFragment(),
                     User.AvatarSize.Large
                 )
             }
-        var spoiler: Spoiler? = null
+        var spoiler: Spoiler? = editTarget?.mainPost?.spoiler
         var media: List<UriInfo> = emptyList()
         var initialized: Boolean = false
-        val nsfw = MutableLiveData<Boolean>().apply { value = false }
+        val nsfw = MutableLiveData<Boolean>().apply { value = editTarget?.mainPost?.isNsfw ?: false }
         val replyTarget = MutableLiveData<Post>().apply { value = replyTargetArg }
         val replyTargetVisibility: LiveData<Int> = replyTarget.map {
             if (it != null) View.VISIBLE else View.GONE
@@ -615,26 +635,30 @@ class ComposePostFragment : BaseFragment(),
         val counterStr: LiveData<String> = counter.map { it.toString() }
         val previewAttachmentsVisibility = MutableLiveData<Int>().apply { value = View.GONE }
         val computedInitialText by lazy {
-            val replyTargetUserUsername = replyTargetArg?.username
-            val mentions = replyTargetArg?.content?.entities?.mentions?.map { it.text }?.toMutableList() ?: mutableListOf()
-            if (replyTargetUserUsername != null) {
-                mentions.add(0, replyTargetUserUsername)
-            }
-            
-            val currentUsername = accountRepository.getDefaultAccount()?.screenName
-            val uniqueMentions = mentions.distinctBy { it.lowercase() }
-                .filterNot { it.equals(currentUsername, ignoreCase = true) }
-
-            when {
-                uniqueMentions.isNotEmpty() -> {
-                    if (replyAll) {
-                        uniqueMentions.joinToString(" ") { "@$it" } + " "
-                    } else {
-                        "@${uniqueMentions.first()} "
-                    }
+            if (editTarget != null) {
+                editTarget.mainPost.content?.text ?: ""
+            } else {
+                val replyTargetUserUsername = replyTargetArg?.username
+                val mentions = replyTargetArg?.content?.entities?.mentions?.map { it.text }?.toMutableList() ?: mutableListOf()
+                if (replyTargetUserUsername != null) {
+                    mentions.add(0, replyTargetUserUsername)
                 }
-                initialText != null -> "$initialText "
-                else -> ""
+                
+                val currentUsername = accountRepository.getDefaultAccount()?.screenName
+                val uniqueMentions = mentions.distinctBy { it.lowercase() }
+                    .filterNot { it.equals(currentUsername, ignoreCase = true) }
+
+                when {
+                    uniqueMentions.isNotEmpty() -> {
+                        if (replyAll) {
+                            uniqueMentions.joinToString(" ") { "@$it" } + " "
+                        } else {
+                            "@${uniqueMentions.first()} "
+                        }
+                    }
+                    initialText != null -> "$initialText "
+                    else -> ""
+                }
             }
         }
         var enablePoll = MutableLiveData<Boolean>().apply { value = false }
@@ -703,9 +727,13 @@ class ComposePostFragment : BaseFragment(),
 
                     val modifiedPostBody = PostBody(text, replyTarget.value?.id, isNsfw = isNsfw, raw = raw.toMap())
                     
-                    status.value = context.getString(R.string.creating_post)
+                    status.value = if (editTarget != null) context.getString(R.string.updating_post) else context.getString(R.string.creating_post)
                     val postOutputData = withContext(Dispatchers.IO) {
-                        postUseCase.run(PostInputData(modifiedPostBody, currentUserId))
+                        if (editTarget != null) {
+                            updatePostUseCase.run(UpdatePostInputData(editTarget.id, modifiedPostBody, currentUserId))
+                        } else {
+                            postUseCase.run(PostInputData(modifiedPostBody, currentUserId))
+                        }
                     }
                     val post = postOutputData.res.data
                     PostWorker.sendResultBroadcast(context, PostWorker.Actions.SendPost, post)
@@ -758,10 +786,12 @@ class ComposePostFragment : BaseFragment(),
             private val currentUserId: String,
             private val uploadFileUseCase: UploadFileUseCase,
             private val postUseCase: PostUseCase,
+            private val updatePostUseCase: UpdatePostUseCase,
             private val createPollUseCase: CreatePollUseCase,
             private val cacheDao: CacheDao,
             private val accountRepository: IAccountRepository,
-            private val preferenceRepository: IPreferenceRepository
+            private val preferenceRepository: IPreferenceRepository,
+            private val editTarget: Post? = null,
         ) :
             ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -773,10 +803,12 @@ class ComposePostFragment : BaseFragment(),
                     currentUserId,
                     uploadFileUseCase,
                     postUseCase,
+                    updatePostUseCase,
                     createPollUseCase,
                     cacheDao,
                     accountRepository,
-                    preferenceRepository
+                    preferenceRepository,
+                    editTarget
                 ) as T
             }
         }
@@ -787,13 +819,15 @@ class ComposePostFragment : BaseFragment(),
             initialText: String? = null,
             initialPhoto: ArrayList<UriInfo>? = null,
             replyTarget: Post? = null,
-            replyAll: Boolean = true
+            replyAll: Boolean = true,
+            editTarget: Post? = null
         ) = ComposePostFragment().apply {
             arguments = Bundle().apply {
                 putString(BundleKey.InitialText.name, initialText)
                 putParcelableArrayList(BundleKey.InitialPhoto.name, initialPhoto)
                 putParcelable(BundleKey.ReplyTarget.name, replyTarget)
                 putBoolean(BundleKey.ReplyAll.name, replyAll)
+                putParcelable(BundleKey.EditTarget.name, editTarget)
             }
         }
     }

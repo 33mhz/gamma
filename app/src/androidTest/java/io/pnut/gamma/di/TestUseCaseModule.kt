@@ -10,6 +10,7 @@ import javax.inject.Singleton
 
 @Module
 @TestInstallIn(components = [SingletonComponent::class], replaces = [UseCaseModule::class])
+@Suppress("unused")
 object TestUseCaseModule {
 
     @Provides
@@ -50,6 +51,8 @@ object TestUseCaseModule {
 
     @Provides
     @Singleton
+    fun provideUpdatePostUseCase(): UpdatePostUseCase = Mockito.mock(UpdatePostUseCase::class.java)
+
     @Provides
     @Singleton
     fun provideStarUseCase(): StarUseCase = Mockito.mock(StarUseCase::class.java)
@@ -80,6 +83,10 @@ object TestUseCaseModule {
 
     @Provides
     @Singleton
+    fun provideSearchMessagesUseCase(): SearchMessagesUseCase = Mockito.mock(SearchMessagesUseCase::class.java)
+
+    @Provides
+    @Singleton
     fun provideLogoutUseCase(): LogoutUseCase = Mockito.mock(LogoutUseCase::class.java)
 
     @Provides
@@ -89,6 +96,10 @@ object TestUseCaseModule {
     @Provides
     @Singleton
     fun provideDeletePostUseCase(): DeletePostUseCase = Mockito.mock(DeletePostUseCase::class.java)
+
+    @Provides
+    @Singleton
+    fun provideReportPostUseCase(): ReportPostUseCase = Mockito.mock(ReportPostUseCase::class.java)
 
     @Provides
     @Singleton
@@ -136,9 +147,41 @@ object TestUseCaseModule {
 
     @Provides
     @Singleton
+    fun provideGetChannelUseCase(): GetChannelUseCase = Mockito.mock(GetChannelUseCase::class.java)
+
+    @Provides
+    @Singleton
     fun provideGetMessagesUseCase(): GetMessagesUseCase = Mockito.mock(GetMessagesUseCase::class.java)
 
     @Provides
     @Singleton
     fun provideUpdateMarkerUseCase(): UpdateMarkerUseCase = Mockito.mock(UpdateMarkerUseCase::class.java)
+
+    @Provides
+    @Singleton
+    fun provideCreateMessageUseCase(): CreateMessageUseCase = Mockito.mock(CreateMessageUseCase::class.java)
+
+    @Provides
+    @Singleton
+    fun provideDeleteMessageUseCase(): DeleteMessageUseCase = Mockito.mock(DeleteMessageUseCase::class.java)
+
+    @Provides
+    @Singleton
+    fun provideGetMessageThreadUseCase(): GetMessageThreadUseCase = Mockito.mock(GetMessageThreadUseCase::class.java)
+
+    @Provides
+    @Singleton
+    fun provideCreatePmMessageUseCase(): CreatePmMessageUseCase = Mockito.mock(CreatePmMessageUseCase::class.java)
+
+    @Provides
+    @Singleton
+    fun provideGetExistingPmUseCase(): GetExistingPmUseCase = Mockito.mock(GetExistingPmUseCase::class.java)
+
+    @Provides
+    @Singleton
+    fun provideSubscribeChannelUseCase(): SubscribeChannelUseCase = Mockito.mock(SubscribeChannelUseCase::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMuteChannelUseCase(): MuteChannelUseCase = Mockito.mock(MuteChannelUseCase::class.java)
 }

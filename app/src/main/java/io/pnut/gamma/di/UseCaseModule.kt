@@ -37,6 +37,7 @@ import io.pnut.gamma.domain.usecases.GetProfileUseCase
 import io.pnut.gamma.domain.usecases.GetUsersUseCase
 import io.pnut.gamma.domain.usecases.LogoutUseCase
 import io.pnut.gamma.domain.usecases.PostUseCase
+import io.pnut.gamma.domain.usecases.UpdatePostUseCase
 import io.pnut.gamma.domain.usecases.ReportPostUseCase
 import io.pnut.gamma.domain.usecases.RepostUseCase
 import io.pnut.gamma.domain.usecases.SearchMessagesUseCase
@@ -105,6 +106,12 @@ object UseCaseModule {
         pnutRepository: IPnutRepository,
         accountRepository: IAccountRepository
     ): PostUseCase = PostUseCase(pnutRepository, accountRepository)
+
+    @Provides
+    fun provideUpdatePostUseCase(
+        pnutRepository: IPnutRepository,
+        accountRepository: IAccountRepository
+    ): UpdatePostUseCase = UpdatePostUseCase(pnutRepository, accountRepository)
 
     @Provides
     fun provideStarUseCase(
