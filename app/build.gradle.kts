@@ -158,8 +158,8 @@ dependencies {
 
   implementation("androidx.palette:palette-ktx:1.0.0")
   implementation("androidx.browser:browser:1.10.0")
-  implementation("androidx.emoji2:emoji2:1.6.0")
-  implementation("androidx.emoji2:emoji2-bundled:1.6.0")
+  implementation("androidx.emoji2:emoji2:1.7.0")
+  implementation("androidx.emoji2:emoji2-bundled:1.7.0")
 
   implementation("com.squareup.okhttp3:logging-interceptor:5.5.0")
 
@@ -181,9 +181,9 @@ dependencies {
 
   testImplementation("junit:junit:4.13.2")
   testImplementation("com.google.truth:truth:1.4.5")
-  testImplementation("org.mockito:mockito-core:5.23.0")
-  testImplementation("org.mockito.kotlin:mockito-kotlin:6.3.0")
-  androidTestImplementation("org.mockito:mockito-android:5.23.0")
+  testImplementation("org.mockito:mockito-core:5.24.0")
+  testImplementation("org.mockito.kotlin:mockito-kotlin:6.4.0")
+  androidTestImplementation("org.mockito:mockito-android:5.24.0")
   testImplementation("org.robolectric:robolectric:4.17")
   val espressoVersion = "3.7.0"
   androidTestImplementation("androidx.test.espresso:espresso-core:$espressoVersion")
@@ -195,7 +195,7 @@ dependencies {
   androidTestImplementation("androidx.test.ext:junit:1.3.0")
 
   // Kotlin
-  val navVersion = "2.10.1"
+  val navVersion = "2.10.2"
   implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
   implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
 
@@ -204,7 +204,7 @@ dependencies {
   implementation("androidx.room:room-ktx:$roomVersion")
   ksp("androidx.room:room-compiler:$roomVersion")
 
-  val workVersion = "2.11.2"
+  val workVersion = "2.12.0"
   implementation("androidx.work:work-runtime-ktx:$workVersion")
   implementation("androidx.hilt:hilt-work:1.4.0")
   ksp("androidx.hilt:hilt-compiler:1.4.0")
