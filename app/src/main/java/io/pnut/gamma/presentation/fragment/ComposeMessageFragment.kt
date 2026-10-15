@@ -69,7 +69,6 @@ import io.pnut.gamma.domain.entity.raw.PollNotice
 import io.pnut.gamma.domain.entity.raw.Spoiler
 import io.pnut.gamma.domain.entity.raw.replacement.PostPoll
 import io.pnut.gamma.domain.usecases.CreatePollUseCase
-import io.pnut.gamma.util.observeOnce
 import io.pnut.gamma.util.showAsError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -484,8 +483,12 @@ class ComposeMessageFragment : BaseFragment(),
             binding.counterTextView.text = it
         }
 
-        viewModel.text.observeOnce(viewLifecycleOwner) {
-            binding.composeTextEditText.setSelection(it.length)
+        viewModel.text.observe(viewLifecycleOwner) { newText ->
+            val textStr = newText.orEmpty()
+            if (binding.composeTextEditText.text.toString() != textStr) {
+                binding.composeTextEditText.setText(textStr)
+                binding.composeTextEditText.setSelection(textStr.length)
+            }
         }
         if (viewModel.initialized) {
             focusToEditText()
@@ -599,9 +602,9 @@ class ComposeMessageFragment : BaseFragment(),
     class ComposeMessageViewModel(
         private val channelId: String,
         channelArg: Channel?,
-        replyTargetArg: Message?,
-        replyAll: Boolean,
-        initialText: String? = null,
+        private val replyTargetArg: Message?,
+        private val replyAll: Boolean,
+        private val initialText: String? = null,
         currentUserId: String,
         private val uploadFileUseCase: UploadFileUseCase,
         private val createMessageUseCase: CreateMessageUseCase,
@@ -609,7 +612,7 @@ class ComposeMessageFragment : BaseFragment(),
         private val postUseCase: PostUseCase,
         private val getChannelUseCase: GetChannelUseCase,
         cacheDao: CacheDao,
-        accountRepository: IAccountRepository,
+        private val accountRepository: IAccountRepository,
         preferenceRepository: IPreferenceRepository
     ) : ViewModel() {
         private val mentionDelegate = MentionViewModelDelegate(cacheDao, accountRepository, preferenceRepository, viewModelScope)
@@ -657,7 +660,11 @@ class ComposeMessageFragment : BaseFragment(),
         }
 
         val previewAttachmentsVisibility = MutableLiveData<Int>().apply { value = View.GONE }
-        val computedInitialText by lazy {
+        private fun computeInitialText(channel: Channel?): String {
+            if (channel?.isTwoPersonPm == true) {
+                return if (initialText != null) "$initialText " else ""
+            }
+
             val replyTargetUserUsername = replyTargetArg?.username
             val mentions = replyTargetArg?.content?.entities?.mentions?.map { it.text }?.toMutableList() ?: mutableListOf()
             if (replyTargetUserUsername != null) {
@@ -668,7 +675,7 @@ class ComposeMessageFragment : BaseFragment(),
             val uniqueMentions = mentions.distinctBy { it.lowercase() }
                 .filterNot { it.equals(currentUsername, ignoreCase = true) }
 
-            when {
+            return when {
                 uniqueMentions.isNotEmpty() -> {
                     if (replyAll) {
                         uniqueMentions.joinToString(" ") { "@$it" } + " "
@@ -679,6 +686,10 @@ class ComposeMessageFragment : BaseFragment(),
                 initialText != null -> "$initialText "
                 else -> ""
             }
+        }
+
+        val computedInitialText by lazy {
+            computeInitialText(channel.value)
         }
         var enablePoll = MutableLiveData<Boolean>().apply { value = false }
 
@@ -696,8 +707,14 @@ class ComposeMessageFragment : BaseFragment(),
             viewModelScope.launch {
                 runCatching {
                     getChannelUseCase.run(channelId)
-                }.onSuccess {
-                    channel.value = it.data
+                }.onSuccess { response ->
+                    val fetchedChannel = response.data
+                    val initialTextBeforeFetch = text.value
+                    val initialTextWithNullChannel = computeInitialText(null)
+                    channel.value = fetchedChannel
+                    if (initialTextBeforeFetch == initialTextWithNullChannel) {
+                        text.value = computeInitialText(fetchedChannel)
+                    }
                 }
             }
         }

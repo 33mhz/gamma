@@ -459,6 +459,10 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
     ) : BaseListViewModel<Message>() {
         val currentChannel = MutableLiveData<Channel>()
 
+        init {
+            fetchChannel()
+        }
+
         override suspend fun getItems(requestPager: PageableItemWrapper.Pager<Message>?): PnutResponse<List<Message>> {
             val pagination = requestPager?.let { PaginationParam.createFromPager(it) } ?: PaginationParam()
             return getMessagesUseCase.run(GetMessagesInputData(channelId, pagination)).messages

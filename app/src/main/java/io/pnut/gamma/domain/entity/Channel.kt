@@ -29,6 +29,20 @@ data class Channel(
 ) : Parcelable, UniquePageable {
     @IgnoredOnParcel
     override val uniqueKey: String by lazy { id }
+
+    @IgnoredOnParcel
+    val isTwoPersonPm: Boolean by lazy {
+        if (type != io.pnut.gamma.domain.model.ChannelType.PM.value) return@lazy false
+        val writeUsers = acl.write.users
+        if (writeUsers != null) {
+            return@lazy writeUsers.size <= 2
+        }
+        val userIds = acl.write.userIds.ifEmpty { acl.full.userIds }.ifEmpty { acl.read.userIds }
+        if (userIds.isNotEmpty()) {
+            return@lazy userIds.distinct().size <= 2
+        }
+        true
+    }
     @Parcelize
     @JsonClass(generateAdapter = true)
     data class ChannelCount(
