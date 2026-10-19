@@ -45,6 +45,10 @@ import io.pnut.gamma.presentation.adapter.MessageViewHolder
 import io.pnut.gamma.presentation.adapter.ThumbnailViewPagerAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import android.content.Context
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import io.pnut.gamma.broadcast.MessageReceiver
 import io.pnut.gamma.presentation.util.BindingUtil
 import io.pnut.gamma.presentation.util.embed.EmbedManager
 import io.pnut.gamma.presentation.util.DateUtil
@@ -59,7 +63,8 @@ import javax.inject.Inject
 open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder>(),
     BaseListRecyclerViewAdapter.IBaseList<Message, MessageViewHolder>,
     DeleteMessageDialogFragment.Callback, SimpleBottomSheetMenuFragment.Callback,
-    Util.DrawerContentFragment, ThumbnailViewPagerAdapter.Listener {
+    Util.DrawerContentFragment, ThumbnailViewPagerAdapter.Listener,
+    MessageReceiver.Callback {
 
     override val menuItemId: Int
         get() = if (isPm) R.id.privateMessages else R.id.channels
@@ -110,6 +115,44 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
 
     @Inject
     lateinit var accountRepository: IAccountRepository
+
+    protected val receiverManager by lazy {
+        activity?.let { LocalBroadcastManager.getInstance(it.applicationContext) }
+    }
+
+    private val messageReceiver by lazy {
+        MessageReceiver(this)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        receiverManager?.registerReceiver(messageReceiver, MessageReceiver.getIntentFilter())
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        receiverManager?.unregisterReceiver(messageReceiver)
+    }
+
+    override fun onMessageReceive(message: Message) {
+        if (message.channelId == channelId) {
+            (viewModel as? ChannelMessagesViewModel)?.isAutoScrollTemporarily = true
+            viewModel.loadNewItems()
+        }
+    }
+
+    override fun onReceiveNewItemsAfter() {
+        super.onReceiveNewItemsAfter()
+        val channelViewModel = viewModel as? ChannelMessagesViewModel ?: return
+        if (!channelViewModel.isAutoScrollTemporarily) return
+        view?.let { getRecyclerView(it) }?.let { recyclerView ->
+            val isTop = context?.let {
+                (recyclerView.layoutManager as? LinearLayoutManager)?.findFirstCompletelyVisibleItemPosition() == 0
+            }
+            if (isTop == true) scrollToTop()
+        }
+        channelViewModel.isAutoScrollTemporarily = false
+    }
 
     private var previousViewHolderItem: ViewHolderItem? = null
 
@@ -457,6 +500,7 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
         private val getMessagesUseCase: GetMessagesUseCase,
         private val getChannelUseCase: GetChannelUseCase
     ) : BaseListViewModel<Message>() {
+        var isAutoScrollTemporarily = false
         val currentChannel = MutableLiveData<Channel>()
 
         init {

@@ -17,6 +17,7 @@ import io.pnut.gamma.domain.entity.raw.ChannelInvite
 import io.pnut.gamma.domain.entity.raw.OEmbed
 import io.pnut.gamma.domain.entity.raw.PollNotice
 import io.pnut.gamma.domain.entity.raw.RawValue
+import io.pnut.gamma.broadcast.MessageReceiver
 import io.pnut.gamma.domain.entity.raw.Spoiler
 import io.pnut.gamma.domain.entity.raw.replacement.PostPoll
 import io.pnut.gamma.domain.model.UriInfo
@@ -162,6 +163,7 @@ class NewPrivateMessageViewModel @Inject constructor(
                 val res = withContext(Dispatchers.IO) {
                     createPmMessageUseCase.run(CreatePmMessageInputData(messageBody))
                 }
+                MessageReceiver.broadcast(context, res.res.data)
                 val usernames = idsList.map { it.trimStart('@') }
                 event.value = Event.NavigateToChannel(res.res.data.channelId, idsList.joinToString(", "), usernames)
             } catch (e: Exception) {

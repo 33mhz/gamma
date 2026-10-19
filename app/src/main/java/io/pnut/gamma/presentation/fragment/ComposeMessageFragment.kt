@@ -47,6 +47,7 @@ import io.pnut.gamma.domain.entity.raw.RawValue
 import io.pnut.gamma.domain.model.Account
 import io.pnut.gamma.domain.model.UriInfo
 import io.pnut.gamma.domain.model.io.CreateMessageInputData
+import io.pnut.gamma.broadcast.MessageReceiver
 import io.pnut.gamma.domain.model.io.CreatePollInputData
 import io.pnut.gamma.domain.model.io.UploadFileInputData
 import io.pnut.gamma.domain.usecases.CreateMessageUseCase
@@ -787,9 +788,10 @@ class ComposeMessageFragment : BaseFragment(),
                     val messageBody = PostBody(text, replyTarget.value?.id, isNsfw = isNsfw, raw = raw.toMap())
                     
                     status.value = context.getString(R.string.creating_message)
-                    withContext(Dispatchers.IO) {
+                    val createMessageOutput = withContext(Dispatchers.IO) {
                         createMessageUseCase.run(CreateMessageInputData(channelId, messageBody))
                     }
+                    MessageReceiver.broadcast(context, createMessageOutput.res.data)
                     
                     event.emit(Event.Success)
                 } catch (e: Exception) {
