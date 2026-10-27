@@ -3,6 +3,11 @@
     android:key="@string/pref_user_key"
     android:title="@string/pref_header_user">
     <Preference
+        android:fragment="io.pnut.gamma.presentation.fragment.ProfileFragment"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:key="@string/pref_profile_user_key"
+        android:title="@string/pref_profile_user_title" />
+    <Preference
         android:icon="@drawable/ic_arrow_forward_black_24dp"
         android:key="@string/pref_logout_user_key"
         android:title="@string/pref_logout_user_title" />

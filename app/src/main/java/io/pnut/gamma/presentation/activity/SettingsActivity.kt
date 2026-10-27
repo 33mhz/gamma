@@ -402,9 +402,17 @@ class SettingsActivity : BaseActivity(),
         override val rootKey: Int = R.string.pref_user_key
         @Inject
         lateinit var logoutUseCase: LogoutUseCase
+        @Inject
+        lateinit var getCurrentAccountUseCase: GetCurrentAccountUseCase
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
+            val currentAccount = getCurrentAccountUseCase.run(Unit).account
+            if (currentAccount != null) {
+                findPreference(R.string.pref_profile_user_key)?.apply {
+                    extras.putString("ID", currentAccount.id)
+                }
+            }
             findPreference(R.string.pref_logout_user_key)?.apply {
                 setOnPreferenceClickListener { logout() }
             }
