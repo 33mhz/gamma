@@ -277,6 +277,14 @@
     <string name="pref_user_header_title_key">pref_user_header_title_key</string>
     <string name="behavior">Behavior</string>
     <string name="display">Display</string>
+    <string name="notifications">Notifications</string>
+    <string name="pref_mndp_notification_title">MNDP Alert</string>
+    <string name="pref_mndp_notification_summary">Send notification 15 minutes before the &lt;a
+        href="https://mndp.tv"&gt;Monday Night Dance Party&lt;/a&gt;</string>
+    <string name="mndp_notification_channel_name">Monday Night Dance Party</string>
+    <string name="mndp_notification_channel_description">Notifications for Monday Night Dance Party</string>
+    <string name="mndp_notification_title">Monday Night Dance Party</string>
+    <string name="mndp_notification_text">The #MondayNightDanceParty is starting in 15 minutes!</string>
     <string name="avatar_swipe">Avatar swipe</string>
     <string name="avatar_swipe_desc">Control the post by swiping the post\'s avatar.</string>
     <string name="avatar_swipe_key">avatar_swipe</string>
@@ -309,7 +317,7 @@
         viewing item below the configured number. Disable when set to 0.</string>
     <string name="pref_use_unified_stream_key">use_unified_stream</string>
     <string name="pref_use_unified_stream_summary_on">Include your recent mentions in the stream.</string>
-    <string name="pref_use_unified_stream_summary_off">Do not nclude your recent mentions in the
+    <string name="pref_use_unified_stream_summary_off">Do not include your recent mentions in the
         stream.</string>
     <string name="pref_use_unified_stream_title">Use unified stream</string>
     <string name="pref_hide_copy_mentions_key">hide_copy_mentions</string>

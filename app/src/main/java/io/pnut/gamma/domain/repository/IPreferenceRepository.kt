@@ -29,4 +29,5 @@ interface IPreferenceRepository {
     fun hasExceededWelcomeFollowed(userId: String): Boolean
     fun setExceededWelcomeFollowed(userId: String, exceeded: Boolean)
     val embedYoutube: Boolean
+    val mndpNotification: Boolean
 }

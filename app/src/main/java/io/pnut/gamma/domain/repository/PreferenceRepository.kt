@@ -160,4 +160,10 @@ class PreferenceRepository(val context: Context) : IPreferenceRepository {
             context.getString(R.string.pref_embed_youtube_key),
             res.getBoolean(R.bool.pref_embed_youtube_default_value)
         )
+
+    override val mndpNotification: Boolean
+        get() = sharedPreferences.getBoolean(
+            context.getString(R.string.pref_mndp_notification_key),
+            false
+        )
 }

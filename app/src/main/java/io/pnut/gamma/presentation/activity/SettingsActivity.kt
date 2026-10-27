@@ -433,6 +433,55 @@ class SettingsActivity : BaseActivity(),
         }
     }
 
+    @AndroidEntryPoint
+    class NotificationPreferenceFragment : BasePreferenceFragment() {
+        override val rootKey: Int = R.string.pref_notification_key
+
+        private val requestPermissionLauncher = registerForActivityResult(
+            androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                context?.let { io.pnut.gamma.util.MndpScheduler.scheduleNextNotification(it) }
+            } else {
+                val mndpPref = findPreference<Preference>(getString(R.string.pref_mndp_notification_key)) as? SwitchPreferenceCompat
+                mndpPref?.isChecked = false
+            }
+        }
+
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            setPreferencesFromResource(
+                R.xml.pref_notification,
+                getString(R.string.pref_notification_key)
+            )
+
+            val mndpPref = findPreference<Preference>(getString(R.string.pref_mndp_notification_key)) as? SwitchPreferenceCompat
+            mndpPref?.setOnPreferenceChangeListener { _, newValue ->
+                val enabled = newValue as Boolean
+                if (enabled) {
+                    checkNotificationPermissionAndSchedule()
+                } else {
+                    context?.let { io.pnut.gamma.util.MndpScheduler.cancelNotification(it) }
+                }
+                true
+            }
+        }
+
+        private fun checkNotificationPermissionAndSchedule() {
+            val ctx = context ?: return
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (androidx.core.content.ContextCompat.checkSelfPermission(
+                        ctx,
+                        android.Manifest.permission.POST_NOTIFICATIONS
+                    ) != android.content.pm.PackageManager.PERMISSION_GRANTED
+                ) {
+                    requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                    return
+                }
+            }
+            io.pnut.gamma.util.MndpScheduler.scheduleNextNotification(ctx)
+        }
+    }
+
     companion object {
 
         /**

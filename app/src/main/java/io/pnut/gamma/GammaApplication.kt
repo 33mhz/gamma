@@ -34,6 +34,12 @@ open class GammaApplication : Application(), CoroutineScope by MainScope(), Conf
     if (key == getString(R.string.pref_username_autocomplete_key)) {
       val enabled = preferenceRepository.usernameAutocomplete
       scheduleUserSuggestionSync(forceSync = enabled)
+    } else if (key == getString(R.string.pref_mndp_notification_key)) {
+      if (preferenceRepository.mndpNotification) {
+        io.pnut.gamma.util.MndpScheduler.scheduleNextNotification(this)
+      } else {
+        io.pnut.gamma.util.MndpScheduler.cancelNotification(this)
+      }
     }
   }
 
@@ -132,5 +138,8 @@ class GammaHiltApplication : GammaApplication() {
         super.onCreate()
         initApplication()
         scheduleUserSuggestionSync()
+        if (preferenceRepository.mndpNotification) {
+            io.pnut.gamma.util.MndpScheduler.ensureScheduled(this)
+        }
     }
 }

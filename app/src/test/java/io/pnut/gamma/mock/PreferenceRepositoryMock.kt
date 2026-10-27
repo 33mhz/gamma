@@ -63,4 +63,6 @@ open class PreferenceRepositoryMock : IPreferenceRepository {
   override val hideFeedBotAvatar: Boolean
     get() = false
   override fun shouldShowAvatar(userType: User.AccountType?, isStream: Boolean): Boolean = true
+  override val mndpNotification: Boolean
+    get() = false
 }

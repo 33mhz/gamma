@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:key="@string/pref_notification_key"
+    android:title="@string/notifications">
+    <PreferenceCategory android:title="@string/notifications">
+        <io.pnut.gamma.presentation.view.LinkableSwitchPreferenceCompat
+            app:defaultValue="false"
+            app:key="@string/pref_mndp_notification_key"
+            app:title="@string/pref_mndp_notification_title"
+            app:summary="@string/pref_mndp_notification_summary" />
+    </PreferenceCategory>
+</PreferenceScreen>
