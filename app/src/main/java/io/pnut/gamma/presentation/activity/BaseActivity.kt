@@ -47,6 +47,8 @@ abstract class BaseActivity : AppCompatActivity() {
         val updateThemeColor = themeColorWhenCreated != ThemeColorUtil.getThemeColor(this)
         val currentDarkThemeMode = ThemeColorUtil.currentDarkThemeMode(this)
         if (updateThemeColor || darkThemeMode != currentDarkThemeMode || preferencesAreChanged) {
+            preferencesAreChanged = false
+            GammaApplication.getInstance(this).updateBaseTheme()
             recreate()
         }
     }

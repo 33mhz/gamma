@@ -8,14 +8,28 @@ import io.pnut.gamma.R
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.DialogFragment
 import io.pnut.gamma.domain.repository.PreferenceRepository
+import java.util.Calendar
 
 object ThemeColorUtil {
     @Suppress("DEPRECATION")
-    enum class DarkMode(val value: Int) {
+    enum class DarkMode(val rawValue: Int) {
         FollowSystem(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM),
         Off(AppCompatDelegate.MODE_NIGHT_NO),
         On(AppCompatDelegate.MODE_NIGHT_YES),
-        Auto(AppCompatDelegate.MODE_NIGHT_AUTO)
+        Auto(AppCompatDelegate.MODE_NIGHT_AUTO);
+
+        val value: Int
+            get() {
+                if (this == Auto) {
+                    val hour = Calendar.getInstance()[Calendar.HOUR_OF_DAY]
+                    return if (hour >= 18 || hour < 6) {
+                        AppCompatDelegate.MODE_NIGHT_YES
+                    } else {
+                        AppCompatDelegate.MODE_NIGHT_NO
+                    }
+                }
+                return rawValue
+            }
     }
 
     enum class ThemeColor(val themeResource: Int) {
@@ -61,13 +75,11 @@ object ThemeColorUtil {
         }
     }
 
-    // TODO: Fix me
     fun currentDarkThemeMode(context: Context): String {
         val preference = PreferenceRepository(context)
-        return preference.darkModeStr
+        return preference.darkMode.value.toString()
     }
 
-    // TODO: Fix me
     fun getThemeColor(context: Context): ThemeColor {
         val preference = PreferenceRepository(context)
         return preference.themeColor
