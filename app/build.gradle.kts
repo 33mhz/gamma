@@ -156,12 +156,12 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
 
-  implementation("androidx.palette:palette-ktx:1.0.0")
+  implementation("androidx.palette:palette-ktx:1.1.0")
   implementation("androidx.browser:browser:1.10.0")
   implementation("androidx.emoji2:emoji2:1.7.0")
   implementation("androidx.emoji2:emoji2-bundled:1.7.0")
 
-  implementation("com.squareup.okhttp3:logging-interceptor:5.5.0")
+  implementation("com.squareup.okhttp3:logging-interceptor:5.5.1")
 
   val daggerVersion = "2.60.1"
   implementation("com.google.dagger:dagger:$daggerVersion")
