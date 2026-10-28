@@ -124,19 +124,74 @@ class SettingsActivity : BaseActivity(),
         }
         override val rootKey: Int = R.string.pref_settings_root_key
 
+        @Inject
+        lateinit var getCurrentAccountUseCase: GetCurrentAccountUseCase
+
+        @Inject
+        lateinit var logoutUseCase: LogoutUseCase
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.pref_headers, rootKey)
             findPreference<Preference>(getString(R.string.pref_user_header_title_key))?.let {
                 it.title = username
             }
-            findPreference<Preference>(getString(R.string.pref_license_key))?.let {
-                it.intent = Intent(context, OssLicensesMenuActivity::class.java)
+
+            val currentAccount = getCurrentAccountUseCase.run(Unit).account
+            if (currentAccount != null) {
+                findPreference(R.string.pref_profile_user_key)?.apply {
+                    extras.putString("ID", currentAccount.id)
+                }
             }
+
+            findPreference(R.string.pref_logout_user_key)?.setOnPreferenceClickListener {
+                logout()
+            }
+
             findPreference<Preference>((getString(R.string.pref_version_key)))?.let {
                 it.summary = BuildConfig.VERSION_NAME
                 it.intent = Intent(Intent.ACTION_VIEW).apply {
                     data = Constants.PLAY_STORE_URL.toUri()
                 }
+            }
+        }
+
+        private fun logout(): Boolean {
+            val anotherAccountId = logoutUseCase.run(Unit).anotherAccountId
+            activity?.finish()
+            val intentClass = if (anotherAccountId != null) {
+                MainActivity::class
+            } else {
+                LoginActivity::class
+            }
+            val newIntent = Intent(activity, intentClass.java).also {
+                it.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            val options = activity?.let {
+                ActivityOptionsCompat.makeCustomAnimation(it, R.anim.scale_up, R.anim.scale_down)
+            }
+            startActivity(newIntent, options?.toBundle())
+            return true
+        }
+
+        private enum class BundleKey { Username }
+        companion object {
+            fun newInstance(username: String) = SettingsFragment().apply {
+                arguments = Bundle().apply {
+                    putString(BundleKey.Username.name, username)
+                }
+            }
+        }
+    }
+
+    @AndroidEntryPoint
+    class AboutPreferenceFragment : BasePreferenceFragment() {
+        override val rootKey: Int = R.string.pref_about_key
+
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            setPreferencesFromResource(R.xml.pref_about, rootKey)
+
+            findPreference<Preference>(getString(R.string.pref_license_key))?.let {
+                it.intent = Intent(context, OssLicensesMenuActivity::class.java)
             }
             findPreference<Preference>("pref_privacy_policy_key")?.let {
                 it.intent = Intent(Intent.ACTION_VIEW).apply {
@@ -146,15 +201,6 @@ class SettingsActivity : BaseActivity(),
             findPreference<Preference>("pref_child_safety_key")?.let {
                 it.intent = Intent(Intent.ACTION_VIEW).apply {
                     data = "https://github.com/33mhz/gamma/blob/master/CHILD_SAFETY.md".toUri()
-                }
-            }
-        }
-
-        private enum class BundleKey { Username }
-        companion object {
-            fun newInstance(username: String) = SettingsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(BundleKey.Username.name, username)
                 }
             }
         }
@@ -395,50 +441,6 @@ class SettingsActivity : BaseActivity(),
         private enum class DialogKey { ClearStreamCache, ClearGlideCache }
 
         override val rootKey: Int = R.string.pref_stream_key
-    }
-
-    @AndroidEntryPoint
-    class UserPreferenceFragment : BasePreferenceFragment() {
-        override val rootKey: Int = R.string.pref_user_key
-        @Inject
-        lateinit var logoutUseCase: LogoutUseCase
-        @Inject
-        lateinit var getCurrentAccountUseCase: GetCurrentAccountUseCase
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            val currentAccount = getCurrentAccountUseCase.run(Unit).account
-            if (currentAccount != null) {
-                findPreference(R.string.pref_profile_user_key)?.apply {
-                    extras.putString("ID", currentAccount.id)
-                }
-            }
-            findPreference(R.string.pref_logout_user_key)?.apply {
-                setOnPreferenceClickListener { logout() }
-            }
-        }
-
-        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            setPreferencesFromResource(R.xml.pref_user, rootKey)
-        }
-
-        private fun logout(): Boolean {
-            val anotherAccountId = logoutUseCase.run(Unit).anotherAccountId
-            activity?.finish()
-            val intentClass = if (anotherAccountId != null) {
-                MainActivity::class
-            } else {
-                LoginActivity::class
-            }
-            val newIntent = Intent(activity, intentClass.java).also {
-                it.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            }
-            val options = activity?.let {
-                ActivityOptionsCompat.makeCustomAnimation(it, R.anim.scale_up, R.anim.scale_down)
-            }
-            startActivity(newIntent, options?.toBundle())
-            return true
-        }
     }
 
     @AndroidEntryPoint

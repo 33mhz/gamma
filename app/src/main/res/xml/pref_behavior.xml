@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:key="@string/pref_behavior_key"
     android:title="@string/behavior">
-    <PreferenceCategory android:title="@string/pref_header_general">
+    <PreferenceCategory android:title="@string/pref_header_composer">
         <SwitchPreferenceCompat
             app:defaultValue="true"
             app:key="@string/pref_username_autocomplete_key"

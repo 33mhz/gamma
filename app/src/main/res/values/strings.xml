@@ -349,10 +349,11 @@
     <string name="pref_embed_youtube_summary">Show thumbnail previews</string>
     <string name="pref_stream_key">pref_stream</string>
     <string name="pref_stream_title">Stream</string>
-    <string name="pref_general_header_title_key">pref_general_header_title_key</string>
+    <string name="pref_app_header_title_key">pref_app_header_title_key</string>
     <string name="pref_license_key">pref_license_key</string>
     <string name="pref_header_app">App</string>
     <string name="pref_header_general">General</string>
+    <string name="pref_header_composer">Composer</string>
     <string name="pref_header_embeds">Load Embeds</string>
     <string name="pref_version_key">pref_version_key</string>
     <string name="gamma_version">Gamma version</string>

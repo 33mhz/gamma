@@ -4,10 +4,10 @@
     android:title="@string/settings">
     <PreferenceCategory android:key="@string/pref_user_header_title_key">
         <Preference
-            android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$UserPreferenceFragment"
+            android:fragment="io.pnut.gamma.presentation.fragment.ProfileFragment"
             android:icon="@drawable/ic_person_black_24dp"
-            app:key="@string/pref_user_key"
-            android:title="@string/pref_header_user" />
+            app:key="@string/pref_profile_user_key"
+            android:title="@string/pref_profile_user_title" />
         <Preference
             android:fragment="io.pnut.gamma.presentation.fragment.UserListFragment$SuggestedUserListFragment"
             android:icon="@drawable/ic_person_add_black_24dp"
@@ -20,10 +20,14 @@
                 android:action="android.intent.action.VIEW"
                 android:data="https://pnut.io/account" />
         </Preference>
+        <Preference
+            android:icon="@drawable/ic_arrow_forward_black_24dp"
+            app:key="@string/pref_logout_user_key"
+            android:title="@string/pref_logout_user_title" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="@string/pref_general_header_title_key"
-        android:title="@string/pref_header_general">
+        android:key="@string/pref_app_header_title_key"
+        android:title="@string/pref_header_app">
         <Preference
             android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$StreamPreferenceFragment"
             android:icon="@drawable/ic_list_black_24dp"
@@ -51,15 +55,9 @@
             android:title="@string/gamma_version"
             app:widgetLayout="@layout/preference_widget_open_in_new" />
         <Preference
-            android:key="@string/pref_license_key"
-            android:title="@string/license" />
-        <Preference
-            android:key="pref_privacy_policy_key"
-            android:title="@string/privacy_policy"
-            app:widgetLayout="@layout/preference_widget_open_in_new" />
-        <Preference
-            android:key="pref_child_safety_key"
-            android:title="@string/child_safety_standards"
-            app:widgetLayout="@layout/preference_widget_open_in_new" />
+            android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$AboutPreferenceFragment"
+            android:icon="@drawable/ic_info_black_24dp"
+            android:key="@string/pref_about_key"
+            android:title="@string/pref_header_about" />
     </PreferenceCategory>
 </PreferenceScreen>
