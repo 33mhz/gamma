@@ -153,6 +153,11 @@ class SettingsActivity : BaseActivity(),
                     data = Constants.PLAY_STORE_URL.toUri()
                 }
             }
+            findPreference<Preference>("pref_child_safety_key")?.let {
+                it.intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = "https://github.com/33mhz/gamma/blob/master/CHILD_SAFETY.md".toUri()
+                }
+            }
         }
 
         private fun logout(): Boolean {
@@ -196,11 +201,6 @@ class SettingsActivity : BaseActivity(),
             findPreference<Preference>("pref_privacy_policy_key")?.let {
                 it.intent = Intent(Intent.ACTION_VIEW).apply {
                     data = "https://github.com/33mhz/gamma/blob/master/PRIVACY.md".toUri()
-                }
-            }
-            findPreference<Preference>("pref_child_safety_key")?.let {
-                it.intent = Intent(Intent.ACTION_VIEW).apply {
-                    data = "https://github.com/33mhz/gamma/blob/master/CHILD_SAFETY.md".toUri()
                 }
             }
         }

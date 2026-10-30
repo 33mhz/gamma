@@ -59,5 +59,9 @@
             android:icon="@drawable/ic_info_black_24dp"
             android:key="@string/pref_about_key"
             android:title="@string/pref_header_about" />
+        <Preference
+            android:key="pref_child_safety_key"
+            android:title="@string/child_safety_standards"
+            app:widgetLayout="@layout/preference_widget_open_in_new" />
     </PreferenceCategory>
 </PreferenceScreen>

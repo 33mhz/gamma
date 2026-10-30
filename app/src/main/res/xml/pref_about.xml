@@ -10,8 +10,4 @@
         android:key="pref_privacy_policy_key"
         android:title="@string/privacy_policy"
         app:widgetLayout="@layout/preference_widget_open_in_new" />
-    <Preference
-        android:key="pref_child_safety_key"
-        android:title="@string/child_safety_standards"
-        app:widgetLayout="@layout/preference_widget_open_in_new" />
 </PreferenceScreen>
