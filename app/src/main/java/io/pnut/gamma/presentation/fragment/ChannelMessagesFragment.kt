@@ -43,6 +43,8 @@ import io.pnut.gamma.presentation.activity.PhotoViewActivity
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
 import io.pnut.gamma.presentation.adapter.MessageViewHolder
 import io.pnut.gamma.presentation.adapter.ThumbnailViewPagerAdapter
+import io.pnut.gamma.util.AppUtil
+import android.widget.Toast
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import android.content.Context
@@ -382,6 +384,10 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
                 val user = message.user ?: return
                 val fragment = ProfileFragment.newInstance(user.id, User.getAvatarUrl(user), user)
                 navigateTo(fragment, user.id)
+            }
+            R.id.menuCopyId -> {
+                AppUtil.copyToClipboard(requireContext(), message.id)
+                Toast.makeText(requireContext(), R.string.copy_id, Toast.LENGTH_SHORT).show()
             }
         }
     }

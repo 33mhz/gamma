@@ -73,6 +73,7 @@ import io.pnut.gamma.domain.usecases.GetCachedPostListUseCase
 import io.pnut.gamma.domain.usecases.GetPollUseCase
 import io.pnut.gamma.domain.usecases.GetPostUseCase
 import io.pnut.gamma.domain.usecases.VoteUseCase
+import io.pnut.gamma.util.AppUtil
 import io.pnut.gamma.presentation.activity.ComposePostActivity
 import io.pnut.gamma.presentation.activity.PhotoViewActivity
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
@@ -231,6 +232,10 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             R.id.menuViewRevisions -> {
                 val fragment = PostRevisionsFragment.newInstance(post.mainPost.id)
                 navigateTo(fragment, "revisions_${post.mainPost.id}")
+            }
+            R.id.menuCopyId -> {
+                AppUtil.copyToClipboard(requireContext(), post.id)
+                Toast.makeText(requireContext(), R.string.copy_id, Toast.LENGTH_SHORT).show()
             }
         }
     }

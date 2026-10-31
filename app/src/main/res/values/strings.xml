@@ -272,6 +272,7 @@
 
     <string name="open_in_browser">Open in browser</string>
     <string name="copy_url">Copy URL</string>
+    <string name="copy_id">Copy ID</string>
 
     <!-- Settings -->
     <string name="pref_user_header_title_key">pref_user_header_title_key</string>
