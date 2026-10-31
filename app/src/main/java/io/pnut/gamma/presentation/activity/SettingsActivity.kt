@@ -1,17 +1,14 @@
 package io.pnut.gamma.presentation.activity
 
 import io.pnut.gamma.R
-import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.core.content.edit
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
-import androidx.preference.ListPreference
-import androidx.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -286,8 +283,11 @@ class SettingsActivity : BaseActivity(),
                 }
             }
             (findPreference(R.string.pref_dark_theme_key) as? DropDownPreference)?.let {
-                it.setOnPreferenceChangeListener { preference: Preference, _: Any ->
+                it.setOnPreferenceChangeListener { preference: Preference, newValue: Any ->
                     if (preference !is DropDownPreference) return@setOnPreferenceChangeListener false
+                    preference.preferenceManager?.sharedPreferences?.edit {
+                        putString(preference.key, newValue.toString())
+                    }
                     activity?.let { activity ->
                         GammaApplication.getInstance(activity).updateBaseTheme()
                     }
@@ -493,70 +493,6 @@ class SettingsActivity : BaseActivity(),
                 }
             }
             io.pnut.gamma.util.MndpScheduler.scheduleNextNotification(ctx)
-        }
-    }
-
-    companion object {
-
-        /**
-         * A preference value change listener that updates the preference's summary
-         * to reflect its new value.
-         */
-        private val sBindPreferenceSummaryToValueListener =
-            Preference.OnPreferenceChangeListener { preference, value ->
-                val stringValue = value.toString()
-
-                if (preference is ListPreference) {
-                    // For list preferences, look up the correct display value in
-                    // the preference's 'entries' list.
-                    val index = preference.findIndexOfValue(stringValue)
-
-                    // Set the summary to reflect the new value.
-                    preference.setSummary(
-                        if (index >= 0)
-                            preference.entries[index]
-                        else
-                            null
-                    )
-
-                } else {
-                    // For all other preferences, set the summary to the value's
-                    // simple string representation.
-                    preference.summary = stringValue
-                }
-                true
-            }
-
-        /**
-         * Helper method to determine if the device has an extra-large screen. For
-         * example, 10" tablets are extra-large.
-         */
-        private fun isXLargeTablet(context: Context): Boolean {
-            return context.resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK >= Configuration.SCREENLAYOUT_SIZE_NORMAL &&
-                    context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        }
-
-        /**
-         * Binds a preference's summary to its value. More specifically, when the
-         * preference's value is changed, its summary (line of text below the
-         * preference title) is updated to reflect the value. The summary is also
-         * immediately updated upon calling this method. The exact display format is
-         * dependent on the type of preference.
-
-         * @see .sBindPreferenceSummaryToValueListener
-         */
-        private fun bindPreferenceSummaryToValue(preference: Preference) {
-            // Set the listener to watch for value changes.
-            preference.onPreferenceChangeListener = sBindPreferenceSummaryToValueListener
-
-            // Trigger the listener immediately with the preference's
-            // current value.
-            sBindPreferenceSummaryToValueListener.onPreferenceChange(
-                preference,
-                PreferenceManager
-                    .getDefaultSharedPreferences(preference.context)
-                    .getString(preference.key, "")
-            )
         }
     }
 }

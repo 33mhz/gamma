@@ -10,7 +10,6 @@ import javax.inject.Singleton
 
 @Module
 @TestInstallIn(components = [SingletonComponent::class], replaces = [UseCaseModule::class])
-@Suppress("unused")
 object TestUseCaseModule {
 
     @Provides

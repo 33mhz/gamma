@@ -33,6 +33,7 @@ class DeletePostDialogFragment : DialogFragment(), DialogInterface.OnClickListen
 
     interface Callback {
         fun ok(position: Int, post: Post)
+        @Suppress("EmptyMethod")
         fun cancel()
     }
 

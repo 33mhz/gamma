@@ -32,6 +32,7 @@ class DeleteMessageDialogFragment : DialogFragment(), DialogInterface.OnClickLis
 
     interface Callback {
         fun ok(position: Int, message: Message)
+        @Suppress("EmptyMethod")
         fun cancel()
     }
 
