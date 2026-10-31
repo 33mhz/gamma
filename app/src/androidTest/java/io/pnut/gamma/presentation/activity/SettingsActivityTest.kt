@@ -76,7 +76,6 @@ class SettingsActivityTest {
       verifyText("Stream")
       verifyText("Behavior")
       verifyText("Display")
-      verifyText("Gamma version")
       verifyText("About")
     }
   }

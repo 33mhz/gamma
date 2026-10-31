@@ -71,7 +71,9 @@
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name=".presentation.activity.LoginActivity" />
+        <activity
+            android:name=".presentation.activity.LoginActivity"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".presentation.activity.EntryActivity"
             android:exported="true"

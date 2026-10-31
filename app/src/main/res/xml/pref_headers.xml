@@ -51,10 +51,6 @@
     </PreferenceCategory>
     <PreferenceCategory>
         <Preference
-            android:key="@string/pref_version_key"
-            android:title="@string/gamma_version"
-            app:widgetLayout="@layout/preference_widget_open_in_new" />
-        <Preference
             android:fragment="io.pnut.gamma.presentation.activity.SettingsActivity$AboutPreferenceFragment"
             android:icon="@drawable/ic_info_black_24dp"
             android:key="@string/pref_about_key"

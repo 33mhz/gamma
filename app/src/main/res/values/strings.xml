@@ -357,9 +357,11 @@
     <string name="pref_header_embeds">Load Embeds</string>
     <string name="pref_version_key">pref_version_key</string>
     <string name="gamma_version">Gamma version</string>
-    <string name="license">License</string>
+    <string name="gamma_on_google_play">Gamma on Google Play</string>
+    <string name="license">Licenses</string>
     <string name="child_safety_standards">Child Safety Standards</string>
     <string name="privacy_policy">Privacy Policy</string>
+    <string name="about_explanation">Gamma is an app initially built by @xyz, and then refactored and continued by @33MHz in 2026.\n\nApp code last updated %1$s.\n\nVersion %2$s.</string>
     <string name="public_room">Public Room</string>
     <string name="private_room">Private Room</string>
     <string name="subscribers">Subscribers</string>

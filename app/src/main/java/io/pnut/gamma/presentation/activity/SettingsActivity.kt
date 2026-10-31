@@ -147,12 +147,6 @@ class SettingsActivity : BaseActivity(),
                 logout()
             }
 
-            findPreference<Preference>((getString(R.string.pref_version_key)))?.let {
-                it.summary = BuildConfig.VERSION_NAME
-                it.intent = Intent(Intent.ACTION_VIEW).apply {
-                    data = Constants.PLAY_STORE_URL.toUri()
-                }
-            }
             findPreference<Preference>("pref_child_safety_key")?.let {
                 it.intent = Intent(Intent.ACTION_VIEW).apply {
                     data = "https://github.com/33mhz/gamma/blob/master/CHILD_SAFETY.md".toUri()
@@ -194,6 +188,16 @@ class SettingsActivity : BaseActivity(),
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.pref_about, rootKey)
+
+            findPreference<Preference>("pref_about_explanation_key")?.let {
+                it.summary = getString(R.string.about_explanation, BuildConfig.LAST_UPDATE_DATE, BuildConfig.VERSION_NAME)
+            }
+
+            findPreference<Preference>((getString(R.string.pref_version_key)))?.let {
+                it.intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = Constants.PLAY_STORE_URL.toUri()
+                }
+            }
 
             findPreference<Preference>(getString(R.string.pref_license_key))?.let {
                 it.intent = Intent(context, OssLicensesMenuActivity::class.java)

@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.FileInputStream
 import java.util.*
+import java.text.SimpleDateFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val hasGoogleServices = file("google-services.json").exists()
@@ -50,6 +51,19 @@ if (versionPropsFile.exists()) {
 
 val currentVersionCode = versionProps.getProperty("versionCode", "1").toInt()
 
+fun getGitCommitDate(): String {
+  return try {
+    val process = ProcessBuilder("git", "log", "-1", "--format=%cs").start()
+    val date = process.inputStream.bufferedReader().readText().trim()
+    process.waitFor()
+      date.ifEmpty { SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date()) }
+  } catch (_: Exception) {
+    SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+  }
+}
+
+val lastUpdateDate = getGitCommitDate()
+
 android {
   namespace = "io.pnut.gamma"
   ndkVersion = "26.1.10909125"
@@ -61,6 +75,7 @@ android {
     targetSdk = 37
     versionCode = currentVersionCode
     versionName = "1.3.0"
+    buildConfigField("String", "LAST_UPDATE_DATE", "\"$lastUpdateDate\"")
     testInstrumentationRunner = "io.pnut.gamma.HiltTestRunner"
   }
   buildTypes {
@@ -171,7 +186,7 @@ dependencies {
 
   implementation("com.github.CanHub:Android-Image-Cropper:4.5.0")
 
-  implementation("com.google.android.gms:play-services-oss-licenses:17.5.2")
+  implementation("com.google.android.gms:play-services-oss-licenses:17.5.3")
 
   if (hasGoogleServices) {
     implementation(platform("com.google.firebase:firebase-bom:34.17.0"))

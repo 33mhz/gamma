@@ -24,6 +24,7 @@
         </item>
         <item name="toolbarStyle">@style/Toolbar</item>
         <item name="materialButtonStyle">@style/Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Button.Outlined</item>
         <item name="colorError">@color/colorError</item>
         <item name="materialCardViewStyle">@style/CardStyle</item>
         <item name="appBarLayoutStyle">@style/AppBarLayoutStyle</item>
@@ -160,21 +161,21 @@
     </style>
 
     <style name="Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="shapeAppearance">@style/CircleShape</item>
+        <item name="shapeAppearanceOverlay">@style/CircleShape</item>
         <item name="strokeColor">?attr/colorPrimary</item>
     </style>
 
-    <style name="RoundedShape">
+    <style name="RoundedShape" parent="ShapeAppearance.MaterialComponents">
         <item name="cornerSize">@dimen/size_avatar_rounded</item>
         <item name="cornerFamily">rounded</item>
     </style>
 
-    <style name="CircleShape">
+    <style name="CircleShape" parent="ShapeAppearance.MaterialComponents">
         <item name="cornerSize">50%</item>
         <item name="cornerFamily">rounded</item>
     </style>
 
-    <style name="SquareShape">
+    <style name="SquareShape" parent="ShapeAppearance.MaterialComponents">
         <item name="cornerSize">0dp</item>
     </style>
 
