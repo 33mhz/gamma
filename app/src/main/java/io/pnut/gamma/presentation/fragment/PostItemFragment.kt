@@ -1123,7 +1123,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
                 runCatching {
                     getPollUseCase.run(
                         GetPollInputData(
-                            pollNotice.id,
+                            pollNotice.id ?: "",
                             pollNotice.pollToken
                         )
                     )

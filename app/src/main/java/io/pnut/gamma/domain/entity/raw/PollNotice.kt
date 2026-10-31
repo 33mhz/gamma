@@ -14,9 +14,21 @@ data class PollNotice(
     override val prompt: String,
     @Json(name = "poll_token") override val pollToken: String,
     @Json(name = "closed_at") override val closedAt: Date,
-    override val id: String,
+    override var id: String? = null,
+    @Json(name = "poll_id") val pollId: String? = null,
     override val options: List<Poll.PollOption>
 ) : RawValue, Parcelable, PollLikeValue {
+
+    init {
+        // TODO: bad data, should be id but sometimes comes back poll_id.
+        setPollIdIfNull()
+    }
+
+    fun setPollIdIfNull() {
+        if (id == null) {
+            id = pollId
+        }
+    }
 
     companion object {
         const val TYPE = "io.pnut.core.poll-notice"

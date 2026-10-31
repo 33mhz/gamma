@@ -12,7 +12,7 @@ interface PollLikeValue {
     val options: List<Poll.PollOption>
     val pollToken: String
     val closedAt: Date
-    val id: String
+    val id: String?
     val alreadyClosed
         get() = closedAt.time < Calendar.getInstance(TimeZone.getTimeZone("UTC")).time.time
 
