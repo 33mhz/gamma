@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.pnut.gamma.broadcast
 
 import android.content.BroadcastReceiver

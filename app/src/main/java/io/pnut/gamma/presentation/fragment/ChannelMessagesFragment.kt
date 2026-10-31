@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.pnut.gamma.presentation.fragment
 
 import android.content.res.ColorStateList

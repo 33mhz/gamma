@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.pnut.gamma.presentation.activity
 
 import io.pnut.gamma.R
