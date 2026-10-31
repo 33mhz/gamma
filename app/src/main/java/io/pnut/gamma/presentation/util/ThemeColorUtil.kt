@@ -22,7 +22,7 @@ object ThemeColorUtil {
             get() {
                 if (this == Auto) {
                     val hour = Calendar.getInstance()[Calendar.HOUR_OF_DAY]
-                    return if (hour >= 18 || hour < 6) {
+                    return if (hour !in 6 until 18) {
                         AppCompatDelegate.MODE_NIGHT_YES
                     } else {
                         AppCompatDelegate.MODE_NIGHT_NO
@@ -68,7 +68,7 @@ object ThemeColorUtil {
                 if (text == null) return Default
                 return try {
                     valueOf(text)
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     Default
                 }
             }

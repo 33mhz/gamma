@@ -87,7 +87,7 @@ class NewPrivateMessageViewModel @Inject constructor(
             status.value = context.getString(R.string.loading_now)
             runCatching {
                 getExistingPmUseCase.run(GetExistingPmInputData(IDs(idsList)))
-            }.onSuccess {
+            }.onSuccess { it ->
                 loading.value = false
                 val usernames = idsList.map { it.trimStart('@') }
                 event.value = Event.NavigateToChannel(it.res.data.id, idsList.joinToString(", "), usernames)
