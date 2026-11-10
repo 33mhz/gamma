@@ -74,7 +74,7 @@ android {
     minSdk = 30
     targetSdk = 37
     versionCode = currentVersionCode
-    versionName = "1.3.0"
+    versionName = "1.3.1"
     buildConfigField("String", "LAST_UPDATE_DATE", "\"$lastUpdateDate\"")
     testInstrumentationRunner = "io.pnut.gamma.HiltTestRunner"
   }
