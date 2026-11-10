@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package io.pnut.gamma.presentation.fragment
 
 import android.content.res.ColorStateList
@@ -37,10 +35,13 @@ import io.pnut.gamma.domain.model.io.GetPostInputData
 import io.pnut.gamma.domain.model.params.single.PaginationParam
 import io.pnut.gamma.domain.repository.IAccountRepository
 import io.pnut.gamma.domain.entity.Channel
+import io.pnut.gamma.broadcast.ChannelReceiver
+import io.pnut.gamma.domain.model.io.UpdateMarkerInputData
 import io.pnut.gamma.domain.usecases.DeleteMessageUseCase
 import io.pnut.gamma.domain.usecases.GetChannelUseCase
 import io.pnut.gamma.domain.usecases.GetMessagesUseCase
 import io.pnut.gamma.domain.usecases.GetPostUseCase
+import io.pnut.gamma.domain.usecases.UpdateMarkerUseCase
 import io.pnut.gamma.presentation.activity.PhotoViewActivity
 import io.pnut.gamma.presentation.adapter.BaseListRecyclerViewAdapter
 import io.pnut.gamma.presentation.adapter.MessageViewHolder
@@ -49,8 +50,6 @@ import io.pnut.gamma.util.AppUtil
 import android.widget.Toast
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import android.content.Context
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.pnut.gamma.broadcast.MessageReceiver
 import io.pnut.gamma.presentation.util.BindingUtil
@@ -118,24 +117,13 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
     lateinit var getPostUseCase: GetPostUseCase
 
     @Inject
-    lateinit var accountRepository: IAccountRepository
+    lateinit var updateMarkerUseCase: UpdateMarkerUseCase
 
-    protected val receiverManager by lazy {
-        activity?.let { LocalBroadcastManager.getInstance(it.applicationContext) }
-    }
+    @Inject
+    lateinit var accountRepository: IAccountRepository
 
     private val messageReceiver by lazy {
         MessageReceiver(this)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        receiverManager?.registerReceiver(messageReceiver, MessageReceiver.getIntentFilter())
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        receiverManager?.unregisterReceiver(messageReceiver)
     }
 
     override fun onMessageReceive(message: Message) {
@@ -175,7 +163,7 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
 
     override val viewModel: BaseListViewModel<Message> by lazy {
         ViewModelProvider(
-            this, ChannelMessagesViewModel.Factory(channelId, getMessagesUseCase, getChannelUseCase)
+            this, ChannelMessagesViewModel.Factory(channelId, getMessagesUseCase, getChannelUseCase, updateMarkerUseCase)
         )[ChannelMessagesViewModel::class.java]
     }
 
@@ -472,6 +460,7 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        messageReceiver.register(viewLifecycleOwner.lifecycleScope)
         val binding = ListWithToolbarBinding.bind(view)
         binding.toolbar.setNavigationOnClickListener {
             backToPrevFragment()
@@ -503,13 +492,20 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        messageReceiver.unregister()
+    }
+
     class ChannelMessagesViewModel(
         private val channelId: String,
         private val getMessagesUseCase: GetMessagesUseCase,
-        private val getChannelUseCase: GetChannelUseCase
+        private val getChannelUseCase: GetChannelUseCase,
+        private val updateMarkerUseCase: UpdateMarkerUseCase
     ) : BaseListViewModel<Message>() {
         var isAutoScrollTemporarily = false
         val currentChannel = MutableLiveData<Channel>()
+        private var hasMarkedAsRead = false
 
         init {
             fetchChannel()
@@ -517,7 +513,13 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
 
         override suspend fun getItems(requestPager: PageableItemWrapper.Pager<Message>?): PnutResponse<List<Message>> {
             val pagination = requestPager?.let { PaginationParam.createFromPager(it) } ?: PaginationParam()
-            return getMessagesUseCase.run(GetMessagesInputData(channelId, pagination)).messages
+            val response = getMessagesUseCase.run(GetMessagesInputData(channelId, pagination)).messages
+            val latestMessage = response.data.firstOrNull()
+            if (latestMessage != null) {
+                markAsReadIfNecessary(latestMessage.id)
+                MessageReceiver.broadcast(null, latestMessage)
+            }
+            return response
         }
 
         fun fetchChannel() {
@@ -526,18 +528,33 @@ open class ChannelMessagesFragment : BaseListFragment<Message, MessageViewHolder
                     getChannelUseCase.run(channelId)
                 }.onSuccess {
                     currentChannel.value = it.data
+                    if (it.data.hasUnread) {
+                        markAsReadIfNecessary(it.data.recentMessageId)
+                    }
                 }
+            }
+        }
+
+        private fun markAsReadIfNecessary(messageId: String?) {
+            if (hasMarkedAsRead || messageId == null) return
+            hasMarkedAsRead = true
+            viewModelScope.launch {
+                runCatching {
+                    updateMarkerUseCase.run(UpdateMarkerInputData(channelId, messageId))
+                }
+                ChannelReceiver.broadcastRead(channelId)
             }
         }
 
         class Factory(
             private val channelId: String,
             private val getMessagesUseCase: GetMessagesUseCase,
-            private val getChannelUseCase: GetChannelUseCase
+            private val getChannelUseCase: GetChannelUseCase,
+            private val updateMarkerUseCase: UpdateMarkerUseCase
         ) : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return ChannelMessagesViewModel(channelId, getMessagesUseCase, getChannelUseCase) as T
+                return ChannelMessagesViewModel(channelId, getMessagesUseCase, getChannelUseCase, updateMarkerUseCase) as T
             }
         }
     }

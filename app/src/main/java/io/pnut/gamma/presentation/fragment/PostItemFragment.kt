@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package io.pnut.gamma.presentation.fragment
 
 import android.R as Rr
@@ -32,7 +30,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -184,22 +181,8 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 
     override fun onReportPostReceive() {}
 
-    protected val receiverManager by lazy {
-        activity?.let { LocalBroadcastManager.getInstance(it.applicationContext) }
-    }
-
     private val postReceiver by lazy {
         PostReceiver(this)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        receiverManager?.registerReceiver(postReceiver, PostWorker.getIntentFilter())
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        receiverManager?.unregisterReceiver(postReceiver)
     }
 
     enum class BundleKey { MainPostId }
@@ -927,6 +910,7 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        postReceiver.register(viewLifecycleOwner.lifecycleScope)
         val recyclerView = getRecyclerView(view)
         itemTouchHelper.attachToRecyclerView(recyclerView)
         setExitSharedElementCallback(object : SharedElementCallback() {
@@ -941,6 +925,11 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             }
         })
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        postReceiver.unregister()
     }
 
     // TODO: create the view holder for deleted post
@@ -1194,17 +1183,14 @@ abstract class PostItemFragment : BaseListFragment<Post, PostItemFragment.PostVi
             RelationshipReceiver(this)
         }
 
-        override fun onAttach(context: Context) {
-            super.onAttach(context)
-            receiverManager?.registerReceiver(
-                relationshipReceiver,
-                RelationshipReceiver.getIntentFilter()
-            )
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+            relationshipReceiver.register(viewLifecycleOwner.lifecycleScope)
         }
 
-        override fun onDetach() {
-            super.onDetach()
-            receiverManager?.unregisterReceiver(relationshipReceiver)
+        override fun onDestroyView() {
+            super.onDestroyView()
+            relationshipReceiver.unregister()
         }
 
         override fun onRelationshipChanged(userId: String?, relationship: Relationship?) {

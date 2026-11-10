@@ -1,12 +1,12 @@
 package io.pnut.gamma.broadcast
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
 import io.pnut.gamma.domain.entity.Post
 import io.pnut.gamma.service.PostWorker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
-class PostReceiver(private val listener: Callback) : BroadcastReceiver() {
+class PostReceiver(private val listener: Callback) {
 
     interface Callback {
         fun onPostReceive(post: Post)
@@ -16,16 +16,38 @@ class PostReceiver(private val listener: Callback) : BroadcastReceiver() {
         fun onReportPostReceive()
     }
 
-    override fun onReceive(context: Context, intent: Intent) {
-        val action = intent.action ?: return
-        val postAction = PostWorker.Actions.getAction(action) ?: return
-        when (postAction) {
-            PostWorker.Actions.SendPost -> listener.onPostReceive(PostWorker.getPost(intent) ?: return)
-            PostWorker.Actions.Star -> listener.onStarReceive(PostWorker.getPost(intent) ?: return)
-            PostWorker.Actions.Repost -> listener.onRepostReceive(PostWorker.getPost(intent) ?: return)
-            PostWorker.Actions.DeletePost -> listener.onDeletePostReceive(PostWorker.getPost(intent) ?: return)
-            PostWorker.Actions.ReportPost -> listener.onReportPostReceive()
-        }
+    private var job: Job? = null
 
+    fun register(coroutineScope: CoroutineScope) {
+        unregister()
+        job = coroutineScope.launch {
+            AppEventBus.postEvents.collect { event ->
+                when (event) {
+                    is AppEventBus.PostEvent.SendPost -> listener.onPostReceive(event.post)
+                    is AppEventBus.PostEvent.Star -> listener.onStarReceive(event.post)
+                    is AppEventBus.PostEvent.Repost -> listener.onRepostReceive(event.post)
+                    is AppEventBus.PostEvent.DeletePost -> listener.onDeletePostReceive(event.post)
+                    is AppEventBus.PostEvent.ReportPost -> listener.onReportPostReceive()
+                }
+            }
+        }
+    }
+
+    fun unregister() {
+        job?.cancel()
+        job = null
+    }
+
+    companion object {
+        fun broadcast(action: PostWorker.Actions, post: Post? = null) {
+            val event = when (action) {
+                PostWorker.Actions.SendPost -> post?.let { AppEventBus.PostEvent.SendPost(it) }
+                PostWorker.Actions.Star -> post?.let { AppEventBus.PostEvent.Star(it) }
+                PostWorker.Actions.Repost -> post?.let { AppEventBus.PostEvent.Repost(it) }
+                PostWorker.Actions.DeletePost -> post?.let { AppEventBus.PostEvent.DeletePost(it) }
+                PostWorker.Actions.ReportPost -> AppEventBus.PostEvent.ReportPost
+            }
+            event?.let { AppEventBus.send(it) }
+        }
     }
 }

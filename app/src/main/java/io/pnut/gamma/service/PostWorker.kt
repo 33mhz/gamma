@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package io.pnut.gamma.service
 
 import android.content.Context
@@ -9,10 +7,10 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.core.content.IntentCompat
 import androidx.hilt.work.HiltWorker
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import io.pnut.gamma.broadcast.PostReceiver
 import io.pnut.gamma.domain.entity.Post
 import io.pnut.gamma.domain.entity.PostBodyOuter
 import io.pnut.gamma.domain.entity.raw.OEmbed
@@ -173,17 +171,25 @@ class PostWorker @AssistedInject constructor(
             }
             else -> return Result.failure()
         }
-        
-        val responseIntent =
-            resultIntent.getOrElse { ErrorIntent.createErrorIntent(applicationContext, it) }
-        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(responseIntent)
-        
+
+        resultIntent.onSuccess { intent ->
+            val actionName = intent.action
+            val post = getPost(intent)
+            if (actionName != null) {
+                val actionEnum = Actions.getAction(actionName)
+                if (actionEnum != null) {
+                    PostReceiver.broadcast(actionEnum, post)
+                }
+            }
+        }.onFailure {
+            ErrorIntent.broadcast(applicationContext, it)
+        }
+
         return Result.success()
     }
 
     private fun sendErrorBroadcast(t: Throwable): Result {
-        val intent = ErrorIntent.createErrorIntent(applicationContext, t)
-        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
+        ErrorIntent.broadcast(applicationContext, t)
         return Result.failure()
     }
 
@@ -281,10 +287,7 @@ class PostWorker @AssistedInject constructor(
             IntentCompat.getParcelableExtra(intent, ResultIntentKey.Post.name, Post::class.java)
 
         fun sendResultBroadcast(context: Context, action: Actions, post: Post) {
-            val intent = Intent(action.getActionName()).apply {
-                putExtra(ResultIntentKey.Post.name, post)
-            }
-            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+            PostReceiver.broadcast(action, post)
         }
     }
 }

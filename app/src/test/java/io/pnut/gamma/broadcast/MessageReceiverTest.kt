@@ -1,12 +1,11 @@
-@file:Suppress("DEPRECATION")
-
 package io.pnut.gamma.broadcast
 
 import android.content.Context
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.common.truth.Truth.assertThat
 import io.pnut.gamma.domain.entity.Client
 import io.pnut.gamma.domain.entity.Message
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -28,8 +27,9 @@ class MessageReceiverTest {
             }
         })
 
-        LocalBroadcastManager.getInstance(context)
-            .registerReceiver(receiver, MessageReceiver.getIntentFilter())
+        val scope = CoroutineScope(Dispatchers.Main)
+        receiver.register(scope)
+        ShadowLooper.idleMainLooper()
 
         val testMessage = Message(
             counts = Message.MessageCount(0),
@@ -51,6 +51,6 @@ class MessageReceiverTest {
         assertThat(receivedMessage?.id).isEqualTo("m123")
         assertThat(receivedMessage?.channelId).isEqualTo("c456")
 
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver)
+        receiver.unregister()
     }
 }

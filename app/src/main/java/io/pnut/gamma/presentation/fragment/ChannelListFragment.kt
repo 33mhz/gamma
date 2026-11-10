@@ -30,12 +30,19 @@ import io.pnut.gamma.presentation.util.DateUtil
 import io.pnut.gamma.databinding.FragmentChannelPostItemBinding
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
+import io.pnut.gamma.broadcast.AppEventBus
+import io.pnut.gamma.broadcast.ChannelReceiver
+import io.pnut.gamma.broadcast.MessageReceiver
+import io.pnut.gamma.domain.entity.Message
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.ChannelViewHolder>(),
-    BaseListRecyclerViewAdapter.IBaseList<Channel, ChannelListFragment.ChannelViewHolder> {
+    BaseListRecyclerViewAdapter.IBaseList<Channel, ChannelListFragment.ChannelViewHolder>,
+    ChannelReceiver.Callback,
+    MessageReceiver.Callback {
     private val channelType: ChannelType by lazy {
         arguments?.let { BundleCompat.getSerializable(it, BundleKey.ChannelType.name, ChannelType::class.java) }
             ?: ChannelType.Chat
@@ -55,6 +62,14 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
 
     @Inject
     lateinit var accountRepository: IAccountRepository
+
+    private val channelReceiver by lazy {
+        ChannelReceiver(this)
+    }
+
+    private val messageReceiver by lazy {
+        MessageReceiver(this)
+    }
 
     override fun getFragmentLayout(): Int = R.layout.fragment_base_list
     override fun getRecyclerView(view: View): RecyclerView = view.findViewById(R.id.baseList)
@@ -76,10 +91,13 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
         item: Channel,
         itemWrapper: PageableItemWrapper<Channel>
     ) {
-        if (item.hasUnread && item.recentMessageId != null) {
-            lifecycleScope.launch {
-                updateMarkerUseCase.run(UpdateMarkerInputData(item.id, item.recentMessageId))
+        if (item.hasUnread) {
+            if (item.recentMessageId != null) {
+                lifecycleScope.launch {
+                    updateMarkerUseCase.run(UpdateMarkerInputData(item.id, item.recentMessageId))
+                }
             }
+            ChannelReceiver.broadcastRead(item.id)
         }
         val title = getChannelTitle(item)
         val usernames = getChannelUsernames(item)
@@ -150,6 +168,26 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
 
     override val itemNameRes: Int = R.string.chat_rooms
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        channelReceiver.register(viewLifecycleOwner.lifecycleScope)
+        messageReceiver.register(viewLifecycleOwner.lifecycleScope)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        channelReceiver.unregister()
+        messageReceiver.unregister()
+    }
+
+    override fun onChannelRead(channelId: String) {
+        (viewModel as? ChannelListViewModel)?.markChannelAsRead(channelId)
+    }
+
+    override fun onMessageReceive(message: Message) {
+        (viewModel as? ChannelListViewModel)?.updateRecentMessage(message)
+    }
+
     override fun onClickSegmentListener(
         viewHolder: BaseListRecyclerViewAdapter.SegmentViewHolder,
         itemWrapper: PageableItemWrapper.Pager<Channel>
@@ -193,6 +231,21 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
         private val getChannelsUseCase: GetChannelsUseCase,
         private val accountRepository: IAccountRepository
     ) : BaseListViewModel<Channel>() {
+
+        init {
+            viewModelScope.launch {
+                AppEventBus.channelEvents.collect { event ->
+                    when (event) {
+                        is AppEventBus.ChannelEvent.ChannelRead -> markChannelAsRead(event.channelId)
+                    }
+                }
+            }
+            viewModelScope.launch {
+                AppEventBus.messageEvents.collect { message ->
+                    updateRecentMessage(message)
+                }
+            }
+        }
         override suspend fun getItems(requestPager: PageableItemWrapper.Pager<Channel>?): PnutResponse<List<Channel>> {
             val params = GetChannelsParam().also { getChannelParams ->
                 val type = channelType.value
@@ -209,6 +262,55 @@ open class ChannelListFragment : BaseListFragment<Channel, ChannelListFragment.C
             val getChannelsOutputData =
                 getChannelsUseCase.run(GetChannelsInputData(channelType, params))
             return getChannelsOutputData.channels
+        }
+
+        fun markChannelAsRead(channelId: String) {
+            var updated = false
+            val newItems = items.map { wrapper ->
+                if (wrapper is PageableItemWrapper.Item && wrapper.item.id == channelId && wrapper.item.hasUnread) {
+                    updated = true
+                    PageableItemWrapper.Item(wrapper.item.copy(hasUnread = false))
+                } else {
+                    wrapper
+                }
+            }
+            if (updated) {
+                items.clear()
+                items.addAll(newItems)
+                listEvent.postValue(ListEvent.UpdateList)
+            }
+        }
+
+        fun updateRecentMessage(message: Message) {
+            var updated = false
+            val myId = accountRepository.getStoredIds().firstOrNull()
+            val newItems = items.map { wrapper ->
+                if (wrapper is PageableItemWrapper.Item && wrapper.item.id == message.channelId) {
+                    val channel = wrapper.item
+                    val currentRecentDate = channel.recentMessage?.createdAt
+                    val isNewer = currentRecentDate == null || message.createdAt.time >= currentRecentDate.time
+                    if (isNewer) {
+                        updated = true
+                        val isFromMe = myId != null && message.user?.id == myId
+                        val hasUnread = !isFromMe
+                        val newChannel = channel.copy(
+                            recentMessage = message,
+                            recentMessageId = message.id,
+                            hasUnread = hasUnread
+                        )
+                        PageableItemWrapper.Item(newChannel)
+                    } else {
+                        wrapper
+                    }
+                } else {
+                    wrapper
+                }
+            }
+            if (updated) {
+                items.clear()
+                items.addAll(newItems)
+                listEvent.postValue(ListEvent.UpdateList)
+            }
         }
 
         class Factory(

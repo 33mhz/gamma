@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package io.pnut.gamma.presentation.activity
 
 import io.pnut.gamma.R
@@ -18,7 +16,7 @@ import androidx.core.view.GravityCompat
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.google.android.material.snackbar.Snackbar
@@ -54,7 +52,6 @@ import io.pnut.gamma.presentation.util.SnackbarCallback
 import io.pnut.gamma.presentation.util.Util
 import io.pnut.gamma.presentation.viewmodel.MainActivityViewModel
 import io.pnut.gamma.service.PostWorker
-import io.pnut.gamma.util.ErrorIntent
 import io.pnut.gamma.util.LogUtil
 import io.pnut.gamma.util.oneLine
 import io.pnut.gamma.util.showAsError
@@ -268,10 +265,6 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         RelationshipReceiver(this)
     }
 
-    private val receiverManager by lazy {
-        LocalBroadcastManager.getInstance(this)
-    }
-
 
     private val eventObserver = Observer<Event> {
         when (it) {
@@ -311,6 +304,10 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
                 }
             }
         })
+
+        postReceiver.register(lifecycleScope)
+        errorReceiver.register(lifecycleScope)
+        relationshipReceiver.register(lifecycleScope)
 
         syncMenu()
     }
@@ -359,18 +356,11 @@ class MainActivity : BaseActivity(), BaseActivity.HaveDrawer, PostReceiver.Callb
         super.onResume()
     }
 
-    override fun onStart() {
-        super.onStart()
-        receiverManager.registerReceiver(postReceiver, PostWorker.getIntentFilter())
-        receiverManager.registerReceiver(errorReceiver, ErrorIntent.getIntentFilter())
-        receiverManager.registerReceiver(relationshipReceiver, RelationshipReceiver.getIntentFilter())
-    }
-
-    override fun onStop() {
-        super.onStop()
-        receiverManager.unregisterReceiver(postReceiver)
-        receiverManager.unregisterReceiver(errorReceiver)
-        receiverManager.unregisterReceiver(relationshipReceiver)
+    override fun onDestroy() {
+        super.onDestroy()
+        postReceiver.unregister()
+        errorReceiver.unregister()
+        relationshipReceiver.unregister()
     }
 
     override fun onNewIntent(intent: Intent) {

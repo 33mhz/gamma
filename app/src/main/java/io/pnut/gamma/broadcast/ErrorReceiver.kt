@@ -1,21 +1,28 @@
 package io.pnut.gamma.broadcast
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import io.pnut.gamma.util.ErrorIntent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
-class ErrorReceiver(private val listener: Callback) : BroadcastReceiver() {
+class ErrorReceiver(private val listener: Callback) {
 
     interface Callback {
         fun onReceiveError(message: String)
     }
 
-    override fun onReceive(context: Context, intent: Intent) {
-        val action = intent.action ?: return
-        val message = intent.getStringExtra(Intent.EXTRA_TEXT).orEmpty()
-        if (ErrorIntent.ACTION == action) {
-            listener.onReceiveError(message)
+    private var job: Job? = null
+
+    fun register(coroutineScope: CoroutineScope) {
+        unregister()
+        job = coroutineScope.launch {
+            AppEventBus.errorEvents.collect { message ->
+                listener.onReceiveError(message)
+            }
         }
+    }
+
+    fun unregister() {
+        job?.cancel()
+        job = null
     }
 }

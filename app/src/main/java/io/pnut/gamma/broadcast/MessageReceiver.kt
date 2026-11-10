@@ -1,41 +1,36 @@
-@file:Suppress("DEPRECATION")
-
 package io.pnut.gamma.broadcast
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import androidx.core.content.IntentCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import io.pnut.gamma.domain.entity.Message
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
-class MessageReceiver(private val listener: Callback) : BroadcastReceiver() {
+class MessageReceiver(private val listener: Callback) {
 
     interface Callback {
         fun onMessageReceive(message: Message)
     }
 
-    override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == ACTION_MESSAGE_RECEIVE) {
-            val message = IntentCompat.getParcelableExtra(intent, EXTRA_MESSAGE, Message::class.java) ?: return
-            listener.onMessageReceive(message)
+    private var job: Job? = null
+
+    fun register(coroutineScope: CoroutineScope) {
+        unregister()
+        job = coroutineScope.launch {
+            AppEventBus.messageEvents.collect { message ->
+                listener.onMessageReceive(message)
+            }
         }
     }
 
+    fun unregister() {
+        job?.cancel()
+        job = null
+    }
+
     companion object {
-        const val ACTION_MESSAGE_RECEIVE = "io.pnut.gamma.broadcast.MessageReceiver.ACTION_MESSAGE_RECEIVE"
-        const val EXTRA_MESSAGE = "EXTRA_MESSAGE"
-
-        fun getIntentFilter(): IntentFilter {
-            return IntentFilter(ACTION_MESSAGE_RECEIVE)
-        }
-
-        fun broadcast(context: Context, message: Message) {
-            val intent = Intent(ACTION_MESSAGE_RECEIVE).apply {
-                putExtra(EXTRA_MESSAGE, message)
-            }
-            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+        fun broadcast(context: Context? = null, message: Message) {
+            AppEventBus.send(message)
         }
     }
 }

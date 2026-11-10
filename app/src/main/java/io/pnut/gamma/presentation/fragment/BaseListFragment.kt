@@ -50,6 +50,9 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
                 @Suppress("UNCHECKED_CAST")
                 adapter.removeItemsBy(it.predicate as (T) -> Boolean)
             }
+            is ListEvent.UpdateList -> {
+                adapter.submitList(ArrayList(viewModel.items))
+            }
         }
     }
 
@@ -199,6 +202,7 @@ abstract class BaseListFragment<T : UniquePageable, V : RecyclerView.ViewHolder>
         object Initialized : ListEvent()
         object Clear : ListEvent()
         data class Filter<T : UniquePageable>(val predicate: (T) -> Boolean) : ListEvent()
+        object UpdateList : ListEvent()
     }
 
     abstract class BaseListViewModel<T : UniquePageable> : ViewModel() {
